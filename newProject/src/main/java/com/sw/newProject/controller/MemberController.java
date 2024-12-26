@@ -2,12 +2,17 @@ package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.MemberDto;
 
+import com.sw.newProject.service.MemberService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class MemberController {
+    private final MemberService memberService;
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     @GetMapping("/join")
     public String getJoinPage() { // 회원가입 페이지
@@ -15,7 +20,7 @@ public class MemberController {
     }
 
     @PostMapping("/doJoin")
-    public boolean doJoin(MemberDto memberDto) { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
-
+    public void insertMember(MemberDto memberDto) { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
+        memberService.insertMember(memberDto);
     }
 }
