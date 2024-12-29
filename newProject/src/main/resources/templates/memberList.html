@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>회원 목록</title>
+</head>
+<body>
+<h1>회원 목록</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>No</th>
+        <th>Id</th>
+        <th>nickNm</th>
+        <th>address1</th>
+        <th>address2</th>
+        <th>zipCode</th>
+        <th>phone</th>
+        <th>email</th>
+        <th>profilePath</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="member : ${members}">
+        <td th:text="${member.memNo}"></td>
+        <td th:text="${member.memId}"></td>
+        <td th:text="${member.nickNm}"></td>
+        <td th:text="${member.address1}"></td>
+        <td th:text="${member.address2}"></td>
+        <td th:text="${member.zipCode}"></td>
+        <td th:text="${member.phone}"></td>
+        <td th:text="${member.email}"></td>
+        <td th:text="${member.profilePath}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

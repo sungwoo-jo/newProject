@@ -7,7 +7,10 @@
 
     <insert id="insertMember" parameterType="com.sw.newProject.dto.MemberDto">
         INSERT INTO member (memId, memPw, nickNm, address1, address2, zipCode, phone, email, profilePath, deleteYn, regDt, modDt)
-        VALUES (#{memId}, #{memPw}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profilePath}, #{deleteYn}, now(), NULL)
+        VALUES (#{memId}, #{memPw}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profilePath}, #{deleteYn}, now(), NULL);
     </insert>
 
+    <select id="getAllMember" resultType="com.sw.newProject.dto.MemberDto">
+        SELECT * FROM member;
+    </select>
 </mapper>
