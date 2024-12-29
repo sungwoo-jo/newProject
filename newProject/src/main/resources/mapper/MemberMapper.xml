@@ -13,4 +13,18 @@
     <select id="getAllMember" resultType="com.sw.newProject.dto.MemberDto">
         SELECT * FROM member;
     </select>
+
+    <update id="updateMember" parameterType="com.sw.newProject.dto.MemberDto">
+        UPDATE member
+        SET memId = #{memId}, memPw = #{memPw}, nickNm = #{nickNm}, address1 = #{address1}, address2 = #{address2}, zipCode = #{zipCode}, phone = #{phone}, email = #{email}, profilePath = #{profilePath}
+        WHERE memNo = #{memNo};
+    </update>
+
+    <select id="getMember" parameterType="int" resultType="com.sw.newProject.dto.MemberDto">
+        SELECT memNo, memId, memPw, nickNm, address1, address2, zipCode, phone, email, profilePath, deleteYn, regDt, modDt FROM member WHERE memNo = #{memNo};
+    </select>
+
+    <update id="deleteMember" parameterType="Integer">
+        UPDATE member SET deleteYn = 'y' WHERE memNo = #{memNo};
+    </update>
 </mapper>

@@ -7,9 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,6 +44,23 @@ public class MemberController {
         List<MemberDto> members = memberService.getAllMember();
         model.addAttribute("members", members);
         return "memberList"; // memberList.html
+    }
+
+    @GetMapping("/update") // 정보수정 페이지
+    public String getUpdatePage() {
+        return "update";
+    }
+
+    @PatchMapping("/doUpdate") // 정보수정 처리
+    public String updateMember(@RequestBody MemberDto memberDto) {
+        memberService.updateMember(memberDto);
+        return "joinSuccess";
+    }
+
+    @DeleteMapping("/doDelete") // 회원탈퇴 처리
+    public String deleteMember(@RequestBody MemberDto memberDto) {
+        memberService.deleteMember(memberDto.getMemNo());
+        return "deleteSuccess";
     }
 }
 
