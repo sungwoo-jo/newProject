@@ -23,5 +23,11 @@ public interface MemberMapper {
 
     Long duplicationEmailCheck(String email);
 
+    Integer validationMemId(String memId);
+
+    Integer validationMemPw(String memPw);
+
+    MemberDto doLogin(String memId, String memPw);
+
 //    boolean validationPassword(MemberDto memberDto);
 }

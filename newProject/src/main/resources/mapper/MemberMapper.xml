@@ -7,25 +7,25 @@
 
     <insert id="insertMember" parameterType="com.sw.newProject.dto.MemberDto">
         INSERT INTO member (memId, memPw, nickNm, address1, address2, zipCode, phone, email, profilePath, deleteYn, regDt, modDt)
-        VALUES (#{memId}, #{memPw}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profilePath}, #{deleteYn}, now(), NULL);
+        VALUES (#{memId}, #{memPw}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profilePath}, #{deleteYn}, now(), NULL)
     </insert>
 
     <select id="getAllMember" resultType="com.sw.newProject.dto.MemberDto">
-        SELECT * FROM member;
+        SELECT * FROM member
     </select>
 
     <update id="updateMember" parameterType="com.sw.newProject.dto.MemberDto">
         UPDATE member
         SET memId = #{memId}, memPw = #{memPw}, nickNm = #{nickNm}, address1 = #{address1}, address2 = #{address2}, zipCode = #{zipCode}, phone = #{phone}, email = #{email}, profilePath = #{profilePath}
-        WHERE memNo = #{memNo};
+        WHERE memNo = #{memNo}
     </update>
 
     <select id="getMember" parameterType="int" resultType="com.sw.newProject.dto.MemberDto">
-        SELECT memNo, memId, memPw, nickNm, address1, address2, zipCode, phone, email, profilePath, deleteYn, regDt, modDt FROM member WHERE memNo = #{memNo};
+        SELECT memNo, memId, memPw, nickNm, address1, address2, zipCode, phone, email, profilePath, deleteYn, regDt, modDt FROM member WHERE memNo = #{memNo}
     </select>
 
     <update id="deleteMember" parameterType="Integer">
-        UPDATE member SET deleteYn = 'y' WHERE memNo = #{memNo};
+        UPDATE member SET deleteYn = 'y' WHERE memNo = #{memNo}
     </update>
 
     <select id="duplicationIdCheck" parameterType="String" resultType="java.lang.Long">
@@ -38,6 +38,18 @@
 
     <select id="duplicationEmailCheck" parameterType="String" resultType="java.lang.Long">
         SELECT count(memNo) FROM member WHERE email = #{email}
+    </select>
+
+    <select id="validationMemId" parameterType="String" resultType="java.lang.Integer">
+        SELECT memNo FROM member WHERE memId = #{memId}
+    </select>
+
+    <select id="validationMemPw" parameterType="String" resultType="java.lang.Integer">
+        SELECT memNo FROM member WHERE memPw = #{memPw}
+    </select>
+
+    <select id="doLogin" parameterType="String" resultType="com.sw.newProject.dto.MemberDto">
+        SELECT * FROM member WHERE memId = #{memId} AND memPw = #{memPw}
     </select>
 <!--    <select id="validationPassword" parameterType="com.sw.newProject.dto.MemberDto">-->
 <!--        SELECT memPw FROM member WHERE-->

@@ -121,6 +121,15 @@ public class MemberService {
         return memberMapper.duplicationEmailCheck(email);
     }
 
+    public MemberDto doLogin(String memId, String memPw) throws NoSuchAlgorithmException {
+        memPw = passwordEncrypt(memPw);
+        return memberMapper.doLogin(memId, memPw);
+    }
+
+    public Integer validationMemId(String memId) { // 회원 아이디 검증
+        // todo:
+    }
+
 //    public boolean validationPassword(MemberDto memberDto) { // 비밀번호 일치 여부 검증
 //        // todo: 로그인 API 만들 때 구현 필요
 //        return true;
