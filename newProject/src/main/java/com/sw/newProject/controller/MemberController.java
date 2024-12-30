@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Controller
@@ -25,12 +26,9 @@ public class MemberController {
     }
 
     @PostMapping("/doJoin") // 회원가입 처리
-    public ResponseEntity<String> insertMember(@RequestBody MemberDto memberDto) { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
-        if (memberDto.getDeleteYn() == null) {
-            memberDto.setDeleteYn(false);
-        }
-
-        System.out.println(memberDto);
+    public ResponseEntity<String> insertMember(@RequestBody MemberDto memberDto) throws NoSuchAlgorithmException { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
+        memberDto.setDeleteYn(false);
+        memberDto.setMemPw(memberService.passwordEncrypt(memberDto.getMemPw()));
 
         memberService.insertMember(memberDto);
         return ResponseEntity
@@ -61,6 +59,33 @@ public class MemberController {
     public String deleteMember(@RequestBody MemberDto memberDto) {
         memberService.deleteMember(memberDto.getMemNo());
         return "deleteSuccess";
+    }
+
+    @GetMapping("/duplicationIdCheck") // 중복 ID 검증
+    @ResponseBody
+    public ResponseEntity<Long> duplicationIdCheck(@RequestParam String memId) {
+        System.out.println("[memberController][duplicationIdCheck][memId]: " + memId);
+        Long count = memberService.duplicationIdCheck(memId);
+
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/duplicationNickNmCheck") // 중복 닉네임 검증
+    @ResponseBody
+    public ResponseEntity<Long> duplicationNickNmCheck(@RequestParam String nickNm) {
+        System.out.println("[memberController][duplicationNickNmCheck][nickNm]: " + nickNm);
+        Long count = memberService.duplicationNickNmCheck(nickNm);
+
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/duplicationEmailCheck") // 중복 이메일 검증
+    @ResponseBody
+    public ResponseEntity<Long> duplicationEmailCheck(@RequestParam String email) {
+        System.out.println("[memberController][duplicationEmailCheck][email]: " + email);
+        Long count = memberService.duplicationEmailCheck(email);
+
+        return ResponseEntity.ok(count);
     }
 }
 

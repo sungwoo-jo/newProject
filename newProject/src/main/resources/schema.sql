@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS `member` CASCADE;
 CREATE TABLE `member` (
     memNo INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '회원번호',
     memId VARCHAR(50) NOT NULL comment '아이디',
-    memPw VARCHAR(150) NOT NULL comment '비밀번호',
+    memPw VARCHAR(500) NOT NULL comment '비밀번호',
     nickNm VARCHAR(50) NOT NULL comment '닉네임',
     address1 VARCHAR(150) DEFAULT NULL comment '주소',
     address2 VARCHAR(100) DEFAULT NULL comment '상세주소',

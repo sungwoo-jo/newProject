@@ -27,4 +27,19 @@
     <update id="deleteMember" parameterType="Integer">
         UPDATE member SET deleteYn = 'y' WHERE memNo = #{memNo};
     </update>
+
+    <select id="duplicationIdCheck" parameterType="String" resultType="java.lang.Long">
+        SELECT count(memNo) FROM member WHERE memId = #{memId}
+    </select>
+
+    <select id="duplicationNickNmCheck" parameterType="String" resultType="java.lang.Long">
+        SELECT count(memNo) FROM member WHERE nickNm = #{nickNm}
+    </select>
+
+    <select id="duplicationEmailCheck" parameterType="String" resultType="java.lang.Long">
+        SELECT count(memNo) FROM member WHERE email = #{email}
+    </select>
+<!--    <select id="validationPassword" parameterType="com.sw.newProject.dto.MemberDto">-->
+<!--        SELECT memPw FROM member WHERE-->
+<!--    </select>-->
 </mapper>

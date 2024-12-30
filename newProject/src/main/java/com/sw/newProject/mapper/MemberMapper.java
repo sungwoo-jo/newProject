@@ -16,4 +16,12 @@ public interface MemberMapper {
     MemberDto getMember(int memNo);
 
     void deleteMember(Integer memNo);
+
+    Long duplicationIdCheck(String memId);
+
+    Long duplicationNickNmCheck(String nickNm);
+
+    Long duplicationEmailCheck(String email);
+
+//    boolean validationPassword(MemberDto memberDto);
 }

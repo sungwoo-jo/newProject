@@ -5,7 +5,9 @@ import com.sw.newProject.mapper.MemberMapper;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.security.MessageDigest;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,8 +21,8 @@ public class MemberService {
         this.memberMapper = memberMapper;
     }
 
-    public void insertMember(MemberDto memberDto) {
-        System.out.println("insert Member" + memberDto);
+    public void insertMember(MemberDto memberDto) { // 회원가입 로직 처리
+        System.out.println("[MemberService][insertMember][memberDto]: " + memberDto);
         memberMapper.insertMember(memberDto);
     }
 
@@ -77,10 +79,50 @@ public class MemberService {
 
     public void deleteMember(Integer memNo) {
         if (memNo == null) {
-            System.out.println("memNo is null");
+            System.out.println("[MemberService][deleteMember][memNo]: memNo is null");
         }
         else {
             memberMapper.deleteMember(memNo);
+            System.out.println("[MemberService][deleteMember][" + memNo + "]: deleteSuccess");
         }
     }
+
+    public Long duplicationIdCheck(String memId) { // 중복 회원 검증
+        System.out.println("[MemberService][duplicationIdCheck][memId]: " + memId);
+        return memberMapper.duplicationIdCheck(memId);
+    }
+
+    public String passwordEncrypt(String memPw) throws NoSuchAlgorithmException { // SHA-256 비밀번호 암호화
+        MessageDigest digest = MessageDigest.getInstance("SHA-256"); // SHA-256 해시 알고리즘 인스턴스 생성
+        
+        // 비밀번호를 바이트 배열로 변환하고, 해시 계산
+        byte[] hashBytes = digest.digest(memPw.getBytes());
+
+        // 해시된 결과를 16진수 문자열로 변환
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hashBytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+
+        return hexString.toString();
+    }
+
+    public Long duplicationNickNmCheck(String nickNm) {
+        System.out.println("[MemberService][duplicationNickNmCheck][nickNm]: " + nickNm);
+        return memberMapper.duplicationNickNmCheck(nickNm);
+    }
+
+    public Long duplicationEmailCheck(String email) {
+        System.out.println("[MemberService][duplicationNickNmCheck][email]: " + email);
+        return memberMapper.duplicationEmailCheck(email);
+    }
+
+//    public boolean validationPassword(MemberDto memberDto) { // 비밀번호 일치 여부 검증
+//        // todo: 로그인 API 만들 때 구현 필요
+//        return true;
+//    }
 }

@@ -38,6 +38,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'com.h2database:h2:2.2.224' // Replace with the latest version
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation group: 'org.json', name: 'json', version: '20240303' // JSONObject(org.json)
 }
 
 tasks.named('test') {
