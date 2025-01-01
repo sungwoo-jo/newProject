@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>아이디 찾기</title>
+</head>
+<body>
+<h2>아이디 찾기</h2>
+
+<form action="/doFindId" method="post">
+  <label for="memNm">이름:</label>
+  <label for="email">이메일:</label>
+  <input type="memNm" id="memNm" name="memNm" required>
+  <input type="email" id="email" name="email" required>
+  <button type="submit">아이디 찾기</button>
+</form>
+
+<div th:if="${error}">
+  <p th:text="${error}" style="color: red;"></p>
+</div>
+</body>
+</html>

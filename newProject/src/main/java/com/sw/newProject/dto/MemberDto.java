@@ -24,6 +24,10 @@ public class MemberDto {
     @Size(min = 5, max = 50, message = "비밀번호는 최소 5자에서 최대 50자까지 입력 가능합니다.")
     private String memPw;
 
+    @NotNull(message = "이름은 필수 입력 항목입니다.")
+    @Size(min = 3, max = 10, message = "이름은 최소 3자에서 최대 10자까지 입력 가능합니다.")
+    private String memNm;
+
     @NotNull(message = "닉네임은 필수 입력 항목입니다.")
     @Size(min = 3, max = 10, message = "닉네임은 최소 3자에서 최대 10자까지 입력 가능합니다.")
     private String nickNm;

@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.MessageDigest;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -94,7 +96,7 @@ public class MemberService {
 
     public String passwordEncrypt(String memPw) throws NoSuchAlgorithmException { // SHA-256 비밀번호 암호화
         MessageDigest digest = MessageDigest.getInstance("SHA-256"); // SHA-256 해시 알고리즘 인스턴스 생성
-        
+
         // 비밀번호를 바이트 배열로 변환하고, 해시 계산
         byte[] hashBytes = digest.digest(memPw.getBytes());
 
@@ -123,15 +125,27 @@ public class MemberService {
 
     public MemberDto doLogin(String memId, String memPw) throws NoSuchAlgorithmException {
         memPw = passwordEncrypt(memPw);
+        System.out.println("[MemberService][doLogin][memId, memPw]: " + memId + ", " + memPw);
         return memberMapper.doLogin(memId, memPw);
     }
 
-    public Integer validationMemId(String memId) { // 회원 아이디 검증
-        // todo:
+    public String doFindId(String memNm, String email) {
+        String memId = memberMapper.doFindId(memNm, email);
+        System.out.println("[MemberService][doFindId][memId]: " + memId);
+        return memId;
     }
-
-//    public boolean validationPassword(MemberDto memberDto) { // 비밀번호 일치 여부 검증
-//        // todo: 로그인 API 만들 때 구현 필요
+//    public Boolean doFindIdOfEmail(String memNm, String email) { // 이거는 메일 발송 API 구현 후 사용하기(그전까지는 doFindId 사용)
+//        }
+//        JavaMailSender emailSender = null;
+//        System.out.println("[MemberService][doFindId][memId]: " + memberMapper.doFindId(memNm, email));
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        message.setFrom("jason692193@gmail.com");
+//        message.setTo(email);
+//        message.setSubject("아이디 찾기 결과");
+//        message.setText("귀하의 아이디는: test");
+//
+//        emailSender.send(message);
 //        return true;
 //    }
+
 }

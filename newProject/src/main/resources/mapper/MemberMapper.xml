@@ -6,8 +6,8 @@
 
 
     <insert id="insertMember" parameterType="com.sw.newProject.dto.MemberDto">
-        INSERT INTO member (memId, memPw, nickNm, address1, address2, zipCode, phone, email, profilePath, deleteYn, regDt, modDt)
-        VALUES (#{memId}, #{memPw}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profilePath}, #{deleteYn}, now(), NULL)
+        INSERT INTO member (memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profilePath, deleteYn, regDt, modDt)
+        VALUES (#{memId}, #{memPw}, #{memNm}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profilePath}, #{deleteYn}, now(), NULL)
     </insert>
 
     <select id="getAllMember" resultType="com.sw.newProject.dto.MemberDto">
@@ -16,7 +16,7 @@
 
     <update id="updateMember" parameterType="com.sw.newProject.dto.MemberDto">
         UPDATE member
-        SET memId = #{memId}, memPw = #{memPw}, nickNm = #{nickNm}, address1 = #{address1}, address2 = #{address2}, zipCode = #{zipCode}, phone = #{phone}, email = #{email}, profilePath = #{profilePath}
+        SET memId = #{memId}, memPw = #{memPw}, memNm = #{memNm}, nickNm = #{nickNm}, address1 = #{address1}, address2 = #{address2}, zipCode = #{zipCode}, phone = #{phone}, email = #{email}, profilePath = #{profilePath}
         WHERE memNo = #{memNo}
     </update>
 
@@ -50,6 +50,10 @@
 
     <select id="doLogin" parameterType="String" resultType="com.sw.newProject.dto.MemberDto">
         SELECT * FROM member WHERE memId = #{memId} AND memPw = #{memPw}
+    </select>
+
+    <select id="doFindId" parameterType="String" resultType="String">
+        SELECT memId FROM member WHERE memNm = #{memNm} AND email = #{email}
     </select>
 <!--    <select id="validationPassword" parameterType="com.sw.newProject.dto.MemberDto">-->
 <!--        SELECT memPw FROM member WHERE-->

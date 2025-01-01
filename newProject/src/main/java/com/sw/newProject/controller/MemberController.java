@@ -4,7 +4,6 @@ import com.sw.newProject.dto.MemberDto;
 
 import com.sw.newProject.service.MemberService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,8 +26,9 @@ public class MemberController {
     }
 
     @PostMapping("/doJoin") // 회원가입 처리
-    public ResponseEntity<String> insertMember(MemberDto memberDto) throws NoSuchAlgorithmException { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
+    public ResponseEntity<String> insertMember(@RequestBody MemberDto memberDto) throws NoSuchAlgorithmException { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
         System.out.println("doJoin 호출");
+        System.out.println("doJoin memPw: " + memberDto.getMemPw());
         memberDto.setDeleteYn(false);
         memberDto.setMemPw(memberService.passwordEncrypt(memberDto.getMemPw()));
 
@@ -93,13 +93,24 @@ public class MemberController {
     }
 
     @PostMapping("/doLogin") // 로그인 처리
-    public boolean doLogin(@RequestParam String memId, @RequestParam String memPw, HttpSession session) throws NoSuchAlgorithmException {
+    public ResponseEntity<Boolean> doLogin(@RequestParam String memId, @RequestParam String memPw, HttpSession session) throws NoSuchAlgorithmException {
         MemberDto member = memberService.doLogin(memId, memPw);
         if (member == null) { // 회원 정보 존재하지 않을 때
-            return false;
+            return ResponseEntity.ok(false);
         }
         session.setAttribute("member", member);
-        return true;
+        return ResponseEntity.ok(true);
     }
+
+    @GetMapping("/findId") // 아이디 찾기 페이지 호출
+    public String findId() {
+        return "findId";
+    }
+
+    @PostMapping("/doFindId") // 아이디 찾기 처리
+    public ResponseEntity<String> doFindId(@RequestParam String memNm, @RequestParam String email) {
+        return ResponseEntity.ok(memberService.doFindId(memNm, email));
+    }
+
 }
 
