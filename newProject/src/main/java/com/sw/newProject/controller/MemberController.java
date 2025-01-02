@@ -3,6 +3,9 @@ package com.sw.newProject.controller;
 import com.sw.newProject.dto.MemberDto;
 
 import com.sw.newProject.service.MemberService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
+@OpenAPIDefinition(info = @Info(title = "newProject API 명세서",
+        description = "API 명세서",
+        version = "v1",
+        contact = @Contact(name = "sungwoo-jo", email = "sungwoo9671@naver.com")
+)
+)
 
 @Controller
 public class MemberController {
