@@ -5,13 +5,15 @@ import com.sw.newProject.mapper.MemberMapper;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Member;
 import java.security.MessageDigest;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Transactional
 @Service
@@ -109,7 +111,7 @@ public class MemberService {
             }
             hexString.append(hex);
         }
-
+//        System.out.println("[MemberService][passwordEncrypt][hexString.toString()]: " + hexString.toString());
         return hexString.toString();
     }
 
@@ -133,6 +135,18 @@ public class MemberService {
         String memId = memberMapper.doFindId(memNm, email);
         System.out.println("[MemberService][doFindId][memId]: " + memId);
         return memId;
+    }
+
+    public Integer doFindPw(String memNm, String email, String memId) {
+        return memberMapper.doFindPw(memNm, email, memId);
+    }
+
+    public void doResetPw(Integer memNo, String newPw) throws NoSuchAlgorithmException {
+        Map<String, Object> map = new HashMap<>();
+        newPw = passwordEncrypt(newPw);
+        map.put("memNo", memNo);
+        map.put("newPw", newPw);
+        memberMapper.doResetPw(map);
     }
 //    public Boolean doFindIdOfEmail(String memNm, String email) { // 이거는 메일 발송 API 구현 후 사용하기(그전까지는 doFindId 사용)
 //        }

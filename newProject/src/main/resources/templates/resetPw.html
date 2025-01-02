@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>비밀번호 재설정</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>비밀번호 재설정</h2>
+  <form id="resetPwForm" action="/doResetPw">
+    <label for="newPw">새 비밀번호:</label>
+    <input type="password" id="newPw" name="newPw" required>
+
+    <label for="confirmPw">비밀번호 확인:</label>
+    <input type="password" id="confirmPw" name="confirmPw" required>
+
+    <button type="submit">비밀번호 재설정</button>
+  </form>
+
+  <div class="message" id="errorMessage" style="display: none;">비밀번호가 일치하지 않습니다. 다시 시도해주세요.</div>
+</div>
+
+<script src="/script/scripts.js"></script>
+</body>
+</html>

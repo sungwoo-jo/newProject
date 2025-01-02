@@ -117,3 +117,84 @@ document.getElementById('findPw').addEventListener('click', function() {
     alert("비밀번호 찾기 기능이 아직 구현되지 않았습니다.");
 });
 // 로그인 페이지 E
+
+// 비밀번호 찾기 페이지 S
+document.getElementById("findPwForm").onsubmit = function(event) {
+    event.preventDefault(); // 기본 폼 제출 방지
+
+    const formData = new FormData(this);
+
+    // 폼 데이터를 JSON 형식으로 변환
+    const data = {};
+    formData.forEach((value, key) => {
+        data[key] = value;
+    });
+
+    // 서버에 요청을 보냄
+    fetch("doFindPw.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => response.json())
+        .then(data => {
+            // 서버로부터 받은 결과 처리
+            if (data.result > 0) {
+                window.location.href = "resetPw?memId=" + data.memId; // 비밀번호 재설정 페이지로 이동
+            } else {
+                document.getElementById("errorMessage").style.display = "block"; // 실패 메시지 표시
+            }
+        })
+        .catch(error => console.error("Error:", error));
+};
+// 비밀번호 찾기 페이지 E
+
+// 비밀번호 재설정 페이지 S
+document.getElementById("resetPwForm").onsubmit = function(event) {
+    event.preventDefault(); // 기본 폼 제출 방지
+
+    const newPw = document.getElementById("newPw").value;
+    const confirmPw = document.getElementById("confirmPw").value;
+
+    // 비밀번호 일치 여부 확인
+    if (newPw !== confirmPw) {
+        document.getElementById("errorMessage").style.display = "block"; // 비밀번호 불일치 메시지 표시
+        return;
+    }
+
+    // 비밀번호 일치하면 요청 보내기
+    const memId = new URLSearchParams(window.location.search).get('memId'); // URL에서 memId 가져오기
+    const data = {
+        memId: memId,
+        newPw: newPw
+    };
+
+    // 요청 보내기
+    fetch("/doResetPw", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("비밀번호가 성공적으로 변경되었습니다.");
+                window.location.href = "/login"; // 로그인 페이지로 리디렉션
+            } else {
+                alert("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+};
+// 비밀번호 재설정 페이지 E
+
+// 비밀번호 재설정 완료 페이지 S
+// 로그인 페이지로 리디렉션
+function redirectLogin() {
+    window.location.href = "/login"; // 로그인 페이지로 이동
+}
+// 비밀번호 재설정 완료 페이지 E

@@ -55,6 +55,14 @@
     <select id="doFindId" parameterType="String" resultType="String">
         SELECT memId FROM member WHERE memNm = #{memNm} AND email = #{email}
     </select>
+
+    <select id="doFindPw" parameterType="String" resultType="Integer">
+        SELECT count(*) FROM member WHERE memId = #{memId} AND email = #{email} AND memNm = #{memNm}
+    </select>
+
+    <select id="doResetPw" parameterType="java.util.Map">
+        UPDATE member SET memPw = #{newPw} WHERE memNo = #{memNo}
+    </select>
 <!--    <select id="validationPassword" parameterType="com.sw.newProject.dto.MemberDto">-->
 <!--        SELECT memPw FROM member WHERE-->
 <!--    </select>-->

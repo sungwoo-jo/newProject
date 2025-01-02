@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>비밀번호 찾기</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>비밀번호 찾기</h2>
+  <form action="/doFindPw" id="findPwForm" method="POST">
+    <label for="memId">회원 ID:</label>
+    <input type="text" id="memId" name="memId" required>
+
+    <label for="memNm">회원 이름:</label>
+    <input type="text" id="memNm" name="memNm" required>
+
+    <label for="email">이메일:</label>
+    <input type="email" id="email" name="email" required>
+
+    <button type="submit">비밀번호 찾기</button>
+  </form>
+
+  <div class="message" id="errorMessage" style="display: none;">정보가 일치하지 않습니다. 다시 시도해주세요.</div>
+</div>
+
+<script src="/script/scripts.js"></script>
+</body>
+</html>

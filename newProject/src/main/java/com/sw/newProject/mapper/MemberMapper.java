@@ -4,6 +4,7 @@ import com.sw.newProject.dto.MemberDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MemberMapper {
@@ -30,6 +31,10 @@ public interface MemberMapper {
     Integer validationMemPw(String memPw);
 
     String doFindId(String memNm, String email);
+
+    Integer doFindPw(String memNm, String email, String memId);
+
+    void doResetPw(Map<String, Object> map);
 
 //    boolean validationPassword(MemberDto memberDto);
 }

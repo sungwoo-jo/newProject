@@ -110,3 +110,9 @@ CREATE TABLE `config` (
     regDt DATETIME NOT NULL comment '생성일',
     modDt DATETIME DEFAULT NULL comment '수정일'
 );
+
+-- 테스트 데이터(회원)
+INSERT INTO member(memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profilePath, regDt) VALUES ('test1', 'test1', '테스트1', 'test1', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '11111', '01011111111', 'test1@naver.com', '/test/test1', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profilePath, regDt) VALUES ('test2', 'test2', '테스트2', 'test2', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '22222', '01022222222', 'test2@naver.com', '/test/test2', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profilePath, regDt) VALUES ('test3', 'test3', '테스트3', 'test3', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '33333', '01033333333', 'test3@naver.com', '/test/test3', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profilePath, regDt) VALUES ('test4', 'test4', '테스트4', 'test4', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '44444', '01044444444', 'test4@naver.com', '/test/test4', now());

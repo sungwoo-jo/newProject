@@ -112,5 +112,34 @@ public class MemberController {
         return ResponseEntity.ok(memberService.doFindId(memNm, email));
     }
 
+    @GetMapping("/findPw") // 비밀번호 찾기 페이지 호출
+    public String findPw() {
+        return "findPw";
+    }
+
+    @PostMapping("doFindPw") // 비밀번호 찾기 처리(회원 정보 일치 여부 확인)
+    public String doFindPw(@RequestParam String memNm, @RequestParam String email, @RequestParam String memId) {
+        if (memberService.doFindPw(memNm, email, memId) > 0) {
+            return "redirect:/resetPw";
+        } else {
+            return "redirect:/findPw";
+        }
+    }
+
+    @GetMapping("resetPw") // 비밀번호 재설정 페이지 호출
+    public String resetPw() {
+        return "resetPw";
+    }
+
+    @PatchMapping("doResetPw") // 비밀번호 재설정 처리
+    public ResponseEntity<String> doResetPw(@RequestParam Integer memNo, @RequestParam String newPw) throws NoSuchAlgorithmException {
+        memberService.doResetPw(memNo, newPw);
+        return ResponseEntity.ok("resetPwSuccess");
+    }
+
+    @GetMapping("resetPwSuccess") // 비밀번호 재설정 완료 페이지 호출
+    public String resetPwSuccess() {
+        return "resetPwSuccess";
+    }
 }
 
