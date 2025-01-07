@@ -5,8 +5,10 @@ import com.sw.newProject.mapper.MemberMapper;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Member;
+import java.io.File;
+import java.io.IOException;
 import java.security.MessageDigest;
 
 import java.security.NoSuchAlgorithmException;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Transactional
 @Service
@@ -25,9 +28,18 @@ public class MemberService {
         this.memberMapper = memberMapper;
     }
 
-    public void insertMember(MemberDto memberDto) { // 회원가입 로직 처리
+    public void insertMember(MemberDto memberDto, MultipartFile profileImage) throws Exception { // 회원가입 로직 처리
+        System.out.println("[MemberService][insertMember][projectPath]: " + System.getProperty("user.dir"));
+        System.out.println("[MemberService][insertMember][profileImage]: " + profileImage);
         System.out.println("[MemberService][insertMember][memberDto]: " + memberDto);
+        System.out.println("[MemberService][insertMember][zipCode]: " + memberDto.getZipCode());
+         // 프로필 이미지 저장 처리
+        saveImage(profileImage);
+
+//        memberDto.setProfilePath(profileInfo.getPath());
+//        memberDto.setProfileImage(profileInfo.getName());
         memberMapper.insertMember(memberDto);
+        System.out.println("insertMember 끝");
     }
 
     public List<MemberDto> getAllMember() {
@@ -40,7 +52,7 @@ public class MemberService {
 
     public void updateMember(@NotNull MemberDto reqMemberDto) {
         //  업데이트 하지 않는 값은 기존 값으로 두고, 업데이트 해야 하는 항목들은 업데이트 해주기
-        //  업데이트 필요 항목: memPw, nickNm, address1, address2, zipCode, phone, email, profilePath, modDt / 불필요: memNo, memId, deleteYn, regDt
+        //  업데이트 필요 항목: memPw, nickNm, address1, address2, zipCode, phone, email, profileImage, modDt / 불필요: memNo, memId, deleteYn, regDt
         MemberDto recentMemberDto = getMember(reqMemberDto.getMemNo()); // 기존 정보 조회
         MemberDto updateMemberDto = new MemberDto(); // 리턴할 데이터
         LocalDateTime nowDateTime = LocalDateTime.now();
@@ -74,8 +86,8 @@ public class MemberService {
         if (reqMemberDto.getEmail() != null) {
             updateMemberDto.setEmail(reqMemberDto.getEmail());
         }
-        if (reqMemberDto.getProfilePath() != null) {
-            updateMemberDto.setProfilePath(reqMemberDto.getProfilePath());
+        if (reqMemberDto.getProfileImage() != null) {
+            updateMemberDto.setProfileImage(reqMemberDto.getProfileImage());
         }
 
         memberMapper.updateMember(updateMemberDto); // 새롭게 세팅한 값으로 업데이트
@@ -162,4 +174,30 @@ public class MemberService {
 //        return true;
 //    }
 
+    public File saveImage(MultipartFile profileImage) throws Exception {
+        // System.getProperty("user.dir") : 현재 프로젝트 경로를 가져옴
+        String projectPath = System.getProperty("user.dir") + File.separator + "profileImage" + File.separator;
+        System.out.println(projectPath);
+
+        // 디렉토리가 존재하는지 확인하고 없으면 생성
+        File directory = new File(projectPath);
+        if (!directory.exists()) {
+            boolean created = directory.mkdirs(); // 디렉토리 생성
+            if (!created) {
+                throw new IOException("디렉토리를 생성할 수 없습니다.");
+            }
+        }
+
+        UUID uuid = UUID.randomUUID(); // 랜덤 이름 생성
+        String fileName = uuid + "_" + profileImage.getOriginalFilename();
+
+        //파일을 담을 껍데기를 만들어 파일경로와 파일이름을 매개변수로 넣고
+        File saveFile = new File(projectPath, fileName);
+        //업로드된 파일을 껍데기에 담아 저장해준다
+        profileImage.transferTo(saveFile);
+
+        System.out.println("[MemberService][saveImage][saveFile]: " + saveFile);
+        return saveFile;
+    }
 }
+

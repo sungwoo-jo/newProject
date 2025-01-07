@@ -40,6 +40,7 @@ public class MemberDto {
     @Email(message = "이메일 규칙에 맞지 않습니다.")
     private String email;
     private String profilePath;
+    private String profileImage;
     private Boolean deleteYn;
     private LocalDateTime regDt; // 날짜와 시간이 모두 필요
     private LocalDateTime modDt; // 날짜와 시간이 모두 필요

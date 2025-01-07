@@ -1,5 +1,6 @@
 package com.sw.newProject.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sw.newProject.dto.MemberDto;
 
 import com.sw.newProject.service.MemberService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -36,14 +38,25 @@ public class MemberController {
     }
 
     @PostMapping("/doJoin") // 회원가입 처리
-    public ResponseEntity<String> insertMember(@RequestBody MemberDto memberDto) throws NoSuchAlgorithmException { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
+    public String insertMember(@RequestPart("memberDto") String memberDtoJson, @RequestPart("profileImage") MultipartFile profileImage) throws Exception { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
+
+        // JSON 문자열을 MemberDto 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        MemberDto memberDto = objectMapper.readValue(memberDtoJson, MemberDto.class); // JSON -> 객체 변환
+
         System.out.println("doJoin 호출");
+        System.out.println("memberDto: " + memberDto);
         System.out.println("doJoin memPw: " + memberDto.getMemPw());
         memberDto.setDeleteYn(false);
         memberDto.setMemPw(memberService.passwordEncrypt(memberDto.getMemPw()));
 
-        memberService.insertMember(memberDto);
-        return ResponseEntity.ok("success"); // todo: 회원가입 완료 페이지로 이동해야 함
+        memberService.insertMember(memberDto, profileImage);
+        return "redirect:/joinSuccess"; // todo: 회원가입 완료 페이지로 이동해야 함
+    }
+
+    @GetMapping("joinSuccess")
+    public String getJoinSuccessPage() {
+        return "joinSuccess";
     }
 
     @GetMapping("/memberList") // 전체 회원 리스트 가져오기

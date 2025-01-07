@@ -36,33 +36,41 @@ document.getElementById("signup-form").addEventListener("submit", function (even
 
 // fetch API를 사용한 POST 요청 예시
 function sendData() {
-    const data = {
-        // memId : document.getElementById("memId").value,
-        // memPw : document.getElementById("memPw").value,
-        // nickNm : document.getElementById("nickNm").value,
-        // address1 : document.getElementById("address1").value,
-        // address2 : document.getElementById("address2").value,
-        // zipCode : document.getElementById("zipCode").value,
-        // phone : document.getElementById("phone").value,
-        // email : document.getElementById("email").value,
-        // profilePath : document.getElementById("profilePath").value,
-        memId : "memId",
-        memPw : "memPw",
-        nickNm : "nickNm",
-        address1 : "address1",
-        address2 : "address2",
-        zipCode : "zipCode",
-        phone : "phone",
-        email : "email",
-        profilePath : "profilePath"
+    // memberDto 객체 생성
+    const memberDto = {
+        memId: document.getElementById("memId").value,
+        memPw: document.getElementById("memPw").value,
+        memNm: document.getElementById("memNm").value,
+        nickNm: document.getElementById("nickNm").value,
+        address1: document.getElementById("address1").value,
+        address2: document.getElementById("address2").value,
+        zipCode: document.getElementById("zipCode").value,
+        phone: document.getElementById("phone").value,
+        email: document.getElementById("email").value
     };
 
+    alert(memberDto);
+
+    // FormData 객체 생성
+    const formData = new FormData();
+
+    // memberDto 객체를 JSON 문자열로 변환하여 FormData에 추가
+    formData.append("memberDto", JSON.stringify(memberDto)); // 이거 되는 코드
+
+
+    // 파일 추가
+    const profileImage = document.getElementById("profileImage").files[0];
+    if (profileImage) {
+        formData.append("profileImage", profileImage);
+    }
+
+    alert(JSON.stringify(formData.get("memberDto")));
+    alert(formData.get("profileImage"));
+
+    // fetch API를 사용하여 서버에 데이터 전송
     fetch('/doJoin', {
         method: 'POST',  // 요청 방식
-        headers: {
-            'Content-Type': 'application/json'  // JSON 형식으로 요청 본문 설정
-        },
-        body: JSON.stringify(data)  // 데이터를 JSON 문자열로 변환하여 요청 본문에 담기
+        body: formData  // FormData를 요청 본문에 담기
     })
         .then(response => response.json())  // 응답을 JSON 형식으로 변환
         .then(data => {
@@ -122,11 +130,11 @@ document.getElementById('findPw').addEventListener('click', function() {
 document.getElementById("findPwForm").onsubmit = function(event) {
     event.preventDefault(); // 기본 폼 제출 방지
 
-    const formData = new FormData(this);
+    const memberDto = new memberDto(this);
 
     // 폼 데이터를 JSON 형식으로 변환
     const data = {};
-    formData.forEach((value, key) => {
+    memberDto.forEach((value, key) => {
         data[key] = value;
     });
 
