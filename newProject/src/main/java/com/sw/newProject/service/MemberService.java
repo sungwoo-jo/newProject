@@ -1,8 +1,15 @@
 package com.sw.newProject.service;
 
+import com.sw.newProject.dto.MailDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.mapper.MemberMapper;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,19 +20,20 @@ import java.security.MessageDigest;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Transactional
 @Service
 public class MemberService {
 
     private final MemberMapper memberMapper;
+    private final MailDto mailDto;
+    private final JavaMailSender javaMailSender;
 
-    public MemberService(MemberMapper memberMapper) {
+    public MemberService(MemberMapper memberMapper, MailDto mailDto, JavaMailSender javaMailSender) {
         this.memberMapper = memberMapper;
+        this.mailDto = mailDto;
+        this.javaMailSender = javaMailSender;
     }
 
     public void insertMember(MemberDto memberDto, MultipartFile profileImage) throws Exception { // 회원가입 로직 처리
@@ -143,9 +151,17 @@ public class MemberService {
         return memberMapper.doLogin(memId, memPw);
     }
 
-    public String doFindId(String memNm, String email) {
+    public String doFindId(String memNm, String email) throws MessagingException {
+        String type = "findId";
         String memId = memberMapper.doFindId(memNm, email);
         System.out.println("[MemberService][doFindId][memId]: " + memId);
+        System.out.println("doFindIdOfEmail 실행");
+        doFindIdOfEmail("테스트1", "sungwoo9671@naver.com");
+
+        System.out.println("sendEmail() 실행 시작");
+        sendEmail(type, email, "[newProject] 아이디 찾기 결과", "귀하의 아이디는 " + memId + " 입니다.");
+        System.out.println("sendEmail() 실행 종료");
+
         return memId;
     }
 
@@ -160,19 +176,42 @@ public class MemberService {
         map.put("newPw", newPw);
         memberMapper.doResetPw(map);
     }
-//    public Boolean doFindIdOfEmail(String memNm, String email) { // 이거는 메일 발송 API 구현 후 사용하기(그전까지는 doFindId 사용)
-//        }
-//        JavaMailSender emailSender = null;
-//        System.out.println("[MemberService][doFindId][memId]: " + memberMapper.doFindId(memNm, email));
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom("jason692193@gmail.com");
-//        message.setTo(email);
-//        message.setSubject("아이디 찾기 결과");
-//        message.setText("귀하의 아이디는: test");
-//
-//        emailSender.send(message);
-//        return true;
-//    }
+    public void doFindIdOfEmail(String memNm, String email) throws MessagingException { // 이거는 메일 발송 API 구현 후 사용하기(그전까지는 doFindId 사용)
+        System.out.println("doFindIdOfEmail 메서드 내부");
+
+        String receiver = email;
+        String senderMail = mailDto.getSenderMail();
+        String password = mailDto.getPassword();
+
+        Properties props = new Properties();
+        props.setProperty("mail.smtp.host", mailDto.getHost());
+        props.setProperty("mail.smtp.port", mailDto.getPort());
+        props.setProperty("mail.smtp.auth", mailDto.getAuth());
+        props.setProperty("mail.smtp.starttls.enable", mailDto.getEnable());
+
+        System.out.println(props.getProperty("mail.smtp.host"));
+        System.out.println(props.getProperty("mail.smtp.port"));
+        System.out.println(props.getProperty("mail.smtp.auth"));
+        System.out.println(props.getProperty("mail.smtp.starttls.enable"));
+
+        // 보내는 사람 계정 정보 설정
+        Session session = Session.getInstance(props, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, password);
+            }
+        });
+
+        System.out.println("[MemberService][doFindId][memId]: " + memberMapper.doFindId(memNm, email));
+
+        // 메일 내용 작성
+        Message msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress(senderMail));
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
+        msg.setSubject("아이디 찾기 결과 메일");
+        msg.setText("귀하의 아이디는 " + "test1" + "입니다.");
+
+        System.out.println("[MemberService][doFindIdOfEmail] 이메일 전송 완료(이제사용안함)");
+    }
 
     public File saveImage(MultipartFile profileImage) throws Exception {
         // System.getProperty("user.dir") : 현재 프로젝트 경로를 가져옴
@@ -198,6 +237,22 @@ public class MemberService {
 
         System.out.println("[MemberService][saveImage][saveFile]: " + saveFile);
         return saveFile;
+    }
+
+    public void sendEmail(String type, String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        message.setFrom("jason692193@gmail.com");
+
+        try {
+            javaMailSender.send(message);
+            System.out.println("[" + type + "] 메일 발송 성공: " + "to: " + to + "\t" + "subject: " + subject + "\t" + "text: " + text);
+        } catch (MailException e) {
+            e.printStackTrace();
+            System.out.println("Error sending email");
+        }
     }
 }
 

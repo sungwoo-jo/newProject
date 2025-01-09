@@ -7,6 +7,7 @@ import com.sw.newProject.service.MemberService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -131,7 +132,7 @@ public class MemberController {
     }
 
     @PostMapping("/doFindId") // 아이디 찾기 처리
-    public ResponseEntity<String> doFindId(@RequestParam String memNm, @RequestParam String email) {
+    public ResponseEntity<String> doFindId(@RequestParam String memNm, @RequestParam String email) throws MessagingException {
         return ResponseEntity.ok(memberService.doFindId(memNm, email));
     }
 
