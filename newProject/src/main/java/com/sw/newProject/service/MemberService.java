@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @Transactional
 @Service
@@ -151,18 +154,23 @@ public class MemberService {
         return memberMapper.doLogin(memId, memPw);
     }
 
-    public String doFindId(String memNm, String email) throws MessagingException {
+    @Async
+    public Future<String> doFindId(String memNm, String email) throws MessagingException {
         String type = "findId";
+        System.out.println("doFindId 실행");
         String memId = memberMapper.doFindId(memNm, email);
         System.out.println("[MemberService][doFindId][memId]: " + memId);
         System.out.println("doFindIdOfEmail 실행");
         doFindIdOfEmail("테스트1", "sungwoo9671@naver.com");
 
-        System.out.println("sendEmail() 실행 시작");
-        sendEmail(type, email, "[newProject] 아이디 찾기 결과", "귀하의 아이디는 " + memId + " 입니다.");
+        try {
+            System.out.println("sendEmail() 실행 시작");
+            return CompletableFuture.completedFuture(sendEmail(type, email, "[newProject] 아이디 찾기 결과", "귀하의 아이디는 " + memId + " 입니다."));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("sendEmail() 실행 종료");
-
-        return memId;
+        return null;
     }
 
     public Integer doFindPw(String memNm, String email, String memId) {
@@ -239,7 +247,7 @@ public class MemberService {
         return saveFile;
     }
 
-    public void sendEmail(String type, String to, String subject, String text) {
+    public String sendEmail(String type, String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
@@ -247,12 +255,15 @@ public class MemberService {
         message.setFrom("jason692193@gmail.com");
 
         try {
+            System.out.println("[메일 발송 성공]");
             javaMailSender.send(message);
-            System.out.println("[" + type + "] 메일 발송 성공: " + "to: " + to + "\t" + "subject: " + subject + "\t" + "text: " + text);
+            System.out.println("[" + type + "] 메일 발송 결과: " + "to: " + to + "\t" + "subject: " + subject + "\t" + "text: " + text);
         } catch (MailException e) {
+            System.out.println("[메일 발송 실패]");
             e.printStackTrace();
             System.out.println("Error sending email");
         }
+        return "[MemberService][sendEmail] 종료";
     }
 }
 

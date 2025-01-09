@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @OpenAPIDefinition(info = @Info(title = "newProject API 명세서",
         description = "API 명세서",
@@ -132,8 +134,9 @@ public class MemberController {
     }
 
     @PostMapping("/doFindId") // 아이디 찾기 처리
-    public ResponseEntity<String> doFindId(@RequestParam String memNm, @RequestParam String email) throws MessagingException {
-        return ResponseEntity.ok(memberService.doFindId(memNm, email));
+    public ResponseEntity<String> doFindId(@RequestParam String memNm, @RequestParam String email) throws MessagingException, ExecutionException, InterruptedException {
+        Future<String> result = memberService.doFindId(memNm, email);
+        return ResponseEntity.ok("sendMailSuccess");
     }
 
     @GetMapping("/findPw") // 비밀번호 찾기 페이지 호출
