@@ -1,38 +1,40 @@
 // scripts.js
 
 // 회원가입 페이지 S
-document.getElementById("signup-form").addEventListener("submit", function (event) {
-    // 간단한 클라이언트 측 유효성 검사
-    let memId = document.getElementById("memId").value;
-    let memPw = document.getElementById("memPw").value;
-    let nickNm = document.getElementById("nickNm").value;
-    let phone = document.getElementById("phone").value;
-    let email = document.getElementById("email").value;
+if (document.getElementById("signup-form")) {
+    document.getElementById("signup-form").addEventListener("submit", function (event) {
+        // 간단한 클라이언트 측 유효성 검사
+        let memId = document.getElementById("memId").value;
+        let memPw = document.getElementById("memPw").value;
+        let nickNm = document.getElementById("nickNm").value;
+        let phone = document.getElementById("phone").value;
+        let email = document.getElementById("email").value;
 
-    // 비밀번호와 전화번호, 이메일의 기본 유효성 검사
-    if (memPw.length < 6) {
-        alert("비밀번호는 6자 이상이어야 합니다.");
-        event.preventDefault();
-        return;
-    }
+        // 비밀번호와 전화번호, 이메일의 기본 유효성 검사
+        if (memPw.length < 6) {
+            alert("비밀번호는 6자 이상이어야 합니다.");
+            event.preventDefault();
+            return;
+        }
 
-    const phonePattern = /^[0-9]{10,11}$/;
-    if (!phonePattern.test(phone)) {
-        alert("전화번호는 10자 또는 11자 숫자만 입력해주세요.");
-        event.preventDefault();
-        return;
-    }
+        const phonePattern = /^[0-9]{10,11}$/;
+        if (!phonePattern.test(phone)) {
+            alert("전화번호는 10자 또는 11자 숫자만 입력해주세요.");
+            event.preventDefault();
+            return;
+        }
 
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    if (!emailPattern.test(email)) {
-        alert("유효한 이메일 주소를 입력해주세요.");
-        event.preventDefault();
-        return;
-    }
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (!emailPattern.test(email)) {
+            alert("유효한 이메일 주소를 입력해주세요.");
+            event.preventDefault();
+            return;
+        }
 
-    // AJAX 요청을 보내는 함수 호출
-    sendData();
-});
+        // AJAX 요청을 보내는 함수 호출
+        sendData();
+    });
+}
 
 // fetch API를 사용한 POST 요청 예시
 function sendData() {
@@ -84,116 +86,125 @@ function sendData() {
 // 회원가입 페이지 E
 
 // 로그인 페이지 S
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
+if (document.getElementById('loginForm')) {
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+        event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
 
-    const memId = document.getElementById('memId').value;
-    const memPw = document.getElementById('memPw').value;
+        const memId = document.getElementById('memId').value;
+        const memPw = document.getElementById('memPw').value;
 
-    const data = {
-        memId: memId,
-        memPw: memPw
-    };
+        const data = {
+            memId: memId,
+            memPw: memPw
+        };
 
-    fetch('/doLogin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("로그인 성공!");
-                window.location.href = "/home";  // 로그인 성공 후 이동할 페이지
-            } else {
-                alert("아이디 또는 비밀번호가 잘못되었습니다.");
-            }
+        fetch('/doLogin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         })
-        .catch(error => {
-            console.error("로그인 실패:", error);
-            alert("로그인 중 오류가 발생했습니다.");
-        });
-});
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("로그인 성공!");
+                    window.location.href = "/home";  // 로그인 성공 후 이동할 페이지
+                } else {
+                    alert("아이디 또는 비밀번호가 잘못되었습니다.");
+                }
+            })
+            .catch(error => {
+                console.error("로그인 실패:", error);
+                alert("로그인 중 오류가 발생했습니다.");
+            });
+    });
+}
 
 // 로그인 페이지 E
 
 // 비밀번호 찾기 페이지 S
-document.getElementById("findPwForm").onsubmit = function(event) {
-    event.preventDefault(); // 기본 폼 제출 방지
+if (document.getElementById("findPwForm")) {
+    document.getElementById("findPwForm").onsubmit = function (event) {
+        event.preventDefault(); // 기본 폼 제출 방지
 
-    const memId = document.getElementById("memId").value;
-    const memNm = document.getElementById("memNm").value;
-    const email = document.getElementById("email").value;
+        // 서버에 요청을 보냄
+        // 폼 데이터 수집
+        const memId = document.getElementById("memId").value;
+        const memNm = document.getElementById("memNm").value;
+        const email = document.getElementById("email").value;
 
-    // 폼 데이터를 JSON 형식으로 변환
-    const data = {
-        memId : memId,
-        memNm : memNm,
-        email : email
-    };
+        // 폼 데이터를 JSON 형식으로 변환
+        const data = {
+            memId: memId,
+            memNm: memNm,
+            email: email
+        };
 
-    // 서버에 요청을 보냄
-    fetch("/doFindPw", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => response.json())
-        .then(data => {
-            // 서버로부터 받은 결과 처리
-            if (data.result > 0) {
-                window.location.href = "resetPw"; // 비밀번호 재설정 페이지로 이동
-            } else {
-                document.getElementById("errorMessage").style.display = "block"; // 실패 메시지 표시
-            }
+        // 서버에 요청을 보냄
+        fetch("/doFindPw", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
+            },
+            body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
         })
-        .catch(error => console.error("Error:", error));
-};
+            .then(response => response.text())
+            .then(data => {  // 서버에서 반환한 HTML 코드 받기
+                if (data === "success") {
+                    // 서버에서 받은 HTML 코드로 input 태그를 동적으로 추가
+                    window.location.href = "/resetPwSuccess";
+                } else {
+                    alert('오류가 발생했습니다.');
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
+
 // 비밀번호 찾기 페이지 E
 
 // 비밀번호 재설정 페이지 S
-document.getElementById("resetPwForm").onsubmit = function(event) {
-    event.preventDefault(); // 기본 폼 제출 방지
+    if (document.getElementById("resetPwForm")) {
+        document.getElementById("resetPwForm").onsubmit = function (event) {
+            event.preventDefault(); // 기본 폼 제출 방지
 
-    const newPw = document.getElementById("newPw").value;
-    const confirmPw = document.getElementById("confirmPw").value;
+            const newPw = document.getElementById("newPw").value;
+            const confirmPw = document.getElementById("confirmPw").value;
 
-    // 비밀번호 일치 여부 확인
-    if (newPw !== confirmPw) {
-        document.getElementById("errorMessage").style.display = "block"; // 비밀번호 불일치 메시지 표시
-        return;
-    }
-
-    // 비밀번호 일치하면 요청 보내기
-    const memNo = document.getElementById("memNo"). value;
-    const data = {
-        memNo: memNo,
-        newPw: newPw
-    };
-
-    // 요청 보내기
-    fetch("/doResetPw", {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("비밀번호가 성공적으로 변경되었습니다.");
-                window.location.href = "/login"; // 로그인 페이지로 리디렉션
-            } else {
-                alert("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+            // 비밀번호 일치 여부 확인
+            if (newPw !== confirmPw) {
+                document.getElementById("errorMessage").style.display = "block"; // 비밀번호 불일치 메시지 표시
+                return;
             }
-        })
-        .catch(error => console.error("Error:", error));
-};
+
+            // 비밀번호 일치하면 요청 보내기
+            const memNo = document.getElementById("memNo").value;
+            const data = {
+                memNo: memNo,
+                newPw: newPw
+            };
+
+            // 요청 보내기
+            fetch("/doResetPw", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("비밀번호가 성공적으로 변경되었습니다.");
+                        window.location.href = "/login"; // 로그인 페이지로 리디렉션
+                    } else {
+                        alert("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        };
+    }
+}
 // 비밀번호 재설정 페이지 E
 
 // 비밀번호 재설정 완료 페이지 S
@@ -201,4 +212,5 @@ document.getElementById("resetPwForm").onsubmit = function(event) {
 function redirectLogin() {
     window.location.href = "/login"; // 로그인 페이지로 이동
 }
+
 // 비밀번호 재설정 완료 페이지 E

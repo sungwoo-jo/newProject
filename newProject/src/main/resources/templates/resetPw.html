@@ -9,18 +9,11 @@
 <body>
 
 <div class="container">
-  <h2>비밀번호 재설정</h2>
-  <form id="resetPwForm">
-    <input type="hidden" id="memNo" name="memNo" th:value="${memNo}">
-    <label for="newPw">새 비밀번호:</label>
-    <input type="password" id="newPw" name="newPw" required>
+  <h2>임시 비밀번호 발송 완료</h2>
 
-    <label for="confirmPw">비밀번호 확인:</label>
-    <input type="password" id="confirmPw" name="confirmPw" required>
+  <h4>이메일로 임시 비밀번호가 발송되었습니다.<br>이메일을 확인해주세요.</h4>
 
-    <button type="submit">비밀번호 재설정</button>
-  </form>
-
+  <a href="/login">로그인 페이지로 이동</a>
   <div class="message" id="errorMessage" style="display: none;">비밀번호가 일치하지 않습니다. 다시 시도해주세요.</div>
 </div>
 

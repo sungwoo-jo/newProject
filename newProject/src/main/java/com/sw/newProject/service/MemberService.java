@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.security.SecureRandom;
 
 import java.io.File;
 import java.io.IOException;
@@ -175,9 +176,26 @@ public class MemberService {
         return null;
     }
 
-    public Integer doFindPw(String memNm, String email, String memId) {
+    @Async
+    public Future<String> doFindPw(String memNm, String email, String memId) throws NoSuchAlgorithmException {
+        String type = "findPw";
+        System.out.println("doFindPw 실행");
+        DoResetPwDto doResetPwDto = new DoResetPwDto();
         System.out.println("[MemberService][doFindPw][memNm, email, memId]: " + memNm + ", " + email + ", " + memId);
-        return memberMapper.doFindPw(memNm, email, memId);
+        Integer memNo = memberMapper.doFindPw(memNm, email, memId);
+        doResetPwDto.setMemNo(memNo);
+        doResetPwDto.setNewPw(generateRandomPassword(12));
+        String beforeMemPw = doResetPwDto.getNewPw(); // 암호화 전 비밀번호
+        doResetPwDto.setNewPw(passwordEncrypt(doResetPwDto.getNewPw())); // 암호화 처리
+        doResetPw(doResetPwDto); // 비밀번호 업데이트
+        try { // 메일 발송
+            System.out.println("sendEmail() 실행 시작");
+            return CompletableFuture.completedFuture(sendEmail(type, email, "[newProject] 비밀번호 재설정 결과", "귀하의 임시비밀번호는 " + beforeMemPw + " 입니다."));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("sendEmail() 실행 종료");
+        return null;
     }
 
     public void doResetPw(DoResetPwDto doResetPwDto) throws NoSuchAlgorithmException {
@@ -265,6 +283,21 @@ public class MemberService {
             System.out.println("Error sending email");
         }
         return "[MemberService][sendEmail] 종료";
+    }
+
+    // 랜덤 비밀번호 생성 함수 (특수문자 포함)
+    public String generateRandomPassword(int length) {
+        // 사용할 문자 집합 (대소문자, 숫자, 특수문자 포함)
+        String charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_+=<>?";
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(charset.length());
+            password.append(charset.charAt(randomIndex));  // 랜덤 문자를 선택하여 추가
+        }
+
+        return password.toString();
     }
 }
 

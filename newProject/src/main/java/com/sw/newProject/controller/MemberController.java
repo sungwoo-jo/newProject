@@ -146,23 +146,17 @@ public class MemberController {
     }
 
     @PostMapping("doFindPw") // 비밀번호 찾기 처리(회원 정보 일치 여부 확인)
-    public String doFindPw(@RequestBody String memNm, @RequestBody String email, @RequestBody String memId, Model model) {
-        System.out.println("[MemberController][doFindPw][memNm]: " + memNm);
-        System.out.println("[MemberController][doFindPw][email]: " + email);
-        System.out.println("[MemberController][doFindPw][memId]: " + memId);
-        Integer memNo = memberService.doFindPw(memNm, email, memId);
-        System.out.println(memNo);
-//        if (memNo > 0) {
-//            model.addAttribute("memNo", memNo);
-//            return "/resetPw";
-//        } else {
-//            return "/findPw";
-//        }
-        return "hello";
+    public ResponseEntity<String> doFindPw(@RequestBody MemberDto memberDto) throws NoSuchAlgorithmException {
+        String memNm = memberDto.getMemNm();
+        String email = memberDto.getEmail();
+        String memId = memberDto.getMemId();
+        Future<String> result = memberService.doFindPw(memNm, email, memId);
+
+        return ResponseEntity.ok("success");
     }
 
-    @GetMapping("resetPw") // 새로운 비밀번호 설정 페이지
-    public String resetPw(Model model) {
+    @GetMapping("resetPw") // 임시 비밀번호 발송 완료 페이지 호출
+    public String resetPw() {
         return "resetPw";
     }
 
