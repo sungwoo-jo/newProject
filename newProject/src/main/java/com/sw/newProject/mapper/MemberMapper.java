@@ -1,5 +1,6 @@
 package com.sw.newProject.mapper;
 
+import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -34,7 +35,7 @@ public interface MemberMapper {
 
     Integer doFindPw(String memNm, String email, String memId);
 
-    void doResetPw(Map<String, Object> map);
+    void doResetPw(DoResetPwDto doResetPwDto);
 
 //    boolean validationPassword(MemberDto memberDto);
 }

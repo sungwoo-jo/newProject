@@ -1,5 +1,6 @@
 package com.sw.newProject.service;
 
+import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MailDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.mapper.MemberMapper;
@@ -32,6 +33,7 @@ public class MemberService {
     private final MemberMapper memberMapper;
     private final MailDto mailDto;
     private final JavaMailSender javaMailSender;
+
 
     public MemberService(MemberMapper memberMapper, MailDto mailDto, JavaMailSender javaMailSender) {
         this.memberMapper = memberMapper;
@@ -174,15 +176,14 @@ public class MemberService {
     }
 
     public Integer doFindPw(String memNm, String email, String memId) {
+        System.out.println("[MemberService][doFindPw][memNm, email, memId]: " + memNm + ", " + email + ", " + memId);
         return memberMapper.doFindPw(memNm, email, memId);
     }
 
-    public void doResetPw(Integer memNo, String newPw) throws NoSuchAlgorithmException {
-        Map<String, Object> map = new HashMap<>();
-        newPw = passwordEncrypt(newPw);
-        map.put("memNo", memNo);
-        map.put("newPw", newPw);
-        memberMapper.doResetPw(map);
+    public void doResetPw(DoResetPwDto doResetPwDto) throws NoSuchAlgorithmException {
+        String newPw = passwordEncrypt(doResetPwDto.getNewPw());
+        System.out.println("[MemberService][doResetPw][doResetPwDto]: " + doResetPwDto.getMemNo() + ", " + doResetPwDto.getNewPw());
+        memberMapper.doResetPw(doResetPwDto);
     }
     public void doFindIdOfEmail(String memNm, String email) throws MessagingException { // 이거는 메일 발송 API 구현 후 사용하기(그전까지는 doFindId 사용)
         System.out.println("doFindIdOfEmail 메서드 내부");

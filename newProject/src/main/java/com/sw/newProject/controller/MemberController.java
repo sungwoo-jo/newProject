@@ -1,6 +1,7 @@
 package com.sw.newProject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 
 import com.sw.newProject.service.MemberService;
@@ -145,22 +146,30 @@ public class MemberController {
     }
 
     @PostMapping("doFindPw") // 비밀번호 찾기 처리(회원 정보 일치 여부 확인)
-    public String doFindPw(@RequestParam String memNm, @RequestParam String email, @RequestParam String memId) {
-        if (memberService.doFindPw(memNm, email, memId) > 0) {
-            return "redirect:/resetPw";
-        } else {
-            return "redirect:/findPw";
-        }
+    public String doFindPw(@RequestBody String memNm, @RequestBody String email, @RequestBody String memId, Model model) {
+        System.out.println("[MemberController][doFindPw][memNm]: " + memNm);
+        System.out.println("[MemberController][doFindPw][email]: " + email);
+        System.out.println("[MemberController][doFindPw][memId]: " + memId);
+        Integer memNo = memberService.doFindPw(memNm, email, memId);
+        System.out.println(memNo);
+//        if (memNo > 0) {
+//            model.addAttribute("memNo", memNo);
+//            return "/resetPw";
+//        } else {
+//            return "/findPw";
+//        }
+        return "hello";
     }
 
-    @GetMapping("resetPw") // 비밀번호 재설정 페이지 호출
-    public String resetPw() {
+    @GetMapping("resetPw") // 새로운 비밀번호 설정 페이지
+    public String resetPw(Model model) {
         return "resetPw";
     }
 
     @PatchMapping("doResetPw") // 비밀번호 재설정 처리
-    public ResponseEntity<String> doResetPw(@RequestParam Integer memNo, @RequestParam String newPw) throws NoSuchAlgorithmException {
-        memberService.doResetPw(memNo, newPw);
+    public ResponseEntity<String> doResetPw(@RequestBody DoResetPwDto doResetPwDto) throws NoSuchAlgorithmException {
+        System.out.println("[MemberController][doResetPw][doResetPwDto]: " + doResetPwDto);
+        memberService.doResetPw(doResetPwDto); // 회원 번호, 새롭게 설정할 비밀번호
         return ResponseEntity.ok("resetPwSuccess");
     }
 

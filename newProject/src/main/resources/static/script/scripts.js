@@ -117,29 +117,25 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         });
 });
 
-document.getElementById('findId').addEventListener('click', function() {
-    alert("아이디 찾기 기능이 아직 구현되지 않았습니다.");
-});
-
-document.getElementById('findPw').addEventListener('click', function() {
-    alert("비밀번호 찾기 기능이 아직 구현되지 않았습니다.");
-});
 // 로그인 페이지 E
 
 // 비밀번호 찾기 페이지 S
 document.getElementById("findPwForm").onsubmit = function(event) {
     event.preventDefault(); // 기본 폼 제출 방지
 
-    const memberDto = new memberDto(this);
+    const memId = document.getElementById("memId").value;
+    const memNm = document.getElementById("memNm").value;
+    const email = document.getElementById("email").value;
 
     // 폼 데이터를 JSON 형식으로 변환
-    const data = {};
-    memberDto.forEach((value, key) => {
-        data[key] = value;
-    });
+    const data = {
+        memId : memId,
+        memNm : memNm,
+        email : email
+    };
 
     // 서버에 요청을 보냄
-    fetch("doFindPw.php", {
+    fetch("/doFindPw", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -150,7 +146,7 @@ document.getElementById("findPwForm").onsubmit = function(event) {
         .then(data => {
             // 서버로부터 받은 결과 처리
             if (data.result > 0) {
-                window.location.href = "resetPw?memId=" + data.memId; // 비밀번호 재설정 페이지로 이동
+                window.location.href = "resetPw"; // 비밀번호 재설정 페이지로 이동
             } else {
                 document.getElementById("errorMessage").style.display = "block"; // 실패 메시지 표시
             }
@@ -173,15 +169,15 @@ document.getElementById("resetPwForm").onsubmit = function(event) {
     }
 
     // 비밀번호 일치하면 요청 보내기
-    const memId = new URLSearchParams(window.location.search).get('memId'); // URL에서 memId 가져오기
+    const memNo = document.getElementById("memNo"). value;
     const data = {
-        memId: memId,
+        memNo: memNo,
         newPw: newPw
     };
 
     // 요청 보내기
     fetch("/doResetPw", {
-        method: "POST",
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json"
         },

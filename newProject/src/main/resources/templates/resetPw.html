@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,8 @@
 
 <div class="container">
   <h2>비밀번호 재설정</h2>
-  <form id="resetPwForm" action="/doResetPw">
+  <form id="resetPwForm">
+    <input type="hidden" id="memNo" name="memNo" th:value="${memNo}">
     <label for="newPw">새 비밀번호:</label>
     <input type="password" id="newPw" name="newPw" required>
 
