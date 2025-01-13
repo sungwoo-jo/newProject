@@ -105,9 +105,9 @@ if (document.getElementById('loginForm')) {
             },
             body: JSON.stringify(data)
         })
-            .then(response => response.json())
+            .then(response => response.text())
             .then(data => {
-                if (data.success) {
+                if (data === "success") {
                     alert("로그인 성공!");
                     window.location.href = "/home";  // 로그인 성공 후 이동할 페이지
                 } else {

@@ -151,10 +151,12 @@ public class MemberService {
         return memberMapper.duplicationEmailCheck(email);
     }
 
-    public MemberDto doLogin(String memId, String memPw) throws NoSuchAlgorithmException {
-        memPw = passwordEncrypt(memPw);
-        System.out.println("[MemberService][doLogin][memId, memPw]: " + memId + ", " + memPw);
-        return memberMapper.doLogin(memId, memPw);
+    public MemberDto doLogin(MemberDto memberDto) throws NoSuchAlgorithmException {
+//        String memPw = passwordEncrypt(memberDto.getMemPw()); // 암호화 처리
+        String memPw = "test1";
+        memberDto.setMemPw(memPw);
+        System.out.println("[MemberService][doLogin][memId, memPw]: " + memberDto.getMemId() + ", " + memberDto.getMemPw());
+        return memberMapper.doLogin(memberDto);
     }
 
     @Async

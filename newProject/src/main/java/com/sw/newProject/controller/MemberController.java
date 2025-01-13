@@ -120,13 +120,13 @@ public class MemberController {
     }
 
     @PostMapping("/doLogin") // 로그인 처리
-    public ResponseEntity<Boolean> doLogin(@RequestParam String memId, @RequestParam String memPw, HttpSession session) throws NoSuchAlgorithmException {
-        MemberDto member = memberService.doLogin(memId, memPw);
+    public ResponseEntity<String> doLogin(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
+        MemberDto member = memberService.doLogin(memberDto);
         if (member == null) { // 회원 정보 존재하지 않을 때
-            return ResponseEntity.ok(false);
+            return ResponseEntity.ok("fail");
         }
         session.setAttribute("member", member);
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok("success");
     }
 
     @GetMapping("/findId") // 아이디 찾기 페이지 호출
