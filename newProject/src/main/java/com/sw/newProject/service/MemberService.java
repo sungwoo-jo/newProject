@@ -153,8 +153,7 @@ public class MemberService {
 
     public MemberDto doLogin(MemberDto memberDto) throws NoSuchAlgorithmException {
 //        String memPw = passwordEncrypt(memberDto.getMemPw()); // 암호화 처리
-        String memPw = "test1";
-        memberDto.setMemPw(memPw);
+        memberDto.setMemPw(memberDto.getMemPw());
         System.out.println("[MemberService][doLogin][memId, memPw]: " + memberDto.getMemId() + ", " + memberDto.getMemPw());
         return memberMapper.doLogin(memberDto);
     }

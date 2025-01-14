@@ -36,6 +36,12 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @GetMapping("/index") // 메인 페이지 호출
+    public String index() {
+        return "index";
+    }
+
+
     @GetMapping("/join") // 회원가입 페이지 호출
     public String getJoinPage() {
         return "join";
@@ -116,17 +122,26 @@ public class MemberController {
 
     @GetMapping("/login") // 로그인 페이지 호출
     public String getLoginPage() {
-        return "login";
+        return "/login";
     }
 
     @PostMapping("/doLogin") // 로그인 처리
-    public ResponseEntity<String> doLogin(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
+    public String doLogin(MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
         MemberDto member = memberService.doLogin(memberDto);
-        if (member == null) { // 회원 정보 존재하지 않을 때
-            return ResponseEntity.ok("fail");
+        if (member != null) { // 로그인 성공
+            // 세션 값 설정
+            session.setAttribute("memId", memberDto.getMemId());
+            return "/index";
+        } else { // 로그인 실패
+            return "/login";
         }
-        session.setAttribute("member", member);
-        return ResponseEntity.ok("success");
+    }
+
+    @GetMapping("/logout") // 로그아웃 처리
+    public String doLogout(HttpSession session) {
+        session.removeAttribute("memId");
+        System.out.println("로그아웃 진행 -> 세션 삭제 완료");
+        return "redirect:/index";
     }
 
     @GetMapping("/findId") // 아이디 찾기 페이지 호출

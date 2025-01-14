@@ -86,40 +86,14 @@ function sendData() {
 // 회원가입 페이지 E
 
 // 로그인 페이지 S
-if (document.getElementById('loginForm')) {
-    document.getElementById('loginForm').addEventListener('submit', function (event) {
-        event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
+document.getElementById('loginForm').addEventListener('submit', function (event) {
+    event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
 
-        const memId = document.getElementById('memId').value;
-        const memPw = document.getElementById('memPw').value;
-
-        const data = {
-            memId: memId,
-            memPw: memPw
-        };
-
-        fetch('/doLogin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => response.text())
-            .then(data => {
-                if (data === "success") {
-                    alert("로그인 성공!");
-                    window.location.href = "/home";  // 로그인 성공 후 이동할 페이지
-                } else {
-                    alert("아이디 또는 비밀번호가 잘못되었습니다.");
-                }
-            })
-            .catch(error => {
-                console.error("로그인 실패:", error);
-                alert("로그인 중 오류가 발생했습니다.");
-            });
-    });
-}
+    const form = document.getElementById('loginForm');
+    form.method = 'POST';
+    form.action = '/doLogin';
+    form.submit();
+});
 
 // 로그인 페이지 E
 
@@ -208,9 +182,6 @@ if (document.getElementById("findPwForm")) {
 // 비밀번호 재설정 페이지 E
 
 // 비밀번호 재설정 완료 페이지 S
-// 로그인 페이지로 리디렉션
-function redirectLogin() {
-    window.location.href = "/login"; // 로그인 페이지로 이동
-}
+
 
 // 비밀번호 재설정 완료 페이지 E

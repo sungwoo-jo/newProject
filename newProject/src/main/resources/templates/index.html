@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a th:if="!${session.memId}" href="http://localhost:8081/join">Join</a>
+    <a th:if="!${session.memId}" href="http://localhost:8081/login">Login</a>
+    <a th:if="${session.memId}" href="http://localhost:8081/logout">Logout</a>
+
+    session 값 확인 : <p th:text="${session.memId}"></p>
+</body>
+</html>
