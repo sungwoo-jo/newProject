@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -32,6 +34,7 @@ public class MemberDto {
     @Size(min = 3, max = 10, message = "닉네임은 최소 3자에서 최대 10자까지 입력 가능합니다.")
     private String nickNm;
 
+    private String comm;
     private String address1;
     private String address2;
     private String zipCode;

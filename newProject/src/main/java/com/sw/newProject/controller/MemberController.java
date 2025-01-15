@@ -29,30 +29,24 @@ import java.util.concurrent.Future;
 )
 
 @Controller
+@RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
-
-    @GetMapping("/index") // 메인 페이지 호출
-    public String index() {
-        return "index";
-    }
-
-
     @GetMapping("/join") // 회원가입 페이지 호출
     public String getJoinPage() {
-        return "join";
+        return "/member/join";
     }
 
     @PostMapping("/doJoin") // 회원가입 처리
-    public String insertMember(@RequestPart("memberDto") String memberDtoJson, @RequestPart("profileImage") MultipartFile profileImage) throws Exception { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
+    public String insertMember(MemberDto memberDto) throws Exception { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
 
         // JSON 문자열을 MemberDto 객체로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        MemberDto memberDto = objectMapper.readValue(memberDtoJson, MemberDto.class); // JSON -> 객체 변환
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        MemberDto memberDto = objectMapper.readValue(memberDtoJson, MemberDto.class); // JSON -> 객체 변환
 
         System.out.println("doJoin 호출");
         System.out.println("memberDto: " + memberDto);
@@ -60,20 +54,20 @@ public class MemberController {
         memberDto.setDeleteYn(false);
         memberDto.setMemPw(memberService.passwordEncrypt(memberDto.getMemPw()));
 
-        memberService.insertMember(memberDto, profileImage);
-        return "redirect:/joinSuccess"; // todo: 회원가입 완료 페이지로 이동해야 함
+        memberService.insertMember(memberDto);
+        return "/member/joinSuccess"; // todo: 회원가입 완료 페이지로 이동해야 함
     }
 
-    @GetMapping("joinSuccess")
+    @GetMapping("/joinSuccess")
     public String getJoinSuccessPage() {
-        return "joinSuccess";
+        return "/member/joinSuccess";
     }
 
     @GetMapping("/memberList") // 전체 회원 리스트 가져오기
     public String getAllMember(Model model) {
         List<MemberDto> members = memberService.getAllMember();
         model.addAttribute("members", members);
-        return "memberList"; // memberList.html
+        return "/member/memberList"; // memberList.html
     }
 
     @GetMapping("/update") // 정보수정 페이지 호출
@@ -84,13 +78,13 @@ public class MemberController {
     @PatchMapping("/doUpdate") // 정보수정 처리
     public String updateMember(@RequestBody MemberDto memberDto) {
         memberService.updateMember(memberDto);
-        return "joinSuccess"; // todo: 마이페이지 메인으로 이동해야 함
+        return "/member/joinSuccess"; // todo: 마이페이지 메인으로 이동해야 함
     }
 
     @DeleteMapping("/doDelete") // 회원탈퇴 처리
     public String deleteMember(@RequestBody MemberDto memberDto) {
         memberService.deleteMember(memberDto.getMemNo());
-        return "deleteSuccess";
+        return "/member/deleteSuccess";
     }
 
     @GetMapping("/duplicationIdCheck") // 중복 ID 검증
@@ -122,7 +116,7 @@ public class MemberController {
 
     @GetMapping("/login") // 로그인 페이지 호출
     public String getLoginPage() {
-        return "/login";
+        return "/member/login";
     }
 
     @PostMapping("/doLogin") // 로그인 처리
@@ -130,23 +124,23 @@ public class MemberController {
         MemberDto member = memberService.doLogin(memberDto);
         if (member != null) { // 로그인 성공
             // 세션 값 설정
-            session.setAttribute("memId", memberDto.getMemId());
+            session.setAttribute("member", member);
             return "/index";
         } else { // 로그인 실패
-            return "/login";
+            return "/member/login";
         }
     }
 
     @GetMapping("/logout") // 로그아웃 처리
     public String doLogout(HttpSession session) {
-        session.removeAttribute("memId");
+        session.removeAttribute("member");
         System.out.println("로그아웃 진행 -> 세션 삭제 완료");
-        return "redirect:/index";
+        return "redirect:/";
     }
 
     @GetMapping("/findId") // 아이디 찾기 페이지 호출
     public String findId() {
-        return "findId";
+        return "/member/findId";
     }
 
     @PostMapping("/doFindId") // 아이디 찾기 처리
@@ -157,7 +151,7 @@ public class MemberController {
 
     @GetMapping("/findPw") // 비밀번호 찾기 페이지 호출
     public String findPw() {
-        return "findPw";
+        return "/member/findPw";
     }
 
     @PostMapping("doFindPw") // 비밀번호 찾기 처리(회원 정보 일치 여부 확인)
@@ -172,7 +166,7 @@ public class MemberController {
 
     @GetMapping("resetPw") // 임시 비밀번호 발송 완료 페이지 호출
     public String resetPw() {
-        return "resetPw";
+        return "/member/resetPw";
     }
 
     @PatchMapping("doResetPw") // 비밀번호 재설정 처리
@@ -184,7 +178,7 @@ public class MemberController {
 
     @GetMapping("resetPwSuccess") // 비밀번호 재설정 완료 페이지 호출
     public String resetPwSuccess() {
-        return "resetPwSuccess";
+        return "/member/resetPwSuccess";
     }
 }
 

@@ -5,10 +5,15 @@
     <title>Title</title>
 </head>
 <body>
-    <a th:if="!${session.memId}" href="http://localhost:8081/join">Join</a>
-    <a th:if="!${session.memId}" href="http://localhost:8081/login">Login</a>
-    <a th:if="${session.memId}" href="http://localhost:8081/logout">Logout</a>
+<a th:if="${session.member}" href="/member/logout">Logout</a>
+    <a th:unless="${session.member}" href="/member/join">Join</a>
+    <a th:unless="${session.member}" href="/member/login">Login</a>
 
-    session 값 확인 : <p th:text="${session.memId}"></p>
+
+<p th:if="${session.member}" th:text="'로그인 사용자 : ' + ${session.member.memNm}"></p>
+<a th:if="${session.member}" th:href="'/mypage'"> > 마이페이지 가기 </a>
+<p th:unless="${session.member}" th:text="'로그인 정보가 없습니다.'"></p>
+
+
 </body>
 </html>

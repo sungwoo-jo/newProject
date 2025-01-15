@@ -6,6 +6,7 @@ CREATE TABLE `member` (
     memPw VARCHAR(500) NOT NULL comment '비밀번호',
     memNm VARCHAR(20) NOT NULL comment '이름',
     nickNm VARCHAR(20) NOT NULL comment '닉네임',
+    comm VARCHAR(100) DEFAULT NULL comment '코멘트',
     address1 VARCHAR(150) DEFAULT NULL comment '주소',
     address2 VARCHAR(100) DEFAULT NULL comment '상세주소',
     zipCode CHAR(5) DEFAULT NULL comment '우편번호',
@@ -112,8 +113,8 @@ CREATE TABLE `config` (
     modDt DATETIME DEFAULT NULL comment '수정일'
 );
 
--- 테스트 데이터(회원)
-INSERT INTO member(memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test1', 'test1', '테스트1', 'test1', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '11111', '01011111111', 'sungwoo9671@naver.com', '/test/test1', now());
-INSERT INTO member(memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test2', 'test2', '테스트2', 'test2', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '22222', '01022222222', 'test2@naver.com', '/test/test2', now());
-INSERT INTO member(memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test3', 'test3', '테스트3', 'test3', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '33333', '01033333333', 'test3@naver.com', '/test/test3', now());
-INSERT INTO member(memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test4', 'test4', '테스트4', 'test4', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '44444', '01044444444', 'test4@naver.com', '/test/test4', now());
+-- 테스트 데이터(회원)1
+INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test1', 'test1', '테스트1', 'test1', '코멘트1', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '11111', '01011111111', 'sungwoo9671@naver.com', '/test/test1', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test2', 'test2', '테스트2', 'test2', '코멘트2', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '22222', '01022222222', 'test2@naver.com', '/test/test2', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test3', 'test3', '테스트3', 'test3', '코멘트3', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '33333', '01033333333', 'test3@naver.com', '/test/test3', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test4', 'test4', '테스트4', 'test4', '코멘트4', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '44444', '01044444444', 'test4@naver.com', '/test/test4', now());

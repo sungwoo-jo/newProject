@@ -37,52 +37,60 @@ if (document.getElementById("signup-form")) {
 }
 
 // fetch API를 사용한 POST 요청 예시
-function sendData() {
-    // memberDto 객체 생성
-    const memberDto = {
-        memId: document.getElementById("memId").value,
-        memPw: document.getElementById("memPw").value,
-        memNm: document.getElementById("memNm").value,
-        nickNm: document.getElementById("nickNm").value,
-        address1: document.getElementById("address1").value,
-        address2: document.getElementById("address2").value,
-        zipCode: document.getElementById("zipCode").value,
-        phone: document.getElementById("phone").value,
-        email: document.getElementById("email").value
-    };
+// function sendData() {
+//     // memberDto 객체 생성
+//     const memberDto = {
+//         memId: document.getElementById("memId").value,
+//         memPw: document.getElementById("memPw").value,
+//         memNm: document.getElementById("memNm").value,
+//         nickNm: document.getElementById("nickNm").value,
+//         address1: document.getElementById("address1").value,
+//         address2: document.getElementById("address2").value,
+//         zipCode: document.getElementById("zipCode").value,
+//         phone: document.getElementById("phone").value,
+//         email: document.getElementById("email").value
+//     };
+//
+//     alert(memberDto);
+//
+//     // FormData 객체 생성
+//     const formData = new FormData();
+//
+//     // memberDto 객체를 JSON 문자열로 변환하여 FormData에 추가
+//     formData.append("memberDto", JSON.stringify(memberDto)); // 이거 되는 코드
+//
+//
+//     // 파일 추가
+//     const profileImage = document.getElementById("profileImage").files[0];
+//     if (profileImage) {
+//         formData.append("profileImage", profileImage);
+//     }
+//
+//
+//     // fetch API를 사용하여 서버에 데이터 전송
+//     fetch('./doJoin', {
+//         method: 'POST',  // 요청 방식
+//         body: formData  // FormData를 요청 본문에 담기
+//     })
+//         .then(response => response.json())  // 응답을 JSON 형식으로 변환
+//         .then(data => {
+//             console.log("성공:", data);  // 성공적으로 응답 받은 데이터 출력
+//         })
+//         .catch(error => {
+//             console.error("실패:", error);  // 오류 발생 시 에러 메시지 출력
+//         });
+// }
+if (document.getElementById('joinForm')) {
+    document.getElementById('joinForm').addEventListener('submit', function (event) {
+        event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
 
-    alert(memberDto);
-
-    // FormData 객체 생성
-    const formData = new FormData();
-
-    // memberDto 객체를 JSON 문자열로 변환하여 FormData에 추가
-    formData.append("memberDto", JSON.stringify(memberDto)); // 이거 되는 코드
-
-
-    // 파일 추가
-    const profileImage = document.getElementById("profileImage").files[0];
-    if (profileImage) {
-        formData.append("profileImage", profileImage);
-    }
-
-    alert(JSON.stringify(formData.get("memberDto")));
-    alert(formData.get("profileImage"));
-
-    // fetch API를 사용하여 서버에 데이터 전송
-    fetch('/doJoin', {
-        method: 'POST',  // 요청 방식
-        body: formData  // FormData를 요청 본문에 담기
+        const form = document.getElementById('joinForm');
+        form.enctype = "multipart/form-data";
+        form.method = 'POST';
+        form.action = './doJoin';
+        form.submit();
     })
-        .then(response => response.json())  // 응답을 JSON 형식으로 변환
-        .then(data => {
-            console.log("성공:", data);  // 성공적으로 응답 받은 데이터 출력
-        })
-        .catch(error => {
-            console.error("실패:", error);  // 오류 발생 시 에러 메시지 출력
-        });
 }
-
 // 회원가입 페이지 E
 
 // 로그인 페이지 S
@@ -91,7 +99,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 
     const form = document.getElementById('loginForm');
     form.method = 'POST';
-    form.action = '/doLogin';
+    form.action = './doLogin';
     form.submit();
 });
 
@@ -185,3 +193,14 @@ if (document.getElementById("findPwForm")) {
 
 
 // 비밀번호 재설정 완료 페이지 E
+
+// 회원 정보 수정 페이지 S
+document.getElementById('updateForm').addEventListener('submit', function (event) {
+    event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
+
+    const form = document.getElementById('updateForm');
+    form.method = 'PATCH';
+    form.action = './doUpdate';
+    form.submit();
+});
+// 회원 정보 수정 페이지 E

@@ -16,12 +16,12 @@
 
     <update id="updateMember" parameterType="com.sw.newProject.dto.MemberDto">
         UPDATE member
-        SET memId = #{memId}, memPw = #{memPw}, memNm = #{memNm}, nickNm = #{nickNm}, address1 = #{address1}, address2 = #{address2}, zipCode = #{zipCode}, phone = #{phone}, email = #{email}, profilePath = #{profilePath}, profileImage = #{profileImage}
+        SET memId = #{memId}, memPw = #{memPw}, memNm = #{memNm}, nickNm = #{nickNm}, comm = #{comm}, address1 = #{address1}, address2 = #{address2}, zipCode = #{zipCode}, phone = #{phone}, email = #{email}, profilePath = #{profilePath}, profileImage = #{profileImage}
         WHERE memNo = #{memNo}
     </update>
 
     <select id="getMember" parameterType="int" resultType="com.sw.newProject.dto.MemberDto">
-        SELECT memNo, memId, memPw, nickNm, address1, address2, zipCode, phone, email, profilePath, profileImage, deleteYn, regDt, modDt FROM member WHERE memNo = #{memNo}
+        SELECT memNo, memId, memNm, memPw, nickNm, comm, address1, address2, zipCode, phone, email, profilePath, profileImage, deleteYn, regDt, modDt FROM member WHERE memNo = #{memNo}
     </select>
 
     <update id="deleteMember" parameterType="Integer">

@@ -42,13 +42,13 @@ public class MemberService {
         this.javaMailSender = javaMailSender;
     }
 
-    public void insertMember(MemberDto memberDto, MultipartFile profileImage) throws Exception { // 회원가입 로직 처리
+    public void insertMember(MemberDto memberDto) throws Exception { // 회원가입 로직 처리
         System.out.println("[MemberService][insertMember][projectPath]: " + System.getProperty("user.dir"));
-        System.out.println("[MemberService][insertMember][profileImage]: " + profileImage);
+        System.out.println("[MemberService][insertMember][profileImage]: " + memberDto.getProfileImage());
         System.out.println("[MemberService][insertMember][memberDto]: " + memberDto);
         System.out.println("[MemberService][insertMember][zipCode]: " + memberDto.getZipCode());
          // 프로필 이미지 저장 처리
-        saveImage(profileImage);
+//        memberDto.setProfileImage((MultipartFile) saveImage(memberDto.getProfileImage()));
 
 //        memberDto.setProfilePath(profileInfo.getPath());
 //        memberDto.setProfileImage(profileInfo.getName());
@@ -74,36 +74,57 @@ public class MemberService {
         // 기존 값으로 유지
         updateMemberDto.setMemNo(recentMemberDto.getMemNo());
         updateMemberDto.setMemId(recentMemberDto.getMemId());
+        updateMemberDto.setMemNm(recentMemberDto.getMemNm());
         updateMemberDto.setDeleteYn(recentMemberDto.getDeleteYn());
         updateMemberDto.setRegDt(recentMemberDto.getRegDt());
         updateMemberDto.setModDt(nowDateTime);
 
         // 전달받은 값으로 업데이트
-        if (reqMemberDto.getMemPw() != null) {
+        if (reqMemberDto.getMemPw() != null && !reqMemberDto.getMemPw().equals("")) {
             updateMemberDto.setMemPw(reqMemberDto.getMemPw());
+        } else {
+            updateMemberDto.setMemPw(recentMemberDto.getMemPw());
         }
-        if (reqMemberDto.getNickNm() != null) {
+        if (reqMemberDto.getNickNm() != null && !reqMemberDto.getNickNm().equals("")) {
             updateMemberDto.setNickNm(reqMemberDto.getNickNm());
+        } else {
+            updateMemberDto.setNickNm(recentMemberDto.getNickNm());
         }
-        if (reqMemberDto.getAddress1() != null) {
+        if (reqMemberDto.getAddress1() != null && !reqMemberDto.getAddress1().equals("")) {
             updateMemberDto.setAddress1(reqMemberDto.getAddress1());
+        } else {
+            updateMemberDto.setAddress1(recentMemberDto.getAddress1());
         }
-        if (reqMemberDto.getAddress2() != null) {
+        if (reqMemberDto.getAddress2() != null && !reqMemberDto.getAddress2().equals("")) {
             updateMemberDto.setAddress2(reqMemberDto.getAddress2());
+        } else {
+            updateMemberDto.setAddress2(recentMemberDto.getAddress2());
         }
-        if (reqMemberDto.getZipCode() != null) {
+        if (reqMemberDto.getZipCode() != null && !reqMemberDto.getZipCode().equals("")) {
             updateMemberDto.setZipCode(reqMemberDto.getZipCode());
+        } else {
+            updateMemberDto.setZipCode(recentMemberDto.getZipCode());
         }
-        if (reqMemberDto.getPhone() != null) {
+        if (reqMemberDto.getPhone() != null && !reqMemberDto.getPhone().equals("")) {
             updateMemberDto.setPhone(reqMemberDto.getPhone());
+        } else {
+            updateMemberDto.setPhone(recentMemberDto.getPhone());
         }
-        if (reqMemberDto.getEmail() != null) {
+        if (reqMemberDto.getEmail() != null && !reqMemberDto.getEmail().equals("")) {
             updateMemberDto.setEmail(reqMemberDto.getEmail());
+        } else {
+            updateMemberDto.setEmail(recentMemberDto.getEmail());
         }
-        if (reqMemberDto.getProfileImage() != null) {
+        if (reqMemberDto.getProfileImage() != null && !reqMemberDto.getProfileImage().equals("")) {
             updateMemberDto.setProfileImage(reqMemberDto.getProfileImage());
+        } else {
+            updateMemberDto.setProfileImage(recentMemberDto.getProfileImage());
         }
-
+        if (reqMemberDto.getComm() != null && !reqMemberDto.getComm().equals("")) {
+            updateMemberDto.setComm(reqMemberDto.getComm());
+        } else {
+            updateMemberDto.setComm(recentMemberDto.getComm());
+        }
         memberMapper.updateMember(updateMemberDto); // 새롭게 세팅한 값으로 업데이트
     }
 
