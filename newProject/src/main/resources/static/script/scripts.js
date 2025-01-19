@@ -116,7 +116,6 @@ if (document.getElementById("loginForm")) {
         })
             .then(response => response.text())
             .then(data => {  // 서버에서 반환한 HTML 코드 받기
-            // .then(response => {
                 if (data === "success") {  // 상태 코드가 200이면 성공
                     console.log('로그인 성공');
                     window.location.href="/";
