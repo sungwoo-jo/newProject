@@ -2,11 +2,12 @@ package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.BoardDto;
 import com.sw.newProject.service.BoardService;
+import org.h2.engine.Mode;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,5 +32,29 @@ public class BoardController {
     public String getWritePage(@PathVariable String boardId, Model model) {
         model.addAttribute("boardId", boardId);
         return "board/write";
+    }
+
+    @GetMapping("{boardId}/view") // 게시글 상세보기 페이지 호출
+    public String getViewPage(@PathVariable String boardId, Model model) {
+        // todo
+        return "board/view";
+    }
+
+    @PostMapping("/doWrite") // 게시글 작성 처리
+    public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto) {
+        // todo
+        return ResponseEntity.ok("success");
+    }
+
+    @PatchMapping("/doUpdate") // 게시글 수정 처리
+    public ResponseEntity<String> doUpdate(@RequestBody BoardDto boardDto) {
+        // todo
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/doDelete") // 게시글 삭제 처리
+    public ResponseEntity<String> doDelete(@RequestBody BoardDto boardDto) {
+        // todo
+        return ResponseEntity.ok("success");
     }
 }
