@@ -12,7 +12,8 @@
 
 <p th:if="${session.member}" th:text="'로그인 사용자 : ' + ${session.member.memNm}"></p>
 <a th:if="${session.member}" th:href="'/mypage'"> > 마이페이지 가기 </a><br>
-<a th:if="${session.member}" th:href="'/member/delete'"> > 회원탈퇴 </a>
+<a th:if="${session.member}" th:href="'/member/delete'"> > 회원탈퇴 </a><br>
+<a th:if="${session.member}" th:href="'/board/travel/list'"> > 여행게시판 가기 </a>
 <p th:unless="${session.member}" th:text="'로그인 정보가 없습니다.'"></p>
 
 

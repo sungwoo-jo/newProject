@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 목록</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>게시글 목록</h2>
+    <table class="table table-striped" border="1">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>좋아요</th>
+            <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
+        <tr th:each="board : ${boards}">
+            <td th:text="${board.boardNo}"></td>
+            <td th:text="${board.subject}"></td>
+            <td th:text="${board.writerNm}"></td>
+            <td th:text="${board.regDt}"></td>
+            <td th:text="${board.likeCnt}"></td>
+            <td th:text="${board.hitCnt}"></td>
+<!--            <td>-->
+<!--                &lt;!&ndash; 게시글 상세보기 링크 &ndash;&gt;-->
+<!--                <a th:href="@{/posts/{postId}(postId=${post.id})}" class="btn btn-primary btn-sm">상세보기</a>-->
+<!--            </td>-->
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 게시글 추가 페이지로 이동하는 링크 (옵션) -->
+    <a href="/board/travel/write" class="btn btn-success">새 게시글 작성</a>
+</div>
+
+</body>
+</html>

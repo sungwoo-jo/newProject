@@ -5,7 +5,6 @@ import com.sw.newProject.dto.MemberDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface MemberMapper {

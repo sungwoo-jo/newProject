@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sw.newProject.mapper.BoardMapper">
+
+    <select id="getBoardList" parameterType="String" resultType="com.sw.newProject.dto.BoardDto">
+        SELECT * FROM
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        WHERE deleteYn = FALSE AND hiddenFl = FALSE
+    </select>
+
+</mapper>
