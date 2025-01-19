@@ -94,14 +94,41 @@ if (document.getElementById('joinForm')) {
 // 회원가입 페이지 E
 
 // 로그인 페이지 S
-document.getElementById('loginForm').addEventListener('submit', function (event) {
-    event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
+if (document.getElementById("loginForm")) {
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+        event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
 
-    const form = document.getElementById('loginForm');
-    form.method = 'POST';
-    form.action = './doLogin';
-    form.submit();
-});
+        const memId = document.getElementById('memId').value;
+        const memPw = document.getElementById('memPw').value;
+
+        const data = {
+            memId: memId,
+            memPw: memPw
+        };
+
+        // 서버에 요청을 보냄
+        fetch("./doLogin", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
+            },
+            body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
+        })
+            .then(response => response.text())
+            .then(data => {  // 서버에서 반환한 HTML 코드 받기
+            // .then(response => {
+                if (data === "success") {  // 상태 코드가 200이면 성공
+                    console.log('로그인 성공');
+                    window.location.href="/";
+                    // 성공 처리 로직
+                } else {
+                    alert('로그인에 실패했습니다. 정보를 다시 확인해주세요.');
+                    // 실패 처리 로직
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+}
 
 // 로그인 페이지 E
 
@@ -142,51 +169,52 @@ if (document.getElementById("findPwForm")) {
             })
             .catch(error => console.error("Error:", error));
     }
+}
 
 // 비밀번호 찾기 페이지 E
 
 // 비밀번호 재설정 페이지 S
-    if (document.getElementById("resetPwForm")) {
-        document.getElementById("resetPwForm").onsubmit = function (event) {
-            event.preventDefault(); // 기본 폼 제출 방지
+if (document.getElementById("resetPwForm")) {
+    document.getElementById("resetPwForm").onsubmit = function (event) {
+        event.preventDefault(); // 기본 폼 제출 방지
 
-            const newPw = document.getElementById("newPw").value;
-            const confirmPw = document.getElementById("confirmPw").value;
+        const newPw = document.getElementById("newPw").value;
+        const confirmPw = document.getElementById("confirmPw").value;
 
-            // 비밀번호 일치 여부 확인
-            if (newPw !== confirmPw) {
-                document.getElementById("errorMessage").style.display = "block"; // 비밀번호 불일치 메시지 표시
-                return;
-            }
+        // 비밀번호 일치 여부 확인
+        if (newPw !== confirmPw) {
+            document.getElementById("errorMessage").style.display = "block"; // 비밀번호 불일치 메시지 표시
+            return;
+        }
 
-            // 비밀번호 일치하면 요청 보내기
-            const memNo = document.getElementById("memNo").value;
-            const data = {
-                memNo: memNo,
-                newPw: newPw
-            };
-
-            // 요청 보내기
-            fetch("/doResetPw", {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("비밀번호가 성공적으로 변경되었습니다.");
-                        window.location.href = "/login"; // 로그인 페이지로 리디렉션
-                    } else {
-                        alert("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
-                    }
-                })
-                .catch(error => console.error("Error:", error));
+        // 비밀번호 일치하면 요청 보내기
+        const memNo = document.getElementById("memNo").value;
+        const data = {
+            memNo: memNo,
+            newPw: newPw
         };
-    }
+
+        // 요청 보내기
+        fetch("/doResetPw", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("비밀번호가 성공적으로 변경되었습니다.");
+                    window.location.href = "/login"; // 로그인 페이지로 리디렉션
+                } else {
+                    alert("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    };
 }
+
 // 비밀번호 재설정 페이지 E
 
 // 비밀번호 재설정 완료 페이지 S
@@ -195,12 +223,51 @@ if (document.getElementById("findPwForm")) {
 // 비밀번호 재설정 완료 페이지 E
 
 // 회원 정보 수정 페이지 S
-document.getElementById('updateForm').addEventListener('submit', function (event) {
-    event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
+if (document.getElementById("updateForm")) {
+    document.getElementById('updateForm').addEventListener('submit', function (event) {
+        event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
 
-    const form = document.getElementById('updateForm');
-    form.method = 'PATCH';
-    form.action = './doUpdate';
-    form.submit();
-});
+        const form = document.getElementById('updateForm');
+        form.method = 'PATCH';
+        form.action = './doUpdate';
+        form.submit();
+    });
+}
 // 회원 정보 수정 페이지 E
+
+// 회원 탈퇴 페이지 S
+if (document.getElementById('deleteForm')) {
+    document.getElementById('deleteForm').addEventListener('submit', function (event) {
+        event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
+
+        const form = document.getElementById('deleteForm');
+
+        const memNo = document.getElementById('memNo').value;
+
+        const memberDto = {
+            memNo: memNo,
+            // 추가적인 값들이 필요하다면 여기에 추가
+        };
+
+        fetch("./doDelete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(memberDto)
+        })
+            .then(response => {
+                if (response.status === 200) {  // 상태 코드가 200이면 성공
+                    console.log('회원 탈퇴 성공');
+                    window.location.href="/member/login";
+                    // 성공 처리 로직
+                } else {
+                    console.error('실패: 상태 코드 ' + response.status);
+                    // 실패 처리 로직
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+}
+
+// 회원 탈퇴 페이지 E

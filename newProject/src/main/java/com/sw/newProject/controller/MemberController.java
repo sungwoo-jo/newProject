@@ -70,21 +70,33 @@ public class MemberController {
         return "/member/memberList"; // memberList.html
     }
 
-    @GetMapping("/update") // 정보수정 페이지 호출
-    public String getUpdatePage() {
-        return "update";
-    }
-
     @PatchMapping("/doUpdate") // 정보수정 처리
     public String updateMember(@RequestBody MemberDto memberDto) {
         memberService.updateMember(memberDto);
         return "/member/joinSuccess"; // todo: 마이페이지 메인으로 이동해야 함
     }
 
-    @DeleteMapping("/doDelete") // 회원탈퇴 처리
-    public String deleteMember(@RequestBody MemberDto memberDto) {
-        memberService.deleteMember(memberDto.getMemNo());
-        return "/member/deleteSuccess";
+    @GetMapping("/delete") // 회원 탈퇴 페이지 호출
+    public String getDeletePage() {
+        return "/member/delete";
+    }
+
+    @PostMapping("/doDelete") // 회원탈퇴 처리
+    @ResponseBody
+    public String deleteMember(@RequestBody MemberDto memberDto, HttpSession session) {
+        Integer memNo = memberDto.getMemNo();
+        System.out.println("memNo: " + memNo);
+
+        try {
+            if (memNo != null && memNo != 0) {
+                memberService.deleteMember(memNo);
+                session.removeAttribute("member");
+                return "Success";
+            }
+            return "Fail";
+        } catch (Exception e) {
+            return "Fail";
+        }
     }
 
     @GetMapping("/duplicationIdCheck") // 중복 ID 검증
@@ -120,14 +132,14 @@ public class MemberController {
     }
 
     @PostMapping("/doLogin") // 로그인 처리
-    public String doLogin(MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
+    public ResponseEntity<String> doLogin(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
         MemberDto member = memberService.doLogin(memberDto);
-        if (member != null) { // 로그인 성공
+        if (member != null && member.getDeleteYn() != Boolean.TRUE) { // 로그인 성공
             // 세션 값 설정
             session.setAttribute("member", member);
-            return "/index";
+            return ResponseEntity.ok("success");
         } else { // 로그인 실패
-            return "/member/login";
+            return ResponseEntity.badRequest().build();
         }
     }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,14 +92,17 @@
     <p>회원 탈퇴를 진행하시려면 아래 버튼을 클릭해주세요. 탈퇴 후에는 재가입할 수 없으며, 모든 데이터는 복구할 수 없습니다.</p>
 
     <div class="buttons">
-        <button class="cancel" onclick="window.location.href='마이페이지.html'">취소</button>
-        <button class="confirm" onclick="window.location.href='탈퇴완료.html'">회원 탈퇴</button>
+        <form id="deleteForm" method="POST" action="./doDelete">
+            <input id="memNo" type="hidden" th:value="${session.member.memNo}">
+            <button class="cancel" id="cancel" type="button">취소</button>
+            <button class="confirm" id="confirm" type="submit">회원 탈퇴</button>
+        </form>
     </div>
 </div>
 
 <footer>
     <p>&copy; 2025 회사명. All Rights Reserved.</p>
 </footer>
-
+<script src="/script/scripts.js"></script>
 </body>
 </html>

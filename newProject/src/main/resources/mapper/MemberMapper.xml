@@ -11,7 +11,7 @@
     </insert>
 
     <select id="getAllMember" resultType="com.sw.newProject.dto.MemberDto">
-        SELECT * FROM member
+        SELECT * FROM member WHERE deleteYn = FALSE;
     </select>
 
     <update id="updateMember" parameterType="com.sw.newProject.dto.MemberDto">
@@ -25,7 +25,7 @@
     </select>
 
     <update id="deleteMember" parameterType="Integer">
-        UPDATE member SET deleteYn = 'y' WHERE memNo = #{memNo}
+        UPDATE member SET deleteYn = TRUE WHERE memNo = #{memNo}
     </update>
 
     <select id="duplicationIdCheck" parameterType="String" resultType="java.lang.Long">
