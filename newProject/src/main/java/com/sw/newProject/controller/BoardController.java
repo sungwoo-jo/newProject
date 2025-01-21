@@ -31,8 +31,19 @@ public class BoardController {
         return "board/list";
     }
 
-    @GetMapping("{boardId}/write") // 게시글 작성 페이지 호출
-    public String getWritePage(@PathVariable String boardId, Model model) {
+    @GetMapping(value = {"{boardId}/write/{boardNo}", "{boardId}/write", "{boardId}/write/"}) // 게시글 작성 페이지 호출
+    public String getWritePage(@PathVariable String boardId, @PathVariable(value = "boardNo", required = false) Integer boardNo, Model model) {
+        log.debug("boardNo: " + boardNo);
+        if (boardNo != null) {
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.put("boardId", boardId);
+            map.put("boardNo", boardNo);
+
+            BoardDto boardDto = boardService.getBoardView(map);
+            model.addAttribute("boardDto", boardDto);
+            return "board/write";
+        }
         model.addAttribute("boardId", boardId);
         return "board/write";
     }
@@ -53,15 +64,24 @@ public class BoardController {
 
     @PostMapping("{boardId}/doWrite") // 게시글 작성 처리
     public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
-        boardService.doWrite(boardDto);
-        return ResponseEntity.ok("success");
+        int result = 0;
+        if (boardDto.getBoardNo() != null) { // 수정
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("boardId", boardId);
+            map.put("boardDto", boardDto);
+
+            result = boardService.doUpdate(map);
+        } else {
+            result = boardService.doWrite(boardDto);
+        }
+        return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
-    @PatchMapping("/doUpdate") // 게시글 수정 처리
-    public ResponseEntity<String> doUpdate(@RequestBody BoardDto boardDto) {
-        // todo
-        return ResponseEntity.ok("success");
-    }
+//    @PatchMapping("/doUpdate") // 게시글 수정 처리
+//    public ResponseEntity<String> doUpdate(@RequestBody BoardDto boardDto) {
+//        // todo
+//        return ResponseEntity.ok("success");
+//    }
 
     @PostMapping("/doDelete") // 게시글 삭제 처리
     public ResponseEntity<String> doDelete(@RequestBody BoardDto boardDto) {

@@ -93,17 +93,22 @@
 <div class="container">
   <h1>게시글 작성</h1>
   <form id="writeForm">
-    <input type="hidden" id="boardId" th:value="${boardId}">
+    <input type="hidden" id="boardId" th:value="${boardId != null ? boardId : ''}">
+    <input type="hidden" id="boardNo" th:value="${boardNo != null ? boardNo : ''}">
     <div class="form-group">
       <label for="subject">제목</label>
-      <input type="text" id="subject" name="subject" required placeholder="게시글 제목을 입력하세요">
+      <input type="text" id="subject" name="subject" required placeholder="게시글 제목을 입력하세요" th:value="${boardDto != null ? boardDto.subject : ''}">
     </div>
     <div class="form-group">
       <label for="contents">내용</label>
-      <textarea id="contents" name="contents" required placeholder="게시글 내용을 입력하세요"></textarea>
+      <textarea id="contents" name="contents" required placeholder="게시글 내용을 입력하세요" th:text="${boardDto != null ? boardDto.contents : ''}"></textarea>
     </div>
     <div class="form-group">
-      <button type="submit">게시글 작성</button>
+      <label for="writerNm">작성자</label>
+      <input type="text" id="writerNm" name="writerNm" required placeholder="게시글 제목을 입력하세요" th:value="${boardDto != null ? boardDto.writerNm : ''}">
+    </div>
+    <div class="form-group">
+      <button type="submit" th:text="${boardDto != null ? '게시글 수정' : '게시글 작성'}"></button>
     </div>
     <div class="form-group">
       <button type="button" class="cancel-btn" onclick="cancelForm()">취소</button>
@@ -119,33 +124,58 @@
     const subject = document.getElementById('subject').value;
     const contents = document.getElementById('contents').value;
     const boardId = document.getElementById('boardId').value;
+    const boardNo = document.getElementById('boardNo').value;
+
 
     const data = {
       subject: subject,
       contents: contents,
       boardId: boardId,
+      boardNo: boardNo
     };
 
-    // 서버에 요청을 보냄
-    fetch("./doWrite", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
-      },
-      body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
-    })
-            .then(response => response.text())
-            .then(data => {  // 서버에서 반환한 HTML 코드 받기
-              if (data === "success") {  // 상태 코드가 200이면 성공
-                console.log('게시글 작성 성공');
-                window.location.href="/";
-                // 성공 처리 로직
-              } else {
-                alert('게시글 작성 실패');
-                // 실패 처리 로직
-              }
-            })
-            .catch(error => console.error("Error:", error));
+    // 수정
+    if (document.getElementById('boardNo').value != null && document.getElementById('boardNo').value !== '') {
+      fetch("../doWrite", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
+        },
+        body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
+      })
+              .then(response => response.text())
+              .then(data => {  // 서버에서 반환한 HTML 코드 받기
+                if (data === "success") {  // 상태 코드가 200이면 성공
+                  console.log('게시글 수정 성공');
+                  window.location.href = "/board/" + boardId + "/list";
+                  // 성공 처리 로직
+                } else {
+                  alert('게시글 작성 실패');
+                  // 실패 처리 로직
+                }
+              })
+              .catch(error => console.error("Error:", error));
+    } else {
+      fetch("./doWrite", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
+        },
+        body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
+      })
+              .then(response => response.text())
+              .then(data => {  // 서버에서 반환한 HTML 코드 받기
+                if (data === "success") {  // 상태 코드가 200이면 성공
+                  console.log('게시글 작성 성공');
+                  window.location.href = "/board/" + boardId + "/list";
+                  // 성공 처리 로직
+                } else {
+                  alert('게시글 작성 실패');
+                  // 실패 처리 로직
+                }
+              })
+              .catch(error => console.error("Error:", error));
+    }
   });
 
   // 취소 버튼 클릭 시 폼 초기화

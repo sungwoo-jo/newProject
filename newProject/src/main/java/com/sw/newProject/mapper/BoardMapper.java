@@ -10,7 +10,9 @@ import java.util.List;
 public interface BoardMapper {
     List<BoardDto> getBoardList(String boardId);
 
-    void doWrite(BoardDto boardDto);
+    int doWrite(BoardDto boardDto);
 
     BoardDto getBoardView(HashMap<String, Object> map);
+
+    int doUpdate(HashMap<String, Object> map);
 }

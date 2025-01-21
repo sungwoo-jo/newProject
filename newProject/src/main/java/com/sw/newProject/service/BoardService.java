@@ -22,7 +22,7 @@ public class BoardService {
         return boardMapper.getBoardList(boardId);
     }
 
-    public void doWrite(BoardDto boardDto) {
+    public int doWrite(BoardDto boardDto) {
         if (boardDto.getMemNo() != null && !boardDto.getMemNo().equals("")) {
             boardDto.setMemNo(boardDto.getMemNo());
         } else {
@@ -34,7 +34,12 @@ public class BoardService {
             boardDto.setWriterNm("비회원");
         }
 
-        boardMapper.doWrite(boardDto);
+        log.debug("doWriteBoardDto: " + boardDto);
+        return boardMapper.doWrite(boardDto);
+    }
+
+    public int doUpdate(HashMap<String, Object> map) {
+        return boardMapper.doUpdate(map);
     }
 
     public BoardDto getBoardView(HashMap<String, Object> map) {

@@ -57,7 +57,8 @@
         </tr>
 
     </table>
-    <a th:href="'/board/' + ${boardId} + '/list'" class="btn btn-secondary">목록으로 돌아가기</a>
+    <a th:href="'/board/' + ${boardId} + '/list'" class="btn btn-secondary">목록으로 돌아가기</a><br>
+    <a th:href="'/board/' + ${boardId} + '/write/' + ${boardDto.boardNo}" class="btn btn-secondary">수정하기</a><br>
 </div>
 
 </body>
