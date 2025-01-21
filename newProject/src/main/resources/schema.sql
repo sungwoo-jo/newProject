@@ -35,7 +35,7 @@ CREATE TABLE `memberSns` (
 DROP TABLE IF EXISTS `travel` CASCADE;
 CREATE TABLE `travel` (
     boardNo INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '게시글번호',
-    memNo INT DEFAULT NULL comment '회원번호',
+    memNo INT NOT NULL DEFAULT 0 comment '회원번호',
     writerNm VARCHAR(100) NOT NULL DEFAULT NULL comment '작성자',
     subject VARCHAR(100) NOT NULL comment '제목',
     contents MEDIUMTEXT NOT NULL comment '내용',
@@ -49,7 +49,7 @@ CREATE TABLE `travel` (
     etcCharge INT DEFAULT 0 comment '기타비용',
     budget INT DEFAULT 0 comment '예산',
     district VARCHAR(100) DEFAULT NULL comment '여행지',
-    visitDt DATETIME NOT NULL comment '방문일',
+    visitDt DATETIME DEFAULT NULL comment '방문일',
     regDt DATETIME NOT NULL comment '생성일',
     modDt DATETIME DEFAULT NULL comment '수정일'
 );

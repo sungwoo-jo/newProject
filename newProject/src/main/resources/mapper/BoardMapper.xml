@@ -13,4 +13,8 @@
         WHERE deleteYn = FALSE AND hiddenFl = FALSE
     </select>
 
+    <insert id="doWrite" parameterType="com.sw.newProject.dto.BoardDto">
+        INSERT INTO travel(memNo, writerNm, subject, contents, regDt) VALUES(#{memNo}, #{writerNm}, #{subject}, #{contents}, now())
+    </insert>
+
 </mapper>

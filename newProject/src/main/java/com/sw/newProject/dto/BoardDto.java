@@ -20,7 +20,7 @@ public class BoardDto {
     private Integer boardNo;
 
     @NotNull
-    private String memNo;
+    private Integer memNo;
 
     @NotNull
     private String writerNm;

@@ -2,15 +2,16 @@ package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.BoardDto;
 import com.sw.newProject.service.BoardService;
-import org.h2.engine.Mode;
-import org.springframework.http.HttpStatusCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/board")
 public class BoardController {
@@ -40,9 +41,9 @@ public class BoardController {
         return "board/view";
     }
 
-    @PostMapping("/doWrite") // 게시글 작성 처리
-    public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto) {
-        // todo
+    @PostMapping("{boardId}/doWrite") // 게시글 작성 처리
+    public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
+        boardService.doWrite(boardDto);
         return ResponseEntity.ok("success");
     }
 
