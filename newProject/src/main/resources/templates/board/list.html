@@ -25,7 +25,7 @@
         <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
         <tr th:each="board : ${boards}">
             <td th:text="${board.boardNo}"></td>
-            <td th:text="${board.subject}"></td>
+            <td><a th:href="'/board/' + ${boardId} + '/view/' + ${board.boardNo}" th:text="${board.subject}"></a></td>
             <td th:text="${board.writerNm}"></td>
             <td th:text="${board.regDt}"></td>
             <td th:text="${board.likeCnt}"></td>

@@ -10,25 +10,54 @@
 
 <div class="container mt-5">
     <h2>게시글 상세보기</h2>
-    <table class="table">
+    <table class="table" border="1">
         <tr>
-            <th>ID</th>
-            <td th:text="${post.id}"></td>
+            <th>작성자</th>
+            <td th:text="${boardDto.writerNm}"></td>
         </tr>
         <tr>
             <th>제목</th>
-            <td th:text="${post.title}"></td>
+            <td th:text="${boardDto.subject}"></td>
         </tr>
         <tr>
             <th>내용</th>
-            <td th:text="${post.content}"></td>
+            <td th:text="${boardDto.contents}"></td>
         </tr>
         <tr>
-            <th>작성일</th>
-            <td th:text="${post.createdDate}"></td>
+            <th>좋아요</th>
+            <td th:text="${boardDto.likeCnt}"></td>
         </tr>
+        <tr>
+            <th>식비</th>
+            <td th:text="${boardDto.foodCharge}"></td>
+        </tr>
+        <tr>
+            <th>교통비</th>
+            <td th:text="${boardDto.transportCharge}"></td>
+        </tr>
+        <tr>
+            <th>기타 경비</th>
+            <td th:text="${boardDto.etcCharge}"></td>
+        </tr>
+        <tr>
+            <th>여행 예산</th>
+            <td th:text="${boardDto.budget}"></td>
+        </tr>
+        <tr>
+            <th>여행지</th>
+            <td th:text="${boardDto.district}"></td>
+        </tr>
+        <tr>
+            <th>방문일</th>
+            <td th:text="${boardDto.visitDt}"></td>
+        </tr>
+        <tr>
+            <th>조회수</th>
+            <td th:text="${boardDto.hitCnt}"></td>
+        </tr>
+
     </table>
-    <a href="/boards/{boardId}/posts" class="btn btn-secondary">목록으로 돌아가기</a>
+    <a th:href="'/board/' + ${boardId} + '/list'" class="btn btn-secondary">목록으로 돌아가기</a>
 </div>
 
 </body>

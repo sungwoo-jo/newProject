@@ -5,6 +5,7 @@ import com.sw.newProject.mapper.BoardMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -34,5 +35,9 @@ public class BoardService {
         }
 
         boardMapper.doWrite(boardDto);
+    }
+
+    public BoardDto getBoardView(HashMap<String, Object> map) {
+        return boardMapper.getBoardView(map);
     }
 }

@@ -9,7 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -35,9 +37,17 @@ public class BoardController {
         return "board/write";
     }
 
-    @GetMapping("{boardId}/view") // 게시글 상세보기 페이지 호출
-    public String getViewPage(@PathVariable String boardId, Model model) {
-        // todo
+    @GetMapping("{boardId}/view/{boardNo}") // 게시글 상세보기 페이지 호출
+    public String getViewPage(@PathVariable String boardId, @PathVariable Integer boardNo, Model model) {
+        HashMap<String, Object> map = new HashMap<>();
+
+        map.put("boardId", boardId);
+        map.put("boardNo", boardNo);
+
+        BoardDto boardDto = boardService.getBoardView(map);
+        model.addAttribute("boardDto", boardDto);
+        model.addAttribute("boardId", boardId);
+        log.debug("boardDto: " + boardDto);
         return "board/view";
     }
 
@@ -58,4 +68,6 @@ public class BoardController {
         // todo
         return ResponseEntity.ok("success");
     }
+
+
 }
