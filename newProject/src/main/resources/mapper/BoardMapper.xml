@@ -35,4 +35,14 @@
         SET subject = #{boardDto.subject}, contents = #{boardDto.contents}
         WHERE boardNo = #{boardDto.boardNo}
     </update>
+
+    <update id="doDelete" parameterType="java.util.HashMap">
+        UPDATE
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        SET deleteYn = TRUE
+        WHERE boardNo = #{boardDto.boardNo}
+    </update>
 </mapper>

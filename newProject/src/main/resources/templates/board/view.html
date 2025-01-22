@@ -11,6 +11,8 @@
 <div class="container mt-5">
     <h2>게시글 상세보기</h2>
     <table class="table" border="1">
+        <input type="hidden" id="boardId" th:value="${boardId}">
+        <input type="hidden" id="boardNo" th:value="${boardDto.boardNo}">
         <tr>
             <th>작성자</th>
             <td th:text="${boardDto.writerNm}"></td>
@@ -59,7 +61,35 @@
     </table>
     <a th:href="'/board/' + ${boardId} + '/list'" class="btn btn-secondary">목록으로 돌아가기</a><br>
     <a th:href="'/board/' + ${boardId} + '/write/' + ${boardDto.boardNo}" class="btn btn-secondary">수정하기</a><br>
+    <button id="doDelete">삭제하기</button><br>
 </div>
+
+<script>
+    document.getElementById('doDelete').addEventListener('click', function() {
+
+        const data = {
+            boardId: document.getElementById('boardId').value,
+            boardNo: document.getElementById('boardNo').value,
+        };
+        fetch('../doDelete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
+            },
+            body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
+        })
+            .then(response => response.text())
+            .then(data => {
+                if (data === "success") {
+                    console.log('게시글 삭제 성공');
+                    window.location.href="/";
+                } else {
+                    alert('게시글 삭제 실패');
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+</script>
 
 </body>
 </html>

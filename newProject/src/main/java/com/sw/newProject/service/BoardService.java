@@ -45,4 +45,8 @@ public class BoardService {
     public BoardDto getBoardView(HashMap<String, Object> map) {
         return boardMapper.getBoardView(map);
     }
+
+    public int doDelete(HashMap<String, Object> map) {
+        return boardMapper.doDelete(map);
+    }
 }

@@ -15,4 +15,6 @@ public interface BoardMapper {
     BoardDto getBoardView(HashMap<String, Object> map);
 
     int doUpdate(HashMap<String, Object> map);
+
+    int doDelete(HashMap<String, Object> map);
 }

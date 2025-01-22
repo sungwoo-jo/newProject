@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Boolean.TRUE;
+
 @Slf4j
 @Controller
 @RequestMapping("/board")
@@ -56,10 +58,17 @@ public class BoardController {
         map.put("boardNo", boardNo);
 
         BoardDto boardDto = boardService.getBoardView(map);
-        model.addAttribute("boardDto", boardDto);
-        model.addAttribute("boardId", boardId);
-        log.debug("boardDto: " + boardDto);
-        return "board/view";
+
+        if (boardDto.getDeleteYn() != TRUE) {
+            model.addAttribute("boardDto", boardDto);
+            model.addAttribute("boardId", boardId);
+            log.debug("boardDto: " + boardDto);
+            return "board/view";
+        } else { // 게시글이 삭제된 상태
+            model.addAttribute("boardId", boardId);
+            model.addAttribute("notFound", "삭제된 게시글입니다.");
+            return "redirect:../list";
+        }
     }
 
     @PostMapping("{boardId}/doWrite") // 게시글 작성 처리
@@ -77,16 +86,17 @@ public class BoardController {
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
-//    @PatchMapping("/doUpdate") // 게시글 수정 처리
-//    public ResponseEntity<String> doUpdate(@RequestBody BoardDto boardDto) {
-//        // todo
-//        return ResponseEntity.ok("success");
-//    }
+    @PostMapping("{boardId}/doDelete") // 게시글 삭제 처리
+    public ResponseEntity<String> doDelete(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
+        int result = 0;
+        if (boardDto.getBoardNo() != null && boardId != null) { // 삭제 진행
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("boardDto", boardDto);
+            map.put("boardId", boardId);
 
-    @PostMapping("/doDelete") // 게시글 삭제 처리
-    public ResponseEntity<String> doDelete(@RequestBody BoardDto boardDto) {
-        // todo
-        return ResponseEntity.ok("success");
+            result = boardService.doDelete(map);
+        }
+        return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
 
