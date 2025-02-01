@@ -39,6 +39,7 @@ CREATE TABLE `travel` (
     writerNm VARCHAR(100) NOT NULL DEFAULT NULL comment '작성자',
     subject VARCHAR(100) NOT NULL comment '제목',
     contents MEDIUMTEXT NOT NULL comment '내용',
+    hashTag VARCHAR(20) DEFAULT NULL comment '해시태그',
     deleteYn BOOLEAN DEFAULT '0' comment '삭제여부',
     likeCnt INT DEFAULT 0 comment '좋아요수',
     hitCnt INT DEFAULT 0 comment '조회수',
@@ -58,6 +59,7 @@ CREATE TABLE `travel` (
 DROP TABLE IF EXISTS `reply` CASCADE;
 CREATE TABLE `reply` (
     replyNo INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '댓글번호',
+    boardId VARCHAR(20) NOT NULL DEFAULT NULL comment '게시판종류',
     boardNo INT NOT NULL comment '게시글번호',
     memNo INT DEFAULT NULL comment '회원번호',
     contents TEXT NOT NULL comment '내용',
@@ -141,4 +143,16 @@ VALUES
 (9, '테스트61', '제주도에서의 여유로운 여행', '제주도의 자연경관을 만끽하며, 바다와 산을 즐기며 평화로운 시간을 보냈습니다. 특히 제주도는 여유롭게 여행하기에 좋은 곳입니다. 가족과 함께 다녀왔습니다.', FALSE, 22, 95, FALSE, FALSE, 45, 70, 35, 4500, '제주도 제주시', '2025-01-11 08:00:00', NOW(), NULL),
 (10, '테스트34', '부산의 문화적 여행', '부산은 다양한 문화와 맛있는 음식들이 가득한 도시입니다. 여행 중에 부산의 문화와 예술을 체험하며, 다양한 음식들을 맛볼 수 있었습니다. 친구들과 함께 다녀왔습니다.', FALSE, 30, 110, FALSE, FALSE, 55, 85, 45, 5100, '부산 자갈치', '2025-01-19 20:30:00', NOW(), NULL);
 
-
+-- 더미 데이터(댓글)
+INSERT INTO reply(boardId, boardNo, memNo, contents, depth, seqNo, parentNo, deleteYn, regDt)
+VALUES
+('travel', 1, 101, '정말 멋진 여행지네요! 꼭 가보고 싶어요.', 0, 1, NULL, 'N', NOW()),
+('travel', 1, 102, '저도 예전에 갔었는데, 정말 좋았어요.', 1, 2, 1, 'N', NOW()),
+('travel', 1, 103, '추천해주셔서 감사합니다. 여행 준비 잘 할게요.', 1, 3, 1, 'N', NOW()),
+('travel', 2, 104, '가보고 싶은 곳이지만, 너무 멀어서 고민이에요.', 0, 4, NULL, 'Y', NOW()),
+('travel', 2, 105, '친구랑 가려고 계획 중이에요. 가격이 비쌀까요?', 1, 5, 4, 'N', NOW()),
+('travel', 2, 106, '가격은 좀 비쌀 수 있지만, 그만한 가치가 있어요.', 2, 6, 5, 'N', NOW()),
+('travel', 3, 107, '저는 여행 팁을 구체적으로 알고 싶어요.', 0, 7, NULL, 'N', NOW()),
+('travel', 3, 108, '여행 일정표를 추천해 주세요.', 1, 8, 7, 'N', NOW()),
+('travel', 3, 109, '여기 주변에는 어떤 음식점이 좋을까요?', 0, 9, NULL, 'N', NOW()),
+('travel', 4, 110, '저는 그 지역에서 유명한 음식이 궁금해요.', 1, 10, 9, 'Y', NOW());

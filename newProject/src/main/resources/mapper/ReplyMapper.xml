@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sw.newProject.mapper.ReplyMapper">
+    <select id="getReply" parameterType="java.util.HashMap" resultType="com.sw.newProject.dto.ReplyDto">
+        SELECT * FROM reply
+        WHERE boardNo = #{boardNo} AND boardId = #{boardId} AND deleteYn = FALSE
+    </select>
+
+    <insert id="doWrite" parameterType="java.util.HashMap">
+        INSERT INTO reply(boardId, boardNo, contents, regDt)
+        VALUES (#{boardId}, #{boardNo}, #{contents}, now())
+    </insert>
+
+    <update id="doDelete" parameterType="java.util.HashMap">
+        UPDATE reply SET deleteYn = TRUE WHERE replyNo = #{replyNo}
+    </update>
+
+    <update id="doUpdate" parameterType="java.util.HashMap">
+        UPDATE reply SET contents = #{contents} WHERE boardId = #{boardId} AND replyNo = #{replyNo}
+    </update>
+</mapper>

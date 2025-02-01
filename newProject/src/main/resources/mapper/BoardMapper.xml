@@ -93,6 +93,6 @@
                 1=1
             </otherwise>
         </choose>
-        ORDER BY boardNo DESC
+        ORDER BY boardNo
     </select>
 </mapper>

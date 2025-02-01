@@ -63,13 +63,139 @@
     <a th:href="'/board/' + ${boardId} + '/write/' + ${boardDto.boardNo}" class="btn btn-secondary">수정하기</a><br>
     <button id="doDelete">삭제하기</button><br>
 </div>
+<hr>
+
+<div id="replys"></div> <!-- 댓글 표시 영역 -->
+<h3>댓글 작성</h3>
+<textarea id="replyContents" placeholder="댓글을 작성하세요"></textarea><br>
+<button onclick="doWrite()">댓글 추가</button>
 
 <script>
-    document.getElementById('doDelete').addEventListener('click', function() {
+    const boardNo = document.getElementById("boardNo").value // 게시글 번호
+    const boardId = document.getElementById("boardId").value // 게시판 종류
+    // 댓글 조회 함수
+    function getReply() {
+        fetch(`/reply/${boardId}/getReply/${boardNo}`)
+            .then(response => response.json())
+            .then(replys => {
+                const replyDiv = document.getElementById('replys');
+                replyDiv.innerHTML = ''; // 기존 댓글 초기화
+                replys.forEach(reply => {
+                    const replyElement = document.createElement('div');
+                    // replyElement.id = `reply-${reply.replyNo}`;
+                    replyElement.innerHTML = `
+                            <p id="reply-${reply.replyNo}">${reply.contents}</p>
+                            <button id="deleteReplyBtn-${reply.replyNo}" name="deleteReplyBtn" style="display:inline-block" onclick="deleteReply(${reply.replyNo})">삭제</button>
+                            <button id="updateReplyBtn-${reply.replyNo}" name="updateReplyBtn" style="display:inline-block" onclick="updateReply(${reply.replyNo})">수정</button>
+                            <button id="saveReplyBtn-${reply.replyNo}" name="saveReplyBtn" style="display:none;" onclick="saveReply(${reply.replyNo})">저장</button>
+                            <button id="cancelReplyBtn-${reply.replyNo}" name="cancelReplyBtn" style="display:none;" onclick="cancelReply(${reply.replyNo})">취소</button>
+                            <textarea id="reply-textarea-${reply.replyNo}" style="display:none;">${reply.contents}</textarea>
+                        `;
+                    replyDiv.appendChild(replyElement);
+                });
+            })
+            .catch(error => console.error('Error loading replys:', error));
+    }
 
+    // 댓글 추가 함수
+    function doWrite() {
+        const content = document.getElementById('replyContents').value;
+        if (!content) {
+            alert("댓글을 입력하세요.");
+            return;
+        }
+
+        fetch(`/reply/${boardId}/doWrite/${boardNo}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: content,
+        })
+            .then(() => {
+                getReply();  // 댓글 목록 새로고침
+                document.getElementById('replyContents').value = '';  // 텍스트박스 비우기
+            })
+            .catch(error => console.error('Error adding reply:', error));
+    }
+
+    // 댓글 삭제 함수
+    function deleteReply(replyNo) {
+        fetch(`/reply/${boardId}/doDelete/${replyNo}`, {
+            method: 'DELETE',
+        })
+            .then(() => {
+                getReply();  // 댓글 목록 새로고침
+            })
+            .catch(error => console.error('Error deleting reply:', error));
+    }
+
+    // 댓글 수정 함수
+    function updateReply(replyNo) {
+        const replyText = document.getElementById('reply-' + replyNo);
+        const replyTextArea = document.getElementById('reply-textarea-' + replyNo);
+        const updateReplyBtn = document.getElementById('updateReplyBtn-' + replyNo);
+        const deleteReplyBtn = document.getElementById('deleteReplyBtn-' + replyNo);
+        const saveReplyBtn = document.getElementById('saveReplyBtn-' + replyNo);
+        const cancelReplyBtn = document.getElementById('cancelReplyBtn-' + replyNo);
+
+        // 수정 버튼 클릭 시
+        // 댓글 텍스트를 숨기고, textarea를 보여줌
+        replyText.style.display = 'none';
+        replyTextArea.style.display = 'block';
+        // 삭제, 수정 버튼을 숨기고 저장, 취소 버튼을 보여줌
+        updateReplyBtn.style.display = 'none';
+        deleteReplyBtn.style.display = 'none';
+        saveReplyBtn.style.display = 'inline-block';
+        cancelReplyBtn.style.display = 'inline-block';
+    }
+
+    function cancelReply(replyNo) {
+        const replyText = document.getElementById('reply-' + replyNo);
+        const replyTextArea = document.getElementById('reply-textarea-' + replyNo);
+        const updateReplyBtn = document.getElementById('updateReplyBtn-' + replyNo);
+        const deleteReplyBtn = document.getElementById('deleteReplyBtn-' + replyNo);
+        const saveReplyBtn = document.getElementById('saveReplyBtn-' + replyNo);
+        const cancelReplyBtn = document.getElementById('cancelReplyBtn-' + replyNo);
+
+        // 취소 버튼 클릭 시
+        // textarea를 숨기고 댓글 텍스트를 보여줌
+        replyTextArea.style.display = 'none';
+        replyText.style.display = 'block';
+        // 저장, 취소 버튼을 숨기고 삭제, 수정 버튼을 보여줌
+        updateReplyBtn.style.display = 'inline-block';
+        deleteReplyBtn.style.display = 'inline-block';
+        saveReplyBtn.style.display = 'none';
+        cancelReplyBtn.style.display = 'none';
+    }
+
+    // 댓글 저장 함수
+    function saveReply(replyNo) {
+
+        const contents = document.getElementById('reply-textarea-' + replyNo).value;
+
+        fetch(`/reply/${boardId}/doUpdate/${replyNo}`, {
+            method: 'PATCH',
+            body: contents
+        })
+            .then(() => {
+                getReply();  // 댓글 목록 새로고침
+            })
+            .catch(error => console.error('Error deleting reply:', error));
+    }
+
+    // 페이지 로드 시 댓글 목록 불러오기
+    window.onload = getReply;
+</script>
+
+<script>
+    // 게시글 삭제 S
+    document.getElementById('doDelete').addEventListener('click', function() {
+        const boardId = document.getElementById('boardId').value;
+        const boardNo = document.getElementById('boardNo').value;
         const data = {
-            boardId: document.getElementById('boardId').value,
-            boardNo: document.getElementById('boardNo').value,
+            boardId: boardId,
+            boardNo: boardNo
         };
         fetch('../doDelete', {
             method: 'POST',
@@ -82,13 +208,14 @@
             .then(data => {
                 if (data === "success") {
                     console.log('게시글 삭제 성공');
-                    window.location.href="/";
+                    window.location.href="/board/" + boardId + "/list";
                 } else {
                     alert('게시글 삭제 실패');
                 }
             })
             .catch(error => console.error("Error:", error));
     });
+    // 게시글 삭제 E
 </script>
 
 </body>
