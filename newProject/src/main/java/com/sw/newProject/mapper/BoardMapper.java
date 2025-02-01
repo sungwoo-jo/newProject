@@ -17,4 +17,6 @@ public interface BoardMapper {
     int doUpdate(HashMap<String, Object> map);
 
     int doDelete(HashMap<String, Object> map);
+
+    List<BoardDto> doSearch(HashMap<String, Object> map);
 }

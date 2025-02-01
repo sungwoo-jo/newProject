@@ -99,5 +99,17 @@ public class BoardController {
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
-
+    @GetMapping("/{boardId}/doSearch") // 게시글 검색
+    public String doSearch(@PathVariable String boardId, Model model, @RequestParam String type, @RequestParam String keyword) {
+        if (!type.equals("") && !keyword.equals("")) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("boardId", boardId);
+            map.put("type", type);
+            map.put("keyword", keyword);
+            List<BoardDto> boardDto = boardService.doSearch(map);
+            model.addAttribute("boards", boardDto);
+        }
+        // todo: 검색어가 없을 경우 알럿창 띄우기
+        return "board/list";
+    }
 }

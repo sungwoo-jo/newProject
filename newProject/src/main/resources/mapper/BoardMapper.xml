@@ -45,4 +45,54 @@
         SET deleteYn = TRUE
         WHERE boardNo = #{boardDto.boardNo}
     </update>
+
+    <select id="doSearch" parameterType="java.util.HashMap" resultType="com.sw.newProject.dto.BoardDto">
+        SELECT * FROM
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        WHERE deleteYn = FALSE AND
+        <choose>
+            <!-- subject 검색 -->
+            <when test="type == 'subject'">
+                subject LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- contents 검색 -->
+            <when test="type == 'contents'">
+                contents LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- all 검색: 제목, 내용, 작성자, 해시태그 등 모든 컬럼에서 검색 -->
+            <when test="type == 'all'">
+                (subject LIKE CONCAT('%', #{keyword}, '%') OR
+                contents LIKE CONCAT('%', #{keyword}, '%') OR
+                writerNm LIKE CONCAT('%', #{keyword}, '%') OR
+                district LIKE CONCAT('%', #{keyword}, '%') OR
+                hashTag LIKE CONCAT('%', #{keyword}, '%'))
+            </when>
+
+            <!-- writerNm 검색 -->
+            <when test="type == 'writerNm'">
+                writerNm LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- district 검색 -->
+            <when test="type == 'district'">
+                district LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- hashTag 검색 -->
+            <when test="type == 'hashTag'">
+                hashTag LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- 기본적으로 검색이 없으면 오류를 방지하기 위해 '1=1' 조건을 추가 -->
+            <otherwise>
+                1=1
+            </otherwise>
+        </choose>
+        ORDER BY boardNo DESC
+    </select>
 </mapper>

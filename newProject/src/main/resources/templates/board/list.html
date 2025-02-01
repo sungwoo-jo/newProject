@@ -10,6 +10,19 @@
 
 <div class="container mt-5">
     <h2>게시글 목록</h2>
+    <form id="searchForm" name="searchForm" method="GET" action="/board/doSearch">게시글 검색
+        <input type="hidden" id="boardId" th:value="${boardId}">
+        <select id="type" name="type">
+            <option value="subject">제목</option>
+            <option value="contents">내용</option>
+            <option value="all">제목+내용</option>
+            <option value="writerNm">작성자</option>
+            <option value="district">지역명</option>
+            <option value="hashTag">해시태그</option>
+        </select>
+        <label for="keyword"></label><input class="search" type="text" placeholder="검색어를 입력하세요." id="keyword" name="keyword">
+        <button id="btnSearch" type="submit">검색</button>
+    </form>
     <table class="table table-striped" border="1">
         <thead>
         <tr>
@@ -41,6 +54,17 @@
     <!-- 게시글 추가 페이지로 이동하는 링크 (옵션) -->
     <a href="/board/travel/write" class="btn btn-success">새 게시글 작성</a>
 </div>
+<script>
+    // 폼 전송 전 동적으로 action을 설정하는 함수
+    document.getElementById("searchForm").onsubmit = function() {
+        // 예시: 경로를 '/board/travel/doSearch'로 동적으로 변경
+        const pathPrefix = "/board";
+        const boardId = document.getElementById("boardId").value;
+
+        // 동적으로 action을 설정
+        this.action = pathPrefix + "/" + boardId + "/doSearch";
+    };
+</script>
 
 </body>
 </html>

@@ -31,6 +31,7 @@ public class BoardDto {
     @NotNull
     private String contents;
 
+    private String hashTag;
     private Boolean deleteYn;
     private Integer likeCnt;
     private Integer hitCnt;

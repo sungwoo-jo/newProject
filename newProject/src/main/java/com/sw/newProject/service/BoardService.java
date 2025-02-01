@@ -49,4 +49,8 @@ public class BoardService {
     public int doDelete(HashMap<String, Object> map) {
         return boardMapper.doDelete(map);
     }
+
+    public List<BoardDto> doSearch(HashMap<String, Object> map) {
+        return boardMapper.doSearch(map);
+    }
 }
