@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +29,7 @@ import java.util.concurrent.Future;
 )
 )
 
+@Slf4j
 @Controller
 @RequestMapping("/member")
 public class MemberController {

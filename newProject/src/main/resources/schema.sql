@@ -77,16 +77,20 @@ CREATE TABLE `reply` (
 DROP TABLE IF EXISTS `post` CASCADE;
 CREATE TABLE `post` (
     postNo INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '쪽지번호',
+    senderMemId VARCHAR(50) NOT NULL comment '발신회원아이디',
     senderMemNo INT NOT NULL comment '발신회원번호',
     receiverMemNo INT NOT NULL comment '수신회원번호',
+    subject VARCHAR(100) NOT NULL comment '제목',
     contents MEDIUMTEXT NOT NULL comment '내용',
     readYn BOOLEAN DEFAULT '0' NOT NULL comment '읽음여부',
+    deleteBySender BOOLEAN DEFAULT '0' comment '발신회원 삭제여부',
+    deleteByReceiver BOOLEAN DEFAULT '0' comment '수신회원 삭제여부',
     sendDt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP comment '전송일',
     readDt DATETIME DEFAULT NULL comment '확인일',
     regDt DATETIME NOT NULL comment '생성일',
-    modDt DATETIME DEFAULT NULL comment '수정일',
-    FOREIGN KEY (senderMemNo) REFERENCES member(memNo),
-    FOREIGN KEY (receiverMemNo) REFERENCES member(memNo)
+    modDt DATETIME DEFAULT NULL comment '수정일'
+--    FOREIGN KEY (senderMemNo) REFERENCES member(memNo),
+--    FOREIGN KEY (receiverMemNo) REFERENCES member(memNo)
 );
 
 -- chatInfo(채팅방정보 테이블)
@@ -156,3 +160,26 @@ VALUES
 ('travel', 3, 108, '여행 일정표를 추천해 주세요.', 1, 8, 7, 'N', NOW()),
 ('travel', 3, 109, '여기 주변에는 어떤 음식점이 좋을까요?', 0, 9, NULL, 'N', NOW()),
 ('travel', 4, 110, '저는 그 지역에서 유명한 음식이 궁금해요.', 1, 10, 9, 'Y', NOW());
+
+-- 더미 데이터(쪽지)
+INSERT INTO post(senderMemId, senderMemNo, receiverMemNo, subject, contents, readYn, deleteBySender, deleteByReceiver, sendDt, readDt, regDt, modDt) VALUES
+('test15', 15, 1, '제목 1', '내용 1', TRUE, FALSE, FALSE, '2025-01-22 15:34:00', '2025-01-22 16:00:00', '2025-01-01 10:00:00', '2025-01-01 10:00:00'),
+('test20', 20, 1, '제목 2', '내용 2', FALSE, FALSE, FALSE, '2025-01-21 14:10:00', NULL, '2025-01-02 11:00:00', '2025-01-02 11:00:00'),
+('test5', 5, 1, '제목 3', '내용 3', TRUE, FALSE, FALSE, '2025-01-20 13:25:00', '2025-01-20 13:45:00', '2025-01-03 12:00:00', '2025-01-03 12:00:00'),
+('test30', 30, 1, '제목 4', '내용 4', FALSE, FALSE, FALSE, '2025-01-19 12:20:00', NULL, '2025-01-04 09:30:00', '2025-01-04 09:30:00'),
+('test10', 10, 1, '제목 5', '내용 5', TRUE, FALSE, FALSE, '2025-01-18 11:50:00', '2025-01-18 12:30:00', '2025-01-05 14:00:00', '2025-01-05 14:00:00'),
+('test12', 12, 2, '제목 6', '내용 6', FALSE, FALSE, FALSE, '2025-01-17 10:40:00', NULL, '2025-01-06 15:30:00', '2025-01-06 15:30:00'),
+('test2', 2, 2, '제목 7', '내용 7', TRUE, FALSE, FALSE, '2025-01-16 09:50:00', '2025-01-16 10:40:00', '2025-01-07 16:10:00', '2025-01-07 16:10:00'),
+('test25', 25, 2, '제목 8', '내용 8', FALSE, FALSE, FALSE, '2025-01-15 08:30:00', NULL, '2025-01-08 17:20:00', '2025-01-08 17:20:00'),
+('test18', 18, 2, '제목 9', '내용 9', TRUE, FALSE, FALSE, '2025-01-14 07:40:00', '2025-01-14 08:10:00', '2025-01-09 18:15:00', '2025-01-09 18:15:00'),
+('test9', 9, 2, '제목 10', '내용 10', FALSE, FALSE, FALSE, '2025-01-13 06:50:00', NULL, '2025-01-10 19:40:00', '2025-01-10 19:40:00'),
+('test14', 14, 3, '제목 11', '내용 11', TRUE, FALSE, FALSE, '2025-01-12 05:45:00', '2025-01-12 06:30:00', '2025-01-11 20:00:00', '2025-01-11 20:00:00'),
+('test7', 7, 3, '제목 12', '내용 12', FALSE, FALSE, FALSE, '2025-01-11 04:30:00', NULL, '2025-01-12 08:20:00', '2025-01-12 08:20:00'),
+('test17', 17, 3, '제목 13', '내용 13', TRUE, FALSE, FALSE, '2025-01-10 03:15:00', '2025-01-10 04:05:00', '2025-01-13 09:10:00', '2025-01-13 09:10:00'),
+('test22', 22, 3, '제목 14', '내용 14', FALSE, FALSE, FALSE, '2025-01-09 02:00:00', NULL, '2025-01-14 10:30:00', '2025-01-14 10:30:00'),
+('test16', 16, 3, '제목 15', '내용 15', TRUE, FALSE, FALSE, '2025-01-08 01:20:00', '2025-01-08 02:00:00', '2025-01-15 11:40:00', '2025-01-15 11:40:00'),
+('test13', 13, 4, '제목 16', '내용 16', FALSE, FALSE, FALSE, '2025-01-07 00:45:00', NULL, '2025-01-16 12:00:00', '2025-01-16 12:00:00'),
+('test6', 6, 4, '제목 17', '내용 17', TRUE, FALSE, FALSE, '2025-01-06 23:30:00', '2025-01-06 23:50:00', '2025-01-17 13:20:00', '2025-01-17 13:20:00'),
+('test3', 3, 4, '제목 18', '내용 18', FALSE, FALSE, FALSE, '2025-01-05 22:10:00', NULL, '2025-01-18 14:50:00', '2025-01-18 14:50:00'),
+('test11', 11, 4, '제목 19', '내용 19', TRUE, FALSE, FALSE, '2025-01-04 21:00:00', '2025-01-04 21:45:00', '2025-01-19 16:10:00', '2025-01-19 16:10:00'),
+('test8', 8, 4, '제목 20', '내용 20', FALSE, FALSE, FALSE, '2025-01-03 19:55:00', NULL, '2025-01-20 17:30:00', '2025-01-20 17:30:00');

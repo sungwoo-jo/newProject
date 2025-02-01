@@ -36,7 +36,7 @@ public class BoardController {
     @GetMapping(value = {"{boardId}/write/{boardNo}", "{boardId}/write", "{boardId}/write/"}) // 게시글 작성 페이지 호출
     public String getWritePage(@PathVariable String boardId, @PathVariable(value = "boardNo", required = false) Integer boardNo, Model model) {
         log.debug("boardNo: " + boardNo);
-        if (boardNo != null) {
+        if (boardNo != null) { // 게시글 수정 형식으로 전달
             HashMap<String, Object> map = new HashMap<>();
 
             map.put("boardId", boardId);

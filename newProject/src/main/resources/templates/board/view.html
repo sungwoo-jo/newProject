@@ -64,7 +64,7 @@
     <button id="doDelete">삭제하기</button><br>
 </div>
 <hr>
-
+<div id="count"></div> <!-- 댓글 갯수 표시 영역 -->
 <div id="replys"></div> <!-- 댓글 표시 영역 -->
 <h3>댓글 작성</h3>
 <textarea id="replyContents" placeholder="댓글을 작성하세요"></textarea><br>
@@ -79,10 +79,15 @@
             .then(response => response.json())
             .then(replys => {
                 const replyDiv = document.getElementById('replys');
+                const replyCnt = document.getElementById('count');
                 replyDiv.innerHTML = ''; // 기존 댓글 초기화
+                replyCnt.innerHTML = ''; // 기존 갯수 초기화
+                const replysCnt = replys.length;
+                const count = document.createElement('count');
+                count.innerHTML = `<h3 id="count">댓글 ${replysCnt}개</h3>`;
+                replyCnt.appendChild(count);
                 replys.forEach(reply => {
                     const replyElement = document.createElement('div');
-                    // replyElement.id = `reply-${reply.replyNo}`;
                     replyElement.innerHTML = `
                             <p id="reply-${reply.replyNo}">${reply.contents}</p>
                             <button id="deleteReplyBtn-${reply.replyNo}" name="deleteReplyBtn" style="display:inline-block" onclick="deleteReply(${reply.replyNo})">삭제</button>
@@ -93,6 +98,8 @@
                         `;
                     replyDiv.appendChild(replyElement);
                 });
+
+
             })
             .catch(error => console.error('Error loading replys:', error));
     }

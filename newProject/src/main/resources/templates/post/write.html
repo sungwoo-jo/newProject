@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>게시글 작성</title>
+  <title>쪽지 보내기</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -91,51 +91,57 @@
 <body>
 
 <div class="container">
-  <h1 th:text="${boardDto != null ? '게시글 수정' : '게시글 작성'}"></h1>
-  <form id="writeForm">
-    <input type="hidden" id="boardId" th:value="${boardId != null ? boardId : ''}">
-    <input type="hidden" id="boardNo" th:value="${boardNo != null ? boardNo : ''}">
+  <h1>쪽지 보내기</h1>
+  <form id="writePost">
+    <input type="hidden" id="senderMemId" th:if="${senderMemId}">
+    <div class="form-group">
+      <label for="receiverId">받는 사람</label>
+      <input type="text" id="receiverId" name="receiverId" required placeholder="받는 사람 ID를 입력하세요" th:value="${senderMemId != null ? senderMemId : ''}">
+    </div>
     <div class="form-group">
       <label for="subject">제목</label>
-      <input type="text" id="subject" name="subject" required placeholder="게시글 제목을 입력하세요" th:value="${boardDto != null ? boardDto.subject : ''}">
+      <input type="text" id="subject" name="subject" required placeholder="쪽지 제목을 입력하세요" th:value="${boardDto != null ? boardDto.subject : ''}">
     </div>
     <div class="form-group">
       <label for="contents">내용</label>
-      <textarea id="contents" name="contents" required placeholder="게시글 내용을 입력하세요" th:text="${boardDto != null ? boardDto.contents : ''}"></textarea>
+      <textarea id="contents" name="contents" required placeholder="쪽지 내용을 입력하세요" th:text="${boardDto != null ? boardDto.contents : ''}"></textarea>
     </div>
     <div class="form-group">
-      <label for="writerNm">작성자</label>
-      <input type="text" id="writerNm" name="writerNm" required placeholder="게시글 제목을 입력하세요" th:value="${boardDto != null ? boardDto.writerNm : ''}">
-    </div>
-    <div class="form-group">
-      <button type="submit" th:text="${boardDto != null ? '게시글 수정' : '게시글 작성'}"></button>
+      <button type="submit">쪽지 보내기</button>
     </div>
     <div class="form-group">
       <button type="button" class="cancel-btn" onclick="cancelForm()">취소</button>
     </div>
   </form>
-  <div class="message" id="message">게시글이 성공적으로 작성되었습니다!</div>
+  <div class="message" id="message">쪽지가 성공적으로 전송되었습니다.</div>
 </div>
 
 <script>
-  document.getElementById('writeForm').addEventListener('submit', function (event) {
+  window.onload = function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const senderMemId = urlParams.get('senderMemId');
+
+    if (senderMemId) {
+      document.getElementById('senderMemIdInput').value = senderMemId;  // hidden input에 값 설정
+      document.getElementById('senderMemIdText').textContent = senderMemId;  // 화면에 senderMemId 표시
+    }
+  }
+
+  document.getElementById('writePost').addEventListener('submit', function (event) {
     event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
 
+    const receiverId = document.getElementById('receiverId').value;
     const subject = document.getElementById('subject').value;
     const contents = document.getElementById('contents').value;
-    const boardId = document.getElementById('boardId').value;
-    const boardNo = document.getElementById('boardNo').value;
-
 
     const data = {
       subject: subject,
       contents: contents,
-      boardId: boardId,
-      boardNo: boardNo
+      receiverId: receiverId
     };
 
     // 수정
-    if (document.getElementById('boardNo').value != null && document.getElementById('boardNo').value !== '') {
+    if (document.getElementById('receiverId').value != null && document.getElementById('receiverId').value !== '') {
       fetch("../doWrite", {
         method: "POST",
         headers: {
@@ -146,37 +152,16 @@
               .then(response => response.text())
               .then(data => {  // 서버에서 반환한 HTML 코드 받기
                 if (data === "success") {  // 상태 코드가 200이면 성공
-                  console.log('게시글 수정 성공');
-                  window.location.href = "/board/" + boardId + "/list";
+                  console.log('쪽지 전송 성공');
+                  window.location.href = "/post/list";
                   // 성공 처리 로직
                 } else {
-                  alert('게시글 작성 실패');
+                  alert('쪽지 전송 실패');
                   // 실패 처리 로직
                 }
               })
               .catch(error => console.error("Error:", error));
-    } else {
-      fetch("./doWrite", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
-        },
-        body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
-      })
-              .then(response => response.text())
-              .then(data => {  // 서버에서 반환한 HTML 코드 받기
-                if (data === "success") {  // 상태 코드가 200이면 성공
-                  console.log('게시글 작성 성공');
-                  window.location.href = "/board/" + boardId + "/list";
-                  // 성공 처리 로직
-                } else {
-                  alert('게시글 작성 실패');
-                  // 실패 처리 로직
-                }
-              })
-              .catch(error => console.error("Error:", error));
-    }
-  });
+    }});
 
   // 취소 버튼 클릭 시 폼 초기화
   function cancelForm() {

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>쪽지 상세보기</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+  <h2>쪽지 상세보기</h2>
+  <table class="table" border="1">
+    <input type="hidden" id="postNo" th:value="${postDto.postNo}">
+    <tr>
+      <th>보낸사람</th>
+      <td th:text="${postDto.senderMemId}" id="senderMemId" name="senderMemId"></td>
+    </tr>
+    <tr>
+      <th>제목</th>
+      <td th:text="${postDto.subject}"></td>
+    </tr>
+    <tr>
+      <th>내용</th>
+      <td th:text="${postDto.contents}"></td>
+    </tr>
+    <tr>
+      <th>전송일</th>
+      <td th:text="${postDto.sendDt}"></td>
+    </tr>
+    <tr>
+      <th>읽음여부</th>
+      <td th:text="${postDto.readYn}"></td>
+    </tr>
+    <tr>
+      <th>읽은날짜</th>
+      <td th:text="${postDto.readDt}"></td>
+    </tr>
+
+  </table>
+  <a th:href="'/post/list'" class="btn btn-secondary">목록으로 돌아가기</a><br>
+  <button id="doDelete">삭제하기</button><br>
+  <button id="doRespond">답장하기</button><br>
+</div>
+
+<script>
+  // 쪽지 삭제 S
+  document.getElementById('doDelete').addEventListener('click', function() {
+    const postNo = document.getElementById('postNo').value;
+    const data = {
+      postNo: postNo
+    };
+    fetch('../doDelete/' + postNo, {
+      method: 'DELETE',
+      body: data // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
+    })
+            .then(response => response.text())
+            .then(data => {
+              if (data === "success") {
+                console.log('쪽지 삭제 성공');
+                window.location.href="/post/list";
+              } else {
+                alert('쪽지 삭제 실패');
+              }
+            })
+            .catch(error => console.error("Error:", error));
+  });
+  // 쪽지 삭제 E
+
+  // 쪽지 답장 S
+  document.getElementById('doRespond').addEventListener('click', function () {
+    const senderMemId = document.getElementById('senderMemId').textContent;
+    window.location.href = `/post/write?senderMemId=${senderMemId}`;
+  });
+  // 쪽지 답장 E
+</script>
+
+</body>
+</html>

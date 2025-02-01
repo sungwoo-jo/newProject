@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>쪽지 목록</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+  <h2>쪽지 목록</h2>
+  <form id="searchForm" name="searchForm" method="GET" action="/post/doSearch">쪽지 검색
+    <select id="type" name="type">
+      <option value="subject">제목</option>
+      <option value="contents">내용</option>
+      <option value="all">제목+내용</option>
+      <option value="writerNm">작성자</option>
+      <option value="district">지역명</option>
+      <option value="hashTag">해시태그</option>
+    </select>
+    <label for="keyword"></label><input class="search" type="text" placeholder="검색어를 입력하세요." id="keyword" name="keyword">
+    <button id="btnSearch" type="submit">검색</button>
+  </form>
+  <table class="table table-striped" border="1">
+    <thead>
+    <tr>
+      <th>번호</th>
+      <th>제목</th>
+      <th>보낸사람</th>
+      <th>전송일</th>
+      <th>읽음여부</th>
+      <th>읽은날짜</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
+    <tr th:each="post : ${postDto}">
+      <td th:text="${post.postNo}"></td>
+      <td><a th:href="'/post/' + 'view/' + ${post.postNo}" th:text="${post.subject}"></a></td>
+      <td th:text="${post.senderMemId}"></td>
+      <td th:text="${post.sendDt}"></td>
+      <td th:text="${post.readYn}"></td>
+      <td th:text="${post.readDt}"></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a href="/post/write" class="btn btn-success">새 쪽지 보내기</a>
+</div>
+<script>
+  // 폼 전송 전 동적으로 action을 설정하는 함수
+  document.getElementById("searchForm").onsubmit = function() {
+    // 예시: 경로를 '/post/doSearch'로 동적으로 변경
+    const pathPrefix = "/post";
+    const postNo = document.getElementById("postNo").value;
+
+    // 동적으로 action을 설정
+    this.action = pathPrefix + "/" + postNo + "/doSearch";
+  };
+</script>
+
+</body>
+</html>
