@@ -14,4 +14,6 @@ public interface PostMapper {
     Integer doDelete(Integer postNo);
 
     Integer doWrite(PostDto postDto);
+
+    Integer getMemNoOfMemId(String memId);
 }

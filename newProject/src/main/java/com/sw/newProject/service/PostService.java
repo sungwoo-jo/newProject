@@ -30,4 +30,8 @@ public class PostService {
     public Integer doWrite(PostDto postDto) {
         return postMapper.doWrite(postDto);
     }
+
+    public Integer getMemNoOfMemId(String memId) {
+        return postMapper.getMemNoOfMemId(memId);
+    }
 }

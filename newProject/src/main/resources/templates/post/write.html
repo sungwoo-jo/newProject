@@ -95,8 +95,8 @@
   <form id="writePost">
     <input type="hidden" id="senderMemId" th:if="${senderMemId}">
     <div class="form-group">
-      <label for="receiverId">받는 사람</label>
-      <input type="text" id="receiverId" name="receiverId" required placeholder="받는 사람 ID를 입력하세요" th:value="${senderMemId != null ? senderMemId : ''}">
+      <label for="receiverMemId">받는 사람</label>
+      <input type="text" id="receiverMemId" name="receiverMemId" required placeholder="받는 사람 ID를 입력하세요" th:value="${senderMemId != null ? senderMemId : ''}">
     </div>
     <div class="form-group">
       <label for="subject">제목</label>
@@ -130,19 +130,19 @@
   document.getElementById('writePost').addEventListener('submit', function (event) {
     event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
 
-    const receiverId = document.getElementById('receiverId').value;
+    const receiverMemId = document.getElementById('receiverMemId').value;
     const subject = document.getElementById('subject').value;
     const contents = document.getElementById('contents').value;
 
     const data = {
       subject: subject,
       contents: contents,
-      receiverId: receiverId
+      receiverMemId: receiverMemId
     };
 
     // 수정
-    if (document.getElementById('receiverId').value != null && document.getElementById('receiverId').value !== '') {
-      fetch("../doWrite", {
+    if (document.getElementById('receiverMemId').value != null && document.getElementById('receiverMemId').value !== '') {
+      fetch("./doWrite", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림

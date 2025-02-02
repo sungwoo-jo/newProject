@@ -10,6 +10,7 @@ public class PostDto {
     private Integer postNo; // 쪽지번호
     private String senderMemId; // 발신회원아이디
     private Integer senderMemNo; // 발신회원번호
+    private String receiverMemId; // 수신회원아이디
     private Integer receiverMemNo; // 수신회원번호
     private String subject; // 제목
     private String contents; // 내용
