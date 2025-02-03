@@ -24,6 +24,9 @@ public class PostController {
         this.postService = postService;
     }
 
+    /*
+     * todo: 보낸 편지함, 받은 편지함으로 구분하기
+     */
     @GetMapping("/list") // 쪽지 리스트 조회
     public String getPostList(HttpSession httpSession, Model model) {
         MemberDto member = (MemberDto) httpSession.getAttribute("member");
@@ -39,6 +42,9 @@ public class PostController {
         return "/post/view";
     }
 
+    /*
+     * todo: 받은편지함 삭제 & 보낸편지함 삭제로 구분 필요
+     */
     @DeleteMapping("/doDelete/{postNo}") // 쪽지 삭제 처리
     public ResponseEntity<String> doDelete(@PathVariable Integer postNo) {
         Integer result = postService.doDelete(postNo);
@@ -60,9 +66,6 @@ public class PostController {
         // 받는사람 세팅
         postDto.setReceiverMemNo(postService.getMemNoOfMemId(postDto.getReceiverMemId()));
         postDto.setReceiverMemId(postDto.getReceiverMemId());
-        // 여기부분 필수값들 뭔지 확인하고 아래 값들은 DEFAULT FALSE 로 설정하면 괜찮을듯
-        // 그리고 sendDt, regDt는 INSERT 시 now() 함수로 현재시간으로 인서트시키기
-        log.debug("postDto: " + postDto);
         Integer result = postService.doWrite(postDto);
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
