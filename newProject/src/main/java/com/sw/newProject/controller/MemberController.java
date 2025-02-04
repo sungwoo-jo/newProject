@@ -1,6 +1,5 @@
 package com.sw.newProject.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 
@@ -11,11 +10,11 @@ import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -158,8 +157,12 @@ public class MemberController {
     }
 
     @PostMapping("/doFindId") // 아이디 찾기 처리
-    public ResponseEntity<String> doFindId(@RequestParam String memNm, @RequestParam String email) throws MessagingException, ExecutionException, InterruptedException {
-        Future<String> result = memberService.doFindId(memNm, email);
+    public ResponseEntity<String> doFindId(@RequestBody MemberDto memberDto) throws MessagingException, ExecutionException, InterruptedException, NotFoundException {
+        if (memberService.findId(memberDto.getMemNm(), memberDto.getEmail()) == null) {
+            log.info("member fot nound");
+            throw new NotFoundException("입력하신 회원 정보를 다시 한 번 확인해주세요.");
+        }
+        Future<String> result = memberService.sendMailFindId(memberDto);
         return ResponseEntity.ok("sendMailSuccess");
     }
 
@@ -169,13 +172,16 @@ public class MemberController {
     }
 
     @PostMapping("doFindPw") // 비밀번호 찾기 처리(회원 정보 일치 여부 확인)
-    public ResponseEntity<String> doFindPw(@RequestBody MemberDto memberDto) throws NoSuchAlgorithmException {
+    public ResponseEntity<String> doFindPw(@RequestBody MemberDto memberDto) throws NoSuchAlgorithmException, NotFoundException {
         String memNm = memberDto.getMemNm();
         String email = memberDto.getEmail();
         String memId = memberDto.getMemId();
-        Future<String> result = memberService.doFindPw(memNm, email, memId);
-
-        return ResponseEntity.ok("success");
+        if (memberService.findPw(memberDto.getMemNm(), memberDto.getEmail(), memberDto.getMemId()) == null) {
+            log.info("member fot nound");
+            throw new NotFoundException("입력하신 회원 정보를 다시 한 번 확인해주세요.");
+        }
+        Future<String> result = memberService.sendMailFindPw(memberDto);
+        return ResponseEntity.ok("sendMailSuccess");
     }
 
     @GetMapping("resetPw") // 임시 비밀번호 발송 완료 페이지 호출

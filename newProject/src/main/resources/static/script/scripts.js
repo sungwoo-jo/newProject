@@ -150,7 +150,7 @@ if (document.getElementById("findPwForm")) {
         };
 
         // 서버에 요청을 보냄
-        fetch("/doFindPw", {
+        fetch("./doFindPw", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
@@ -159,11 +159,11 @@ if (document.getElementById("findPwForm")) {
         })
             .then(response => response.text())
             .then(data => {  // 서버에서 반환한 HTML 코드 받기
-                if (data === "success") {
-                    // 서버에서 받은 HTML 코드로 input 태그를 동적으로 추가
-                    window.location.href = "/resetPwSuccess";
+                if (data === "sendMailSuccess") {
+                    alert('입력하신 이메일로 임시 비밀번호가 전송되었습니다.\n새로운 비밀번호로 로그인 해주세요.');
+                    window.location.href = "./login";
                 } else {
-                    alert('오류가 발생했습니다.');
+                    alert('일치하는 정보가 없습니다.\n입력하신 정보를 다시 확인해주세요.');
                 }
             })
             .catch(error => console.error("Error:", error));
@@ -213,12 +213,12 @@ if (document.getElementById("resetPwForm")) {
             .catch(error => console.error("Error:", error));
     };
 }
-
 // 비밀번호 재설정 페이지 E
 
 // 비밀번호 재설정 완료 페이지 S
-
-
+function redirectLogin() {
+    window.location.href = "./login"; // 로그인 페이지로 리디렉션
+}
 // 비밀번호 재설정 완료 페이지 E
 
 // 회원 정보 수정 페이지 S

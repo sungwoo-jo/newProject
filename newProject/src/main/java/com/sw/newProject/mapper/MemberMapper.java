@@ -30,11 +30,9 @@ public interface MemberMapper {
 
     Integer validationMemPw(String memPw);
 
-    String doFindId(String memNm, String email);
+    String findId(String memNm, String email);
 
-    Integer doFindPw(String memNm, String email, String memId);
+    Integer findPw(String memNm, String email, String memId);
 
     void doResetPw(DoResetPwDto doResetPwDto);
-
-//    boolean validationPassword(MemberDto memberDto);
 }

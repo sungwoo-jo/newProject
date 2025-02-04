@@ -4,9 +4,7 @@ import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MailDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.mapper.MemberMapper;
-import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -27,6 +25,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+@Slf4j
 @Transactional
 @Service
 public class MemberService {
@@ -173,24 +172,26 @@ public class MemberService {
     }
 
     public MemberDto doLogin(MemberDto memberDto) throws NoSuchAlgorithmException {
-//        String memPw = passwordEncrypt(memberDto.getMemPw()); // 암호화 처리
-        memberDto.setMemPw(memberDto.getMemPw());
+        String memPw = passwordEncrypt(memberDto.getMemPw()); // 암호화 처리
+        memberDto.setMemPw(memPw); // 암호화 처리 된 비밀번호로 set
         System.out.println("[MemberService][doLogin][memId, memPw]: " + memberDto.getMemId() + ", " + memberDto.getMemPw());
         return memberMapper.doLogin(memberDto);
     }
 
+    public String findId(String memNm, String email) { // 이름과 이메일을 이용해 아이디 조회
+        return memberMapper.findId(memNm, email);
+    }
+
     @Async
-    public Future<String> doFindId(String memNm, String email) throws MessagingException {
+    public Future<String> sendMailFindId(MemberDto memberDto) { // 찾은 아이디를 메일로 발송하는 메서드
         String type = "findId";
-        System.out.println("doFindId 실행");
-        String memId = memberMapper.doFindId(memNm, email);
-        System.out.println("[MemberService][doFindId][memId]: " + memId);
-        System.out.println("doFindIdOfEmail 실행");
-        doFindIdOfEmail("테스트1", "sungwoo9671@naver.com");
+        System.out.println("sendMailFindId 실행");
+        System.out.println("[MemberService][doFindId][memId]: " + memberDto.getMemId());
+        memberDto.setMemId(findId(memberDto.getMemNm(), memberDto.getEmail())); // 이메일 전송 전 아이디 set
 
         try {
             System.out.println("sendEmail() 실행 시작");
-            return CompletableFuture.completedFuture(sendEmail(type, email, "[newProject] 아이디 찾기 결과", "귀하의 아이디는 " + memId + " 입니다."));
+            return CompletableFuture.completedFuture(sendEmail(type, memberDto.getEmail(), "[newProject] 아이디 찾기 결과", "귀하의 아이디는 " + memberDto.getMemId() + " 입니다."));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -198,21 +199,26 @@ public class MemberService {
         return null;
     }
 
+    public Integer findPw(String memNm, String email, String memId) {
+        return memberMapper.findPw(memNm, email, memId);
+    }
+
     @Async
-    public Future<String> doFindPw(String memNm, String email, String memId) throws NoSuchAlgorithmException {
+    public Future<String> sendMailFindPw(MemberDto memberDto) throws NoSuchAlgorithmException {
         String type = "findPw";
         System.out.println("doFindPw 실행");
-        DoResetPwDto doResetPwDto = new DoResetPwDto();
-        System.out.println("[MemberService][doFindPw][memNm, email, memId]: " + memNm + ", " + email + ", " + memId);
-        Integer memNo = memberMapper.doFindPw(memNm, email, memId);
-        doResetPwDto.setMemNo(memNo);
-        doResetPwDto.setNewPw(generateRandomPassword(12));
-        String beforeMemPw = doResetPwDto.getNewPw(); // 암호화 전 비밀번호
+        DoResetPwDto doResetPwDto = new DoResetPwDto(); // 새로운 비밀번호를 세팅해줄 Dto 생성
+        System.out.println("[MemberService][doFindPw][memNm, email, memId]: " + memberDto.getMemNm() + ", " + memberDto.getEmail() + ", " + memberDto.getMemId());
+
+        // 비밀번호 변경 대상 회원의 memNo 를 이용해 새로운 비밀번호를 생성하고, 암호화 처리 후 DB에 set 하고 이메일 발송 처리 로직
+        doResetPwDto.setMemNo(findPw(memberDto.getMemNm(), memberDto.getEmail(), memberDto.getMemId())); // 현재 회원의 memNo 구하기
+        doResetPwDto.setNewPw(generateRandomPassword(12)); // 새로운 비밀번호 생성
+        String unEncryptPw = doResetPwDto.getNewPw();
         doResetPwDto.setNewPw(passwordEncrypt(doResetPwDto.getNewPw())); // 암호화 처리
-        doResetPw(doResetPwDto); // 비밀번호 업데이트
+        doResetPw(doResetPwDto); // 암호화 처리 된 비밀번호 넘기기
         try { // 메일 발송
             System.out.println("sendEmail() 실행 시작");
-            return CompletableFuture.completedFuture(sendEmail(type, email, "[newProject] 비밀번호 재설정 결과", "귀하의 임시비밀번호는 " + beforeMemPw + " 입니다."));
+            return CompletableFuture.completedFuture(sendEmail(type, memberDto.getEmail(), "[newProject] 비밀번호 재설정 결과", "귀하의 임시비밀번호는 " + unEncryptPw + " 입니다."));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -221,45 +227,9 @@ public class MemberService {
     }
 
     public void doResetPw(DoResetPwDto doResetPwDto) throws NoSuchAlgorithmException {
-        String newPw = passwordEncrypt(doResetPwDto.getNewPw());
-        System.out.println("[MemberService][doResetPw][doResetPwDto]: " + doResetPwDto.getMemNo() + ", " + doResetPwDto.getNewPw());
+//        String newPw = passwordEncrypt(doResetPwDto.getNewPw());
+        System.out.println("[MemberService][doResetPw][doResetPwDto]: " + doResetPwDto.getMemNo() + ", " + doResetPwDto.getNewPw() + ", " + doResetPwDto.getMemNo());
         memberMapper.doResetPw(doResetPwDto);
-    }
-    public void doFindIdOfEmail(String memNm, String email) throws MessagingException { // 이거는 메일 발송 API 구현 후 사용하기(그전까지는 doFindId 사용)
-        System.out.println("doFindIdOfEmail 메서드 내부");
-
-        String receiver = email;
-        String senderMail = mailDto.getSenderMail();
-        String password = mailDto.getPassword();
-
-        Properties props = new Properties();
-        props.setProperty("mail.smtp.host", mailDto.getHost());
-        props.setProperty("mail.smtp.port", mailDto.getPort());
-        props.setProperty("mail.smtp.auth", mailDto.getAuth());
-        props.setProperty("mail.smtp.starttls.enable", mailDto.getEnable());
-
-        System.out.println(props.getProperty("mail.smtp.host"));
-        System.out.println(props.getProperty("mail.smtp.port"));
-        System.out.println(props.getProperty("mail.smtp.auth"));
-        System.out.println(props.getProperty("mail.smtp.starttls.enable"));
-
-        // 보내는 사람 계정 정보 설정
-        Session session = Session.getInstance(props, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderMail, password);
-            }
-        });
-
-        System.out.println("[MemberService][doFindId][memId]: " + memberMapper.doFindId(memNm, email));
-
-        // 메일 내용 작성
-        Message msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(senderMail));
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
-        msg.setSubject("아이디 찾기 결과 메일");
-        msg.setText("귀하의 아이디는 " + "test1" + "입니다.");
-
-        System.out.println("[MemberService][doFindIdOfEmail] 이메일 전송 완료(이제사용안함)");
     }
 
     public File saveImage(MultipartFile profileImage) throws Exception {

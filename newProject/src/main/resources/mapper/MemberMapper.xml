@@ -51,11 +51,11 @@
         SELECT * FROM member WHERE memId = #{memId} AND memPw = #{memPw}
     </select>
 
-    <select id="doFindId" parameterType="String" resultType="String">
+    <select id="findId" parameterType="String" resultType="String">
         SELECT memId FROM member WHERE memNm = #{memNm} AND email = #{email}
     </select>
 
-    <select id="doFindPw" parameterType="String" resultType="Integer">
+    <select id="findPw" parameterType="String" resultType="Integer">
         SELECT memNo FROM member WHERE memId = #{memId} AND email = #{email} AND memNm = #{memNm}
     </select>
 
