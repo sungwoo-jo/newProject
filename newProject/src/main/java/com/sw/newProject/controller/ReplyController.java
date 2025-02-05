@@ -2,6 +2,7 @@ package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.ReplyDto;
 import com.sw.newProject.service.ReplyService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,14 +14,11 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/reply")
 public class ReplyController {
 
     private final ReplyService replyService;
-
-    public ReplyController(ReplyService replyService) {
-        this.replyService = replyService;
-    }
 
     @GetMapping("/{boardId}/getReply/{boardNo}") // 댓글 조회
     public List<ReplyDto> getReply(@PathVariable String boardId, @PathVariable Integer boardNo) {

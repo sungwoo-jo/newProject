@@ -4,6 +4,7 @@ import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MailDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.mapper.MemberMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.mail.MailException;
@@ -27,19 +28,13 @@ import java.util.concurrent.Future;
 
 @Slf4j
 @Transactional
+@RequiredArgsConstructor
 @Service
 public class MemberService {
 
     private final MemberMapper memberMapper;
     private final MailDto mailDto;
     private final JavaMailSender javaMailSender;
-
-
-    public MemberService(MemberMapper memberMapper, MailDto mailDto, JavaMailSender javaMailSender) {
-        this.memberMapper = memberMapper;
-        this.mailDto = mailDto;
-        this.javaMailSender = javaMailSender;
-    }
 
     public void insertMember(MemberDto memberDto) throws Exception { // 회원가입 로직 처리
         System.out.println("[MemberService][insertMember][projectPath]: " + System.getProperty("user.dir"));

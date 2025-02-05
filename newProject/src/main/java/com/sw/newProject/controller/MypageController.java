@@ -5,6 +5,7 @@ import com.sw.newProject.service.MemberService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,14 +17,11 @@ import org.springframework.web.bind.annotation.*;
 )
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/mypage")
 public class MypageController {
 
     private final MemberService memberService;
-
-    public MypageController(MemberService memberService) {
-        this.memberService = memberService;
-    }
 
     @GetMapping(value = {"/", "/index", ""})
     public String getIndexPage() {

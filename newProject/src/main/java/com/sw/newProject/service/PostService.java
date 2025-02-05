@@ -2,18 +2,16 @@ package com.sw.newProject.service;
 
 import com.sw.newProject.dto.PostDto;
 import com.sw.newProject.mapper.PostMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class PostService {
 
     private final PostMapper postMapper;
-
-    public PostService(PostMapper postMapper) {
-        this.postMapper = postMapper;
-    }
 
     public List<PostDto> getPostList(Integer memNo) {
         return postMapper.getPostList(memNo);

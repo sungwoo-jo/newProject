@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sw.newProject.mapper.ReservationMapper">
+    <select id="getReservationById" parameterType="java.lang.Integer">
+        SELECT * FROM reservation WHERE memNo = #{memNo}
+    </select>
+    <insert id="createReservation" parameterType="com.sw.newProject.dto.ReservationDto">
+        INSERT INTO reservation(userType, placeId, rsvTime, status, reqMsg) VALUES(#{userType}, #{placeId}, #{rsvTime}, #{status}, #{reqMsg})
+    </insert>
+    <update id="cancelReservation" parameterType="com.sw.newProject.dto.ReservationDto">
+        UPDATE reservation SET deleteYn = 'y' WHERE rsvId = #{rsvId}
+    </update>
+</mapper>

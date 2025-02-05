@@ -4,25 +4,22 @@ import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.PostDto;
 import com.sw.newProject.service.PostService;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/post")
 public class PostController {
 
     private final PostService postService;
-
-    public PostController(PostService postService) {
-        this.postService = postService;
-    }
 
     /*
      * todo: 보낸 편지함, 받은 편지함으로 구분하기

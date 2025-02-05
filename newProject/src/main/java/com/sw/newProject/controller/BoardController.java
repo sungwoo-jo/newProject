@@ -2,6 +2,7 @@ package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.BoardDto;
 import com.sw.newProject.service.BoardService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,13 +19,10 @@ import static java.lang.Boolean.TRUE;
 @Slf4j
 @Controller
 @RequestMapping("/board")
+@RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
-
-    public BoardController(BoardService boardService) {
-        this.boardService = boardService;
-    }
 
     @GetMapping("{boardId}/list") // 게시글 리스트 페이지 호출
     public String getBoardList(@PathVariable String boardId, Model model) {

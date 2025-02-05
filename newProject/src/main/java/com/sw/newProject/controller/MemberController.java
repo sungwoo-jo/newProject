@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +31,11 @@ import java.util.concurrent.Future;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
 
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
     @GetMapping("/join") // 회원가입 페이지 호출
     public String getJoinPage() {
         return "/member/join";
