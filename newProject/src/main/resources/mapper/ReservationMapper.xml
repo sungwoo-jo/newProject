@@ -7,9 +7,12 @@
         SELECT * FROM reservation WHERE memNo = #{memNo}
     </select>
     <insert id="createReservation" parameterType="com.sw.newProject.dto.ReservationDto">
-        INSERT INTO reservation(userType, placeId, rsvTime, status, reqMsg) VALUES(#{userType}, #{placeId}, #{rsvTime}, #{status}, #{reqMsg})
+        INSERT INTO reservation(placeId, rsvDt, rsvStatus, reqMsg, regDt) VALUES(#{placeId}, #{rsvDt}, #{rsvStatus}, #{reqMsg}, now())
     </insert>
     <update id="cancelReservation" parameterType="com.sw.newProject.dto.ReservationDto">
         UPDATE reservation SET deleteYn = 'y' WHERE rsvId = #{rsvId}
     </update>
+    <select id="viewReservation" parameterType="com.sw.newProject.dto.ReservationDto">
+        SELECT * FROM reservation WHERE rsvId = #{rsvId}
+    </select>
 </mapper>

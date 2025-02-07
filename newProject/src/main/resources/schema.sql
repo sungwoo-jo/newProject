@@ -128,6 +128,20 @@ CREATE TABLE `config` (
     modDt DATETIME DEFAULT NULL comment '수정일'
 );
 
+-- reservation(예약 정보 테이블)
+DROP TABLE IF EXISTS `reservation` CASCADE;
+CREATE TABLE `reservation` (
+    rsvId INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '예약번호',
+    memNo INT NOT NULL DEFAULT 0 comment '회원번호',
+    placeId INT NOT NULL DEFAULT NULL comment '장소번호',
+    rsvDt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP comment '예약일',
+    rsvStatus VARCHAR(10) NOT NULL DEFAULT 'PENDING' comment '예약상태',
+    reqMsg VARCHAR(100) DEFAULT NULL comment '요청사항',
+    deleteYn BOOLEAN DEFAULT '0' comment '삭제여부',
+    regDt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP comment '생성일',
+    modDt DATETIME DEFAULT NULL comment '수정일'
+);
+
 -- 더미 데이터(회원)
 INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test1', '1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014', '테스트1', 'test1', '코멘트1', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '11111', '01011111111', 'sungwoo9671@naver.com', '/test/test1', now());
 INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test2', '60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752', '테스트2', 'test2', '코멘트2', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '22222', '01022222222', 'test2@naver.com', '/test/test2', now());
@@ -184,3 +198,16 @@ INSERT INTO post(senderMemId, senderMemNo, receiverMemId, receiverMemNo, subject
 ('test3', 3, 'test4', 4, '제목 18', '내용 18', FALSE, FALSE, FALSE, '2025-01-05 22:10:00', NULL, '2025-01-18 14:50:00', '2025-01-18 14:50:00'),
 ('test11', 11, 'test4', 4, '제목 19', '내용 19', TRUE, FALSE, FALSE, '2025-01-04 21:00:00', '2025-01-04 21:45:00', '2025-01-19 16:10:00', '2025-01-19 16:10:00'),
 ('test8', 8, 'test4', 4, '제목 20', '내용 20', FALSE, FALSE, FALSE, '2025-01-03 19:55:00', NULL, '2025-01-20 17:30:00', '2025-01-20 17:30:00');
+
+-- 더미 데이터(예약 정보)
+INSERT INTO reservation (memNo, placeId, rsvDt, rsvStatus, reqMsg, deleteYn, regDt, modDt) VALUES
+(1, 101, '2025-02-07 09:00:00', 'PENDING', '창가 자리로 예약 부탁드립니다.', 0, '2025-02-07 09:00:00', NULL),
+(1, 102, '2025-02-07 14:30:00', 'CONFIRMED', '조용한 분위기의 자리 요청합니다.', 0, '2025-02-07 09:15:00', '2025-02-07 09:30:00'),
+(1, 103, '2025-02-07 18:00:00', 'CANCELED', NULL, 0, '2025-02-07 09:45:00', '2025-02-07 10:00:00'),
+(1, 104, '2025-02-07 20:00:00', 'PENDING', 'VIP 좌석으로 예약해 주세요.', 0, '2025-02-07 10:15:00', NULL),
+(1, 105, '2025-02-08 12:00:00', 'CONFIRMED', '특별 메뉴 부탁드려요.', 0, '2025-02-07 10:45:00', '2025-02-07 11:00:00'),
+(1, 106, '2025-02-08 10:30:00', 'PENDING', '창문 가까운 자리 부탁드려요.', 0, '2025-02-08 10:00:00', NULL),
+(1, 107, '2025-02-08 15:00:00', 'CONFIRMED', '기념일이라 특별한 대접을 부탁드립니다.', 0, '2025-02-08 10:30:00', '2025-02-08 11:00:00'),
+(1, 108, '2025-02-08 17:30:00', 'CANCELED', '예약 취소 부탁드립니다.', 0, '2025-02-08 11:15:00', '2025-02-08 11:30:00'),
+(1, 109, '2025-02-08 19:00:00', 'PENDING', '혼자 예약인데 편안한 자리를 원합니다.', 0, '2025-02-08 12:00:00', NULL),
+(1, 110, '2025-02-09 08:00:00', 'CONFIRMED', '어린이 메뉴 제공 부탁드립니다.', 0, '2025-02-08 13:00:00', '2025-02-08 13:15:00');

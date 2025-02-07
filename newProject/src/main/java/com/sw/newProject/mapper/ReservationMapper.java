@@ -10,9 +10,9 @@ public interface ReservationMapper {
 
     List<ReservationDto> getReservationById(Integer memNo);
 
-    ReservationDto createReservation(ReservationDto reservationDto);
+    int createReservation(ReservationDto reservationDto);
 
-    String cancelReservation(ReservationDto reservationDto);
+    void cancelReservation(ReservationDto reservationDto);
 
     ReservationDto viewReservation(ReservationDto reservationDto);
 }
