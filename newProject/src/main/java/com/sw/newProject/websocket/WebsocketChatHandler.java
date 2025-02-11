@@ -42,7 +42,7 @@ public class WebsocketChatHandler extends TextWebSocketHandler {
             chatMessage.setMessage(chatMessage.getSender() + "님이 퇴장했습니다..");
             sendToEachSocket(sessions,new TextMessage(objectMapper.writeValueAsString(chatMessage)) );
         }else {
-            sendToEachSocket(sessions,message ); //입장,퇴장 아닐 때는 클라이언트로부터 온 메세지 그대로 전달.
+            sendToEachSocket(sessions,message); //입장,퇴장 아닐 때는 클라이언트로부터 온 메세지 그대로 전달.
         }
     }
     private  void sendToEachSocket(Set<WebSocketSession> sessions, TextMessage message){

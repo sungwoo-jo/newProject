@@ -95,4 +95,24 @@
         </choose>
         ORDER BY boardNo
     </select>
+
+    <update id="incrementHitCnt" parameterType="java.util.HashMap">
+        UPDATE
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        SET hitCnt = hitCnt + 1
+        WHERE boardNo = #{boardNo}
+    </update>
+
+    <update id="doLike" parameterType="java.util.HashMap">
+        UPDATE
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        SET likeCnt = likeCnt + 1
+        WHERE boardNo = #{boardDto.boardNo}
+    </update>
 </mapper>

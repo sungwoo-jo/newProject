@@ -44,11 +44,19 @@ public class BoardService {
         return boardMapper.getBoardView(map);
     }
 
+    public void incrementHitCnt(HashMap<String, Object> map) {
+        boardMapper.incrementHitCnt(map);
+    }
+
     public int doDelete(HashMap<String, Object> map) {
         return boardMapper.doDelete(map);
     }
 
     public List<BoardDto> doSearch(HashMap<String, Object> map) {
         return boardMapper.doSearch(map);
+    }
+
+    public int doLike(HashMap<String, Object> map) {
+        return boardMapper.doLike(map);
     }
 }

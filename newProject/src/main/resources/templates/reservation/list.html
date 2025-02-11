@@ -12,6 +12,7 @@
     <th>장소명</th>
     <th>예약시간</th>
     <th>예약상태</th>
+    <th>예약상세</th>
   </tr>
   </thead>
   <tbody>
@@ -19,6 +20,7 @@
     <td data-th-id="'placeId' + ${stat.index+1}" th:text="${reservation.placeId}">장소명</td>
     <td id="rsvDt-[[${stat.index+1}]]" data-th-id="'rsvDt' + ${stat.index+1}" th:text="${reservation.rsvDt}">예약시간</td>
     <td data-th-id="'rsvStatus' + ${stat.index+1}" th:text="${reservation.rsvStatus}">예약상태</td>
+    <td><a th:href="'/reservation/view/' + ${reservation.rsvId}" th:text="'예약확인 > '"></a></td>
   </tr>
   </tbody>
 </table>
@@ -42,8 +44,16 @@
       const hours = date.getHours().toString().padStart(2, '0'); // 2자리로 맞추기 위해 0 채우기
       const minutes = date.getMinutes().toString().padStart(2, '0'); // 2자리로 맞추기 위해 0 채우기
 
+      // 오전/오후 구분
+      const period = hours >= 12 ? '오후' : '오전';
+
+      // 12시간제로 변경 (오후 1시는 13이므로 12를 빼줌)
+      const displayHour = hours % 12 || 12;  // 12시인 경우 12로 표시
+
+      const formattedTime = `${period} ${displayHour}:${minutes}`;
+
       // 포맷된 날짜를 td에 업데이트
-      const formattedDate = `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
+      const formattedDate = `${year}. ${month}. ${day}. ${formattedTime}`;
 
       td.textContent = formattedDate;
     });

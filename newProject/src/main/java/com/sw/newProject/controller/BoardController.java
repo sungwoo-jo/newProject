@@ -55,6 +55,7 @@ public class BoardController {
         map.put("boardId", boardId);
         map.put("boardNo", boardNo);
 
+        boardService.incrementHitCnt(map); // 조회수 증가 -> 추후 사용자 별 하루 1회씩만 증가하도록 수정 필요
         BoardDto boardDto = boardService.getBoardView(map);
 
         if (boardDto.getDeleteYn() != TRUE) {
@@ -63,10 +64,19 @@ public class BoardController {
             log.debug("boardDto: " + boardDto);
             return "board/view";
         } else { // 게시글이 삭제된 상태
-            model.addAttribute("boardId", boardId);
-            model.addAttribute("notFound", "삭제된 게시글입니다.");
+//            model.addAttribute("boardId", boardId);
+//            model.addAttribute("notFound", "삭제된 게시글입니다.");
             return "redirect:../list";
         }
+    }
+
+    @PostMapping("{boardId}/doLike") // 좋아요 처리
+    public ResponseEntity<String> doLike(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("boardDto", boardDto);
+        map.put("boardId", boardId);
+        int result = boardService.doLike(map);
+        return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
     @PostMapping("{boardId}/doWrite") // 게시글 작성 처리

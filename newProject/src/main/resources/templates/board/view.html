@@ -62,6 +62,7 @@
     <a th:href="'/board/' + ${boardId} + '/list'" class="btn btn-secondary">목록으로 돌아가기</a><br>
     <a th:href="'/board/' + ${boardId} + '/write/' + ${boardDto.boardNo}" class="btn btn-secondary">수정하기</a><br>
     <button id="doDelete">삭제하기</button><br>
+    <button id="like">좋아요</button><br>
 </div>
 <hr>
 <div id="count"></div> <!-- 댓글 갯수 표시 영역 -->
@@ -176,7 +177,35 @@
         cancelReplyBtn.style.display = 'none';
     }
 
-    // 댓글 저장 함수
+    // 좋아요 버튼 함수 S
+    document.getElementById('like').addEventListener('click', function() {
+        const boardNo = document.getElementById('boardNo').value;
+        const boardId = document.getElementById('boardId').value;
+        const data = {
+            boardNo: boardNo,
+            boardId: boardId
+        };
+
+        fetch('../doLike', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
+            },
+            body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
+        })
+            .then(response => response.text())
+            .then(data => {
+                if (data === "success") {
+                    alert('좋아요!');
+                } else {
+                    alert('좋아요 실패!');
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+    // 좋아요 버튼 함수 E
+
+    // 댓글 저장 함수 S
     function saveReply(replyNo) {
 
         const contents = document.getElementById('reply-textarea-' + replyNo).value;
