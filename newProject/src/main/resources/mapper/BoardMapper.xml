@@ -115,4 +115,15 @@
         SET likeCnt = likeCnt + 1
         WHERE boardNo = #{boardDto.boardNo}
     </update>
+
+    <select id="getPopularBoard" parameterType="java.lang.String" resultType="com.sw.newProject.dto.BoardDto">
+        SELECT * FROM
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        WHERE deleteYn = FALSE
+        ORDER BY likeCnt DESC
+        LIMIT 0, 5
+    </select>
 </mapper>

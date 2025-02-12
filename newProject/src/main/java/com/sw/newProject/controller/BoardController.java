@@ -2,6 +2,7 @@ package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.BoardDto;
 import com.sw.newProject.service.BoardService;
+import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,12 @@ public class BoardController {
         List<BoardDto> boardDto = boardService.getBoardList(boardId);
         model.addAttribute("boards", boardDto);
         return "board/list";
+    }
+
+    @ResponseBody
+    @GetMapping("{boardId}/getPopularBoard") // 인기게시글 조회 처리
+    public List<BoardDto> getPopularBoard(@PathVariable String boardId) {
+        return boardService.getPopularBoard(boardId);
     }
 
     @GetMapping(value = {"{boardId}/write/{boardNo}", "{boardId}/write", "{boardId}/write/"}) // 게시글 작성 페이지 호출

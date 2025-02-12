@@ -18,6 +18,32 @@
 <a th:if="${session.member}" th:href="'/reservation/list'"> > 예약페이지 가기 </a><br>
 <p th:unless="${session.member}" th:text="'로그인 정보가 없습니다.'"></p>
 
+<hr>
+
+<h1>인기게시글</h1>
+<table class="table table-striped" border="1">
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성일</th>
+        <th>좋아요</th>
+        <th>조회수</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 인기게시글 리스트 -->
+    <tr th:each="board : ${boardDto}">
+        <td th:text="${board.boardNo}"></td>
+        <td><a th:href="'/board/travel/view/' + ${board.boardNo}" th:text="${board.subject}"></a></td>
+        <td th:text="${board.writerNm}"></td>
+        <td th:text="${board.regDt}"></td>
+        <td th:text="${board.likeCnt}"></td>
+        <td th:text="${board.hitCnt}"></td>
+    </tr>
+    </tbody>
+</table>
 
 </body>
 </html>

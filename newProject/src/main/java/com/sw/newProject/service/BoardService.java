@@ -59,4 +59,12 @@ public class BoardService {
     public int doLike(HashMap<String, Object> map) {
         return boardMapper.doLike(map);
     }
+
+    /*
+     * 인기 게시글 가져오기(5개)
+     * 좋아요 순으로 내림차순 정렬
+     */
+    public List<BoardDto> getPopularBoard(String boardId) {
+        return boardMapper.getPopularBoard(boardId);
+    }
 }

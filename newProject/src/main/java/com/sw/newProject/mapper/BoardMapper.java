@@ -23,4 +23,6 @@ public interface BoardMapper {
     void incrementHitCnt(HashMap<String, Object> map);
 
     int doLike(HashMap<String, Object> map);
+
+    List<BoardDto> getPopularBoard(String boardId);
 }
