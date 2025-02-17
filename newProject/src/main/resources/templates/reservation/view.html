@@ -2,13 +2,79 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 상세보기</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
-<div>
-<p>예약번호 : 123456789</p>
+<body>
 
-<p>주문상품</p>
-<p>예약상태: 결제완료 | 결제완료일: 2025. 02. 08. (토)</p>
-<p>금액: </p>
+<div class="container mt-5">
+    <h2>예약 상세보기</h2>
+    <table class="table" border="1">
+        <input type="hidden" id="rsvNo" th:value="${reservationDto.rsvNo}">
+        <tr>
+            <th>예약번호</th>
+            <td th:text="${reservationDto.rsvNo}"></td>
+        </tr>
+        <tr>
+            <th>회원번호</th>
+            <td th:text="${reservationDto.memNo}"></td>
+        </tr>
+        <tr>
+            <th>장소번호</th>
+            <td th:text="${reservationDto.placeId}"></td>
+        </tr>
+        <tr>
+            <th>예약일시</th>
+            <td th:text="${reservationDto.rsvDt}"></td>
+        </tr>
+        <tr>
+            <th>예약상태</th>
+            <td th:text="${reservationDto.rsvStatus}"></td>
+        </tr>
+        <tr>
+            <th>요청사항</th>
+            <td th:text="${reservationDto.reqMsg}"></td>
+        </tr>
+
+    </table>
+    <a th:href="'/reservation/list'" class="btn btn-secondary">목록으로 돌아가기</a><br>
+    <div th:if="${reservationDto.rsvStatus != '예약취소'}"><button id="doDelete">예약 취소하기</button><br></div>
+
 </div>
 
+<script>
+    // 예약 취소 S
+    document.getElementById('doDelete').addEventListener('click', function() {
+        if (!confirm("예약을 취소하시겠습니까?")) {
+            return false;
+        } else {
+            const rsvNo = document.getElementById('rsvNo').value;
+            console.log(rsvNo);
+            const data = {
+                rsvNo: rsvNo
+            }
+            fetch('../cancel/' + rsvNo, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
+                },
+                body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === "success") {
+                        alert('예약이 취소되었습니다.');
+                        history.go(0);
+                    } else {
+                        alert('예약 취소 실패');
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+    });
+    // 예약 취소 E
+</script>
+
+</body>
 </html>

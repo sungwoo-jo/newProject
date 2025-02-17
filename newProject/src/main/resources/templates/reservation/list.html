@@ -20,7 +20,7 @@
     <td data-th-id="'placeId' + ${stat.index+1}" th:text="${reservation.placeId}">장소명</td>
     <td id="rsvDt-[[${stat.index+1}]]" data-th-id="'rsvDt' + ${stat.index+1}" th:text="${reservation.rsvDt}">예약시간</td>
     <td data-th-id="'rsvStatus' + ${stat.index+1}" th:text="${reservation.rsvStatus}">예약상태</td>
-    <td><a th:href="'/reservation/view/' + ${reservation.rsvId}" th:text="'예약확인 > '"></a></td>
+    <td><a th:href="'/reservation/view/' + ${reservation.getRsvNo}" th:text="'예약확인 > '"></a></td>
   </tr>
   </tbody>
 </table>

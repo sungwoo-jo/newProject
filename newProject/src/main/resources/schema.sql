@@ -131,7 +131,7 @@ CREATE TABLE `config` (
 -- reservation(예약 정보 테이블)
 DROP TABLE IF EXISTS `reservation` CASCADE;
 CREATE TABLE `reservation` (
-    rsvId INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '예약번호',
+    rsvNo INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '예약번호',
     memNo INT NOT NULL DEFAULT 0 comment '회원번호',
     placeId INT NOT NULL DEFAULT NULL comment '장소번호',
     rsvDt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP comment '예약일',

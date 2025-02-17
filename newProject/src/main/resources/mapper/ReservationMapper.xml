@@ -9,10 +9,10 @@
     <insert id="createReservation" parameterType="com.sw.newProject.dto.ReservationDto">
         INSERT INTO reservation(placeId, rsvDt, rsvStatus, reqMsg, regDt) VALUES(#{placeId}, #{rsvDt}, #{rsvStatus}, #{reqMsg}, now())
     </insert>
-    <update id="cancelReservation" parameterType="com.sw.newProject.dto.ReservationDto">
-        UPDATE reservation SET deleteYn = 'y' WHERE rsvId = #{rsvId}
+    <update id="cancelReservation" parameterType="java.lang.Integer">
+        UPDATE reservation SET RSVSTATUS = 'CANCELED' WHERE rsvNo = #{rsvNo}
     </update>
-    <select id="viewReservation" parameterType="com.sw.newProject.dto.ReservationDto">
-        SELECT * FROM reservation WHERE rsvId = #{rsvId}
+    <select id="viewReservation" parameterType="java.lang.Integer">
+        SELECT * FROM reservation WHERE rsvNo = #{rsvNo}
     </select>
 </mapper>

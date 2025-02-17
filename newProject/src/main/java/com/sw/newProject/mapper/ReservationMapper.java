@@ -12,7 +12,7 @@ public interface ReservationMapper {
 
     int createReservation(ReservationDto reservationDto);
 
-    void cancelReservation(ReservationDto reservationDto);
+    int cancelReservation(Integer rsvNo);
 
-    ReservationDto viewReservation(ReservationDto reservationDto);
+    ReservationDto viewReservation(Integer rsvNo);
 }
