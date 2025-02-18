@@ -1,4 +1,4 @@
-package Config;
+package com.sw.newProject.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.springframework.context.annotation.Bean;

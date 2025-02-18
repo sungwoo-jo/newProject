@@ -146,7 +146,7 @@ public class MemberController {
     @GetMapping("/logout") // 로그아웃 처리
     public String doLogout(HttpSession session) {
         session.removeAttribute("member");
-        System.out.println("로그아웃 진행 -> 세션 삭제 완료");
+        log.info("로그아웃 진행 -> 세션 삭제 완료");
         return "redirect:/";
     }
 

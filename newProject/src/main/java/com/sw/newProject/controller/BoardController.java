@@ -52,6 +52,7 @@ public class BoardController {
             return "board/write";
         }
         model.addAttribute("boardId", boardId);
+        log.info("write 페이지를 가져옵니다.");
         return "board/write";
     }
 

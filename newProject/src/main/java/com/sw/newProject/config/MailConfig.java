@@ -1,19 +1,18 @@
-package Config;
+package com.sw.newProject.config;
 
-import com.sw.newProject.dto.MailDto;
-import com.sw.newProject.mapper.MemberMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
 @Configuration
 public class MailConfig {
-    @Bean
-    public MailSender mailSender() {
 
+    @Bean
+    public JavaMailSender mailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
