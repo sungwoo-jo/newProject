@@ -3,6 +3,7 @@ package com.sw.newProject.service;
 import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MailDto;
 import com.sw.newProject.dto.MemberDto;
+import com.sw.newProject.dto.UploadFileDto;
 import com.sw.newProject.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,18 +37,41 @@ public class MemberService {
     private final MailDto mailDto;
     private final JavaMailSender javaMailSender;
 
-    public void insertMember(MemberDto memberDto) throws Exception { // 회원가입 로직 처리
+    public void insertMember(MemberDto memberDto, MultipartFile file) throws Exception { // 회원가입 로직 처리
         System.out.println("[MemberService][insertMember][projectPath]: " + System.getProperty("user.dir"));
-        System.out.println("[MemberService][insertMember][profileImage]: " + memberDto.getProfileImage());
         System.out.println("[MemberService][insertMember][memberDto]: " + memberDto);
         System.out.println("[MemberService][insertMember][zipCode]: " + memberDto.getZipCode());
          // 프로필 이미지 저장 처리
-//        memberDto.setProfileImage((MultipartFile) saveImage(memberDto.getProfileImage()));
+        memberDto.setProfileImageName(saveProfileImage(file));
 
-//        memberDto.setProfilePath(profileInfo.getPath());
-//        memberDto.setProfileImage(profileInfo.getName());
+        memberDto.setMemPw(passwordEncrypt(memberDto.getMemPw()));
+
         memberMapper.insertMember(memberDto);
-        System.out.println("insertMember 끝");
+        System.out.println("insertMember end");
+    }
+
+    /*
+     * 프로필 이미지를 저장하는 메서드
+     * file을 전달받아 uploadFile 테이블에 데이터를 저장하고
+     * member 테이블에 profileImageName을 저장한다.
+     * todo: 회원 별 폴더를 생성하고 폴더 내에 이미지를 저장하는 방식으로 전환해보기(이미지가 없다면 not found 나게끔)
+     */
+    public String saveProfileImage(MultipartFile file) throws IOException {
+        UploadFileDto uploadFileDto = new UploadFileDto();
+
+        String uuid = UUID.randomUUID().toString();
+
+        // 확장자 구하기
+        int pos = file.getOriginalFilename().lastIndexOf(".");
+        String extension = file.getOriginalFilename().substring(pos+1);
+
+        uploadFileDto.setUploadFileName(file.getOriginalFilename()); // 업로드 파일명
+        uploadFileDto.setStoredFileName(uuid + "." + extension); // uuid로 파일명 변경하여 저장
+
+        file.transferTo(new File(System.getProperty("user.dir") + "\\newProject\\src\\main\\resources\\static\\upload\\" + uploadFileDto.getStoredFileName()));
+        memberMapper.saveProfileImage(uploadFileDto);
+
+        return uploadFileDto.getStoredFileName();
     }
 
     public List<MemberDto> getAllMember() {
@@ -109,10 +133,10 @@ public class MemberService {
         } else {
             updateMemberDto.setEmail(recentMemberDto.getEmail());
         }
-        if (reqMemberDto.getProfileImage() != null && !reqMemberDto.getProfileImage().equals("")) {
-            updateMemberDto.setProfileImage(reqMemberDto.getProfileImage());
+        if (reqMemberDto.getProfileImageName() != null && !reqMemberDto.getProfileImageName().equals("")) {
+            updateMemberDto.setProfileImageName(reqMemberDto.getProfileImageName());
         } else {
-            updateMemberDto.setProfileImage(recentMemberDto.getProfileImage());
+            updateMemberDto.setProfileImageName(recentMemberDto.getProfileImageName());
         }
         if (reqMemberDto.getComm() != null && !reqMemberDto.getComm().equals("")) {
             updateMemberDto.setComm(reqMemberDto.getComm());
@@ -152,7 +176,6 @@ public class MemberService {
             }
             hexString.append(hex);
         }
-//        System.out.println("[MemberService][passwordEncrypt][hexString.toString()]: " + hexString.toString());
         return hexString.toString();
     }
 
@@ -222,13 +245,11 @@ public class MemberService {
     }
 
     public void doResetPw(DoResetPwDto doResetPwDto) throws NoSuchAlgorithmException {
-//        String newPw = passwordEncrypt(doResetPwDto.getNewPw());
         System.out.println("[MemberService][doResetPw][doResetPwDto]: " + doResetPwDto.getMemNo() + ", " + doResetPwDto.getNewPw() + ", " + doResetPwDto.getMemNo());
         memberMapper.doResetPw(doResetPwDto);
     }
 
     public File saveImage(MultipartFile profileImage) throws Exception {
-        // System.getProperty("user.dir") : 현재 프로젝트 경로를 가져옴
         String projectPath = System.getProperty("user.dir") + File.separator + "profileImage" + File.separator;
         System.out.println(projectPath);
 

@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -42,11 +44,12 @@ public class MemberController {
     }
 
     @PostMapping("/doJoin") // 회원가입 처리
-    public String insertMember(MemberDto memberDto) throws Exception { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
+    public String insertMember(MemberDto memberDto, @RequestParam("profileImage") MultipartFile file) throws Exception { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
+        log.info("profileImageName fileInfo: {}", file);
 
-        // JSON 문자열을 MemberDto 객체로 변환
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        MemberDto memberDto = objectMapper.readValue(memberDtoJson, MemberDto.class); // JSON -> 객체 변환
+        log.info("현재 작업경로: {}", System.getProperty("user.dir")); //현재 작업경로
+
+        memberService.insertMember(memberDto, file);
 
         System.out.println("doJoin 호출");
         System.out.println("memberDto: " + memberDto);
@@ -54,8 +57,7 @@ public class MemberController {
         memberDto.setDeleteYn(false);
         memberDto.setMemPw(memberService.passwordEncrypt(memberDto.getMemPw()));
 
-        memberService.insertMember(memberDto);
-        return "/member/joinSuccess"; // todo: 회원가입 완료 페이지로 이동해야 함
+        return "/member/joinSuccess";
     }
 
     @GetMapping("/joinSuccess")

@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -43,8 +42,7 @@ public class MemberDto {
     @NotNull(message = "이메일은 필수 입력 항목입니다.")
     @Email(message = "이메일 규칙에 맞지 않습니다.")
     private String email;
-    private String profilePath;
-    private String profileImage;
+    private String profileImageName; // MemberDto에서는 파일명만 가지고 있고, 필요 시 첨부파일 테이블에서 파일명을 조회해서 파일을 찾는다.
     private Boolean deleteYn;
     private LocalDateTime regDt; // 날짜와 시간이 모두 필요
     private LocalDateTime modDt; // 날짜와 시간이 모두 필요

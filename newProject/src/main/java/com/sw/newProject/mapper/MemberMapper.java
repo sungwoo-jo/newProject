@@ -2,6 +2,7 @@ package com.sw.newProject.mapper;
 
 import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
+import com.sw.newProject.dto.UploadFileDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -35,4 +36,6 @@ public interface MemberMapper {
     Integer findPw(String memNm, String email, String memId);
 
     void doResetPw(DoResetPwDto doResetPwDto);
+
+    void saveProfileImage(UploadFileDto uploadFileDto);
 }

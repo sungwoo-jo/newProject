@@ -12,8 +12,7 @@ CREATE TABLE `member` (
     zipCode CHAR(5) DEFAULT NULL comment '우편번호',
     phone VARCHAR(20) DEFAULT NULL comment '휴대폰번호',
     email VARCHAR(50) DEFAULT NULL comment '이메일',
-    profilePath VARCHAR(200) DEFAULT NULL comment '프로필이미지경로',
-    profileImage VARCHAR(200) DEFAULT NULL comment '프로필이미지파일명',
+    profileImageName VARCHAR(200) DEFAULT NULL comment '프로필이미지파일명',
     deleteYn BOOLEAN DEFAULT '0' comment '탈퇴여부',
     regDt DATETIME NOT NULL DEFAULT NULL comment '생성일',
     modDt DATETIME DEFAULT NULL comment '수정일'
@@ -142,11 +141,21 @@ CREATE TABLE `reservation` (
     modDt DATETIME DEFAULT NULL comment '수정일'
 );
 
+-- uploadFile(첨부파일 테이블)
+DROP TABLE IF EXISTS `uploadFile` CASCADE;
+CREATE TABLE `uploadFile` (
+    sno INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '첨부파일번호',
+    uploadFileName VARCHAR(200) DEFAULT NULL comment '업로드 당시 파일명',
+    storedFileName VARCHAR(200) DEFAULT NULL comment '저장된 파일명',
+    regDt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP comment '생성일',
+    modDt DATETIME DEFAULT NULL comment '수정일'
+);
+
 -- 더미 데이터(회원)
-INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test1', '1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014', '테스트1', 'test1', '코멘트1', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '11111', '01011111111', 'sungwoo9671@naver.com', '/test/test1', now());
-INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test2', '60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752', '테스트2', 'test2', '코멘트2', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '22222', '01022222222', 'test2@naver.com', '/test/test2', now());
-INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test3', 'test3', '테스트3', 'test3', '코멘트3', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '33333', '01033333333', 'test3@naver.com', '/test/test3', now());
-INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImage, regDt) VALUES ('test4', 'test4', '테스트4', 'test4', '코멘트4', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '44444', '01044444444', 'test4@naver.com', '/test/test4', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImageName, regDt) VALUES ('test1', '744ea9ec6fa0a83e9764b4e323d5be6b55a5accfc7fe4c08eab6a8de1fca4855', '테스트1', 'test1', '코멘트1', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '11111', '01011111111', 'sungwoo9671@naver.com', '1ccc9e61-01d4-446b-bb8e-e91f256d4359.png', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, regDt) VALUES ('test2', '60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752', '테스트2', 'test2', '코멘트2', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '22222', '01022222222', 'test2@naver.com', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, regDt) VALUES ('test3', 'test3', '테스트3', 'test3', '코멘트3', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '33333', '01033333333', 'test3@naver.com', now());
+INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, regDt) VALUES ('test4', 'test4', '테스트4', 'test4', '코멘트4', '서울특별시 강서구', '가로공원로 88길 16-4 2층', '44444', '01044444444', 'test4@naver.com', now());
 
 -- 더미 데이터(여행게시판)
 INSERT INTO travel(memNo, writerNm, subject, contents, deleteYn, likeCnt, hitCnt, hiddenFl, complaintFl, foodCharge, transportCharge, etcCharge, budget, district, visitDt, regDt, modDt)
