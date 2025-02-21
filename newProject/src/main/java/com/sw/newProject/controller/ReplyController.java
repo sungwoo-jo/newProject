@@ -26,6 +26,7 @@ public class ReplyController {
         map.put("boardId", boardId);
         map.put("boardNo", boardNo);
         List<ReplyDto> replyDto = replyService.getReply(map);
+        log.info("{}", replyDto);
         return replyDto;
     }
 
@@ -35,6 +36,7 @@ public class ReplyController {
         map.put("boardId", boardId);
         map.put("boardNo", boardNo);
         map.put("contents", contents);
+        log.info("{}", map);
         replyService.doWrite(map);
     }
 
@@ -44,6 +46,7 @@ public class ReplyController {
         HashMap<String, Object> map = new HashMap<>();
         map.put("boardId", boardId);
         map.put("replyNo", replyNo);
+        log.info("{}", map);
         replyService.doDelete(map);
     }
 
@@ -53,6 +56,7 @@ public class ReplyController {
         map.put("boardId", boardId);
         map.put("replyNo", replyNo);
         map.put("contents", contents);
+        log.info("{}", map);
         replyService.doUpdate(map);
     }
 }
