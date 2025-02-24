@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +39,9 @@ public class MemberDto {
     private String address2;
     private String zipCode;
     private String phone;
+
+    private Map<Integer, String> following;
+    private Map<Integer, String> follower;
 
     @NotNull(message = "이메일은 필수 입력 항목입니다.")
     @Email(message = "이메일 규칙에 맞지 않습니다.")

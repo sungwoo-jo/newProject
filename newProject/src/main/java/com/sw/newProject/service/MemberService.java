@@ -41,13 +41,16 @@ public class MemberService {
         System.out.println("[MemberService][insertMember][projectPath]: " + System.getProperty("user.dir"));
         System.out.println("[MemberService][insertMember][memberDto]: " + memberDto);
         System.out.println("[MemberService][insertMember][zipCode]: " + memberDto.getZipCode());
-         // 프로필 이미지 저장 처리
-        memberDto.setProfileImageName(saveProfileImage(file));
-
         memberDto.setMemPw(passwordEncrypt(memberDto.getMemPw()));
+        memberMapper.insertMember(memberDto); // 회원 정보 저장
 
-        memberMapper.insertMember(memberDto);
-        System.out.println("insertMember end");
+        // 프로필 이미지 저장 처리
+        memberDto.setProfileImageName(saveProfileImage(memberDto, file));
+        saveProfileImageName(memberDto);
+    }
+
+    private void saveProfileImageName(MemberDto memberDto) { // 프로필 이미지만 저장
+        memberMapper.saveProfileImageName(memberDto);
     }
 
     /*
@@ -56,7 +59,7 @@ public class MemberService {
      * member 테이블에 profileImageName을 저장한다.
      * todo: 회원 별 폴더를 생성하고 폴더 내에 이미지를 저장하는 방식으로 전환해보기(이미지가 없다면 not found 나게끔)
      */
-    public String saveProfileImage(MultipartFile file) throws IOException {
+    public String saveProfileImage(MemberDto memberDto, MultipartFile file) throws IOException {
         UploadFileDto uploadFileDto = new UploadFileDto();
 
         String uuid = UUID.randomUUID().toString();
@@ -65,13 +68,26 @@ public class MemberService {
         int pos = file.getOriginalFilename().lastIndexOf(".");
         String extension = file.getOriginalFilename().substring(pos+1);
 
-        uploadFileDto.setUploadFileName(file.getOriginalFilename()); // 업로드 파일명
-        uploadFileDto.setStoredFileName(uuid + "." + extension); // uuid로 파일명 변경하여 저장
+        uploadFileDto.setUploadFileName(file.getOriginalFilename()); // 업로드 원본 파일명
 
-        file.transferTo(new File(System.getProperty("user.dir") + "\\newProject\\src\\main\\resources\\static\\upload\\" + uploadFileDto.getStoredFileName()));
+        String directory = System.getProperty("user.dir") + "\\newProject\\src\\main\\resources\\static\\upload\\";
+
+        // memNo의 디렉토리가 존재하는지 확인하고 없으면 생성
+        File projectPath = new File(directory + memberDto.getMemNo() + "_" + memberDto.getMemId());
+        if (!projectPath.exists()) {
+            boolean created = projectPath.mkdirs(); // 디렉토리 생성
+            if (!created) {
+                throw new IOException("디렉토리를 생성할 수 없습니다.");
+            }
+        }
+        uploadFileDto.setStoredFileName(projectPath + "\\" + uuid + "." + extension); // uuid로 파일명 변경하여 저장
+
+        log.info("업로드 경로: {}", uploadFileDto.getStoredFileName());
+
+        file.transferTo(new File(uploadFileDto.getStoredFileName()));
         memberMapper.saveProfileImage(uploadFileDto);
 
-        return uploadFileDto.getStoredFileName();
+        return memberDto.getMemNo() + "_" + memberDto.getMemId() + "/" + uuid + "." + extension; // 회원 테이블에 저장할 파일명(폴더 + 파일명 + 확장자 형식으로 저장이 됨)
     }
 
     public List<MemberDto> getAllMember() {
@@ -95,7 +111,6 @@ public class MemberService {
         updateMemberDto.setMemNm(recentMemberDto.getMemNm());
         updateMemberDto.setDeleteYn(recentMemberDto.getDeleteYn());
         updateMemberDto.setRegDt(recentMemberDto.getRegDt());
-        updateMemberDto.setModDt(nowDateTime);
 
         // 전달받은 값으로 업데이트
         if (reqMemberDto.getMemPw() != null && !reqMemberDto.getMemPw().equals("")) {

@@ -13,6 +13,7 @@
     <table class="table" border="1">
         <input type="hidden" id="boardId" th:value="${boardId}">
         <input type="hidden" id="boardNo" th:value="${boardDto.boardNo}">
+        <input type="hidden" id="memNo" th:value="${boardDto.memNo}">
         <tr>
             <th>작성자</th>
             <td th:text="${boardDto.writerNm}"></td>
@@ -63,6 +64,7 @@
     <a th:href="'/board/' + ${boardId} + '/write/' + ${boardDto.boardNo}" class="btn btn-secondary">수정하기</a><br>
     <button id="doDelete">삭제하기</button><br>
     <button id="like">좋아요</button><br>
+    <button id="follow" th:text="${boardDto.writerNm} + '님을 팔로우하기'"></button><br>
 </div>
 <hr>
 <div id="count"></div> <!-- 댓글 갯수 표시 영역 -->
@@ -252,6 +254,36 @@
             .catch(error => console.error("Error:", error));
     });
     // 게시글 삭제 E
+
+    // 팔로우하기 S
+    document.getElementById('follow').addEventListener('click', function() {
+        const boardId = document.getElementById('boardId').value;
+        const boardNo = document.getElementById('boardNo').value;
+        const memNo = document.getElementById('memNo').value;
+        const data = {
+            boardId: boardId,
+            boardNo: boardNo,
+            memNo: memNo
+        };
+        fetch('../../../member/follow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
+            },
+            body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
+        })
+            .then(response => response.text())
+            .then(data => {
+                if (data === "success") {
+                    alert('팔로우 하였습니다.');
+                    // todo: 팔로우 버튼을 팔로우취소 버튼으로 변경하기
+                } else {
+                    alert('팔로우 실패하였습니다.');
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+    // 팔로우하기 E
 </script>
 
 </body>

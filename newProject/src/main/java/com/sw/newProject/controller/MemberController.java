@@ -1,5 +1,6 @@
 package com.sw.newProject.controller;
 
+import com.sw.newProject.dto.BoardDto;
 import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 
@@ -73,8 +74,10 @@ public class MemberController {
     }
 
     @PatchMapping("/doUpdate") // 정보수정 처리
-    public String updateMember(@RequestBody MemberDto memberDto) {
+    public String updateMember(@RequestBody MemberDto memberDto, HttpSession session) {
         memberService.updateMember(memberDto);
+        MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
+        session.setAttribute("member", updatedMemberDto); // 최신 정보로 세팅
         return "/member/joinSuccess"; // todo: 마이페이지 메인으로 이동해야 함
     }
 
@@ -200,6 +203,13 @@ public class MemberController {
     @GetMapping("resetPwSuccess") // 비밀번호 재설정 완료 페이지 호출
     public String resetPwSuccess() {
         return "/member/resetPwSuccess";
+    }
+
+    @PostMapping("/follow") // 팔로우 처리
+    public ResponseEntity<String> follow(@RequestBody BoardDto boardDto, HttpSession session) {
+        log.info("session: {}", session.getAttribute("member"));
+//        memberService.follow();
+        return ResponseEntity.ok("success");
     }
 }
 

@@ -38,4 +38,6 @@ public interface MemberMapper {
     void doResetPw(DoResetPwDto doResetPwDto);
 
     void saveProfileImage(UploadFileDto uploadFileDto);
+
+    void saveProfileImageName(MemberDto memberDto);
 }

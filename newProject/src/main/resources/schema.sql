@@ -13,6 +13,8 @@ CREATE TABLE `member` (
     address2 VARCHAR(100) DEFAULT NULL comment '상세주소',
     zipCode CHAR(5) DEFAULT NULL comment '우편번호',
     phone VARCHAR(20) DEFAULT NULL comment '휴대폰번호',
+    following JSON DEFAULT NULL comment '팔로잉',
+    follower JSON DEFAULT NULL comment '팔로워',
     email VARCHAR(50) DEFAULT NULL comment '이메일',
     profileImageName VARCHAR(200) DEFAULT NULL comment '프로필이미지파일명',
     deleteYn BOOLEAN DEFAULT '0' comment '탈퇴여부',

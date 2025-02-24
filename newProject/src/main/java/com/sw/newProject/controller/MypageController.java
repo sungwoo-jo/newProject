@@ -5,7 +5,9 @@ import com.sw.newProject.service.MemberService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 )
 )
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/mypage")
@@ -34,9 +37,11 @@ public class MypageController {
     }
 
     @PostMapping("/doUpdate")
-    public String doUpdate(MemberDto memberDto) {
-        System.out.println(memberDto);
+    public String doUpdate(MemberDto memberDto, HttpSession session) {
+        log.info("memberDto: {}", memberDto);
         memberService.updateMember(memberDto);
-        return "/index";
+        MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
+        session.setAttribute("member", updatedMemberDto);
+        return "/mypage/index";
     }
 }

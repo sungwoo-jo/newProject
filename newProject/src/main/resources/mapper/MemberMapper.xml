@@ -4,9 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sw.newProject.mapper.MemberMapper">
 
-    <insert id="insertMember" parameterType="com.sw.newProject.dto.MemberDto">
-        INSERT INTO member (memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImageName, deleteYn, regDt, modDt)
-        VALUES (#{memId}, #{memPw}, #{memNm}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profileImageName}, #{deleteYn}, now(), NULL)
+    <insert id="insertMember" parameterType="com.sw.newProject.dto.MemberDto" useGeneratedKeys="true" keyProperty="memNo">
+            INSERT INTO member (memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImageName, deleteYn, regDt, modDt)
+            VALUES (#{memId}, #{memPw}, #{memNm}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profileImageName}, #{deleteYn}, now(), NULL);
     </insert>
 
     <select id="getAllMember" resultType="com.sw.newProject.dto.MemberDto">
@@ -15,12 +15,12 @@
 
     <update id="updateMember" parameterType="com.sw.newProject.dto.MemberDto">
         UPDATE member
-        SET memId = #{memId}, memPw = #{memPw}, memNm = #{memNm}, nickNm = #{nickNm}, comm = #{comm}, address1 = #{address1}, address2 = #{address2}, zipCode = #{zipCode}, phone = #{phone}, email = #{email}, profileImageName = #{profileImageName}
+        SET memId = #{memId}, memPw = #{memPw}, memNm = #{memNm}, nickNm = #{nickNm}, comm = #{comm}, address1 = #{address1}, address2 = #{address2}, zipCode = #{zipCode}, phone = #{phone}, email = #{email}, profileImageName = #{profileImageName}, modDt = now()
         WHERE memNo = #{memNo}
     </update>
 
     <select id="getMember" parameterType="int" resultType="com.sw.newProject.dto.MemberDto">
-        SELECT memNo, memId, memNm, memPw, nickNm, comm, address1, address2, zipCode, phone, email, profileImageName, deleteYn, regDt, modDt FROM member WHERE memNo = #{memNo}
+        SELECT * FROM member WHERE memNo = #{memNo}
     </select>
 
     <update id="deleteMember" parameterType="Integer">
@@ -66,4 +66,8 @@
     <insert id="saveProfileImage" parameterType="com.sw.newProject.dto.UploadFileDto">
         INSERT INTO uploadFile(uploadFileName, storedFileName, regDt) VALUES(#{uploadFileName}, #{storedFileName}, now())
     </insert>
+
+    <update id="saveProfileImageName" parameterType="com.sw.newProject.dto.MemberDto">
+        UPDATE member SET profileImageName = #{profileImageName} WHERE memNo = #{memNo}
+    </update>
 </mapper>
