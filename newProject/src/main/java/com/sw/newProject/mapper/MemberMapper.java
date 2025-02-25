@@ -4,7 +4,9 @@ import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.UploadFileDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Mapper
@@ -40,4 +42,12 @@ public interface MemberMapper {
     void saveProfileImage(UploadFileDto uploadFileDto);
 
     void saveProfileImageName(MemberDto memberDto);
+
+    void insertFollowData(HashMap<String, String> followData);
+
+    void insertFollowingData(HashMap<String, String> followingData);
+
+    HashMap<String, String> getFollowData(Integer memNo);
+
+    HashMap<String, String> getFollowingData(Integer memNo);
 }

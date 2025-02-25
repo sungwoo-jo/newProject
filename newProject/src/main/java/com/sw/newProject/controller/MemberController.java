@@ -4,6 +4,8 @@ import com.sw.newProject.dto.BoardDto;
 import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 
+import com.sw.newProject.enumType.ErrorCode;
+import com.sw.newProject.exception.CustomException;
 import com.sw.newProject.service.MemberService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -13,6 +15,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.NotFoundException;
+import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,9 +25,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static com.sw.newProject.enumType.ErrorCode.ALREADY_FOLLOWED;
 
 @OpenAPIDefinition(info = @Info(title = "newProject API 명세서",
         description = "API 명세서",
@@ -207,8 +216,70 @@ public class MemberController {
 
     @PostMapping("/follow") // 팔로우 처리
     public ResponseEntity<String> follow(@RequestBody BoardDto boardDto, HttpSession session) {
-        log.info("session: {}", session.getAttribute("member"));
-//        memberService.follow();
+        log.info("팔로우 시도: {}", session.getAttribute("member"));
+        log.info("대상 게시글: {}", boardDto);
+        MemberDto memberDto = (MemberDto)session.getAttribute("member");
+        log.info("memberDto: {}", memberDto);
+        Date now = new Date();
+        SimpleDateFormat followDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        HashMap<String, String> map1 = new HashMap<>(); // 팔로우데이터 담는 맵
+        HashMap<String, String> map2 = new HashMap<>(); // 팔로잉데이터 담는 맵
+
+        HashMap<String, String> recentFollowData = memberService.getFollowData(memberDto.getMemNo()); // 회원의 현재 팔로우 데이터를 가져오기
+        JSONObject recentFollowDataJson = new JSONObject(recentFollowData);
+        JSONObject jsonObject = new JSONObject();
+
+        if (recentFollowData == null) { // 팔로우 데이터가 없는 경우
+            recentFollowData = new HashMap<>(); // 새롭게 초기화
+            recentFollowData.put(String.valueOf(boardDto.getMemNo()), followDt.format(now)); // 팔로우하는 유저의 데이터를 put
+            JSONObject newRecentFollowData = new JSONObject(recentFollowData); // json으로 변환
+            log.info("newRecentFollowData | {}", newRecentFollowData);
+            map1.put("memNo", String.valueOf(memberDto.getMemNo()));
+            map1.put("followData", String.valueOf(newRecentFollowData));
+        } else { // 팔로우 데이터 있으면 현재 데이터에다가 추가만 해주면 됨
+            // "follow" 값을 가져와서 이스케이프 처리된 JSON 문자열을 얻음
+            String followDataJson = recentFollowDataJson.getString("follow");
+            JSONObject prevFollowData = new JSONObject(followDataJson);
+            log.info("1: {}", boardDto.getMemNo().toString());
+            log.info("2: {}", prevFollowData);
+            if (prevFollowData.has(boardDto.getMemNo().toString())) { // 현재 팔로우하려는 회원을 이미 팔로우했는지 확인
+                throw new CustomException(ALREADY_FOLLOWED, "이미 팔로우 된 회원입니다.");
+            } else {
+                // 두 번째로, 이스케이프 처리된 JSON 문자열을 다시 JSONObject로 변환
+                JSONObject newRecentFollowData = new JSONObject(followDataJson);
+                newRecentFollowData.put(String.valueOf(boardDto.getMemNo()), followDt.format(now));
+                log.info("newRecentFollowData: {}", newRecentFollowData);
+                map1.put("memNo", String.valueOf(memberDto.getMemNo()));
+                map1.put("followData", String.valueOf(newRecentFollowData));
+            }
+        }
+
+        memberService.insertFollowData(map1);
+
+        HashMap<String, String> recentFollwingData = memberService.getFollowingData(boardDto.getMemNo()); // 회원의 현재 팔로잉 데이터를 가져오기
+            if (recentFollwingData == null) { // 팔로잉 데이터가 없는 경우
+                recentFollwingData = new HashMap<>(); // 새롭게 초기화
+                recentFollwingData.put(String.valueOf(memberDto.getMemNo()), followDt.format(now)); // 팔로잉하는 유저의 데이터에 팔로우 유저의 데이터를 추가
+                JSONObject newRecentFollowingData = new JSONObject(recentFollwingData);
+                log.info("235 | {}", newRecentFollowingData);
+                map2.put("memNo", String.valueOf(boardDto.getMemNo()));
+                map2.put("followingData", String.valueOf(newRecentFollowingData));
+                log.info("map2: {}", map2);
+                memberService.insertFollowingData(map2); // todo
+            }
+            else { // 팔로잉 데이터가 있는 경우(데이터를 가져와서 추가해주고 map2에 넣으면 됨)
+                JSONObject recentFollowingDataJson = new JSONObject(recentFollwingData);
+                String followingDataJson = recentFollowingDataJson.getString("following");
+                JSONObject prevFollowingData = new JSONObject(followingDataJson);
+                // 현재 팔로잉 데이터를 정제해 가져오기
+                prevFollowingData.put(String.valueOf(memberDto.getMemNo()), followDt.format(now));
+                map2.put("memNo", String.valueOf(boardDto.getMemNo()));
+                map2.put("followingData", String.valueOf(prevFollowingData));
+                memberService.insertFollowData(map1);
+                memberService.insertFollowingData(map2); // todo
+            }
+
         return ResponseEntity.ok("success");
     }
 }

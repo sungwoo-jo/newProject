@@ -13,16 +13,12 @@ public class ErrorDto {
     private String msg;
     private String detail;
 
-    public static ResponseEntity<ErrorDto> toResponseEntity(CustomException ex) {
+    public static ErrorDto fromException(CustomException ex) {
         ErrorCode errorType = ex.getErrorCode();
-        String detail = ex.getDetail();
-
-        return ResponseEntity
-                .status(ex.getStatus())
-                .body(ErrorDto.builder()
-                        .code(errorType.getCode())
-                        .msg(errorType.getMsg())
-                        .detail(detail)
-                        .build());
+        return ErrorDto.builder()
+                .code(errorType.getCode())
+                .msg(errorType.getMsg())
+                .detail(ex.getDetail())
+                .build();
     }
 }

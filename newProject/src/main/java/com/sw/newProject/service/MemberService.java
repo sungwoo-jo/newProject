@@ -8,6 +8,7 @@ import com.sw.newProject.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -321,6 +322,22 @@ public class MemberService {
         }
 
         return password.toString();
+    }
+
+    public HashMap<String, String> getFollowData(Integer memNo) { // 팔로우 데이터 반환
+        return memberMapper.getFollowData(memNo);
+    }
+
+    public HashMap<String, String> getFollowingData(Integer memNo) { // 팔로워 데이터 반환
+        return memberMapper.getFollowingData(memNo);
+    }
+
+    public void insertFollowData(HashMap<String, String> followData) {
+        memberMapper.insertFollowData(followData);
+    }
+
+    public void insertFollowingData(HashMap<String, String> followingData) {
+        memberMapper.insertFollowingData(followingData);
     }
 }
 

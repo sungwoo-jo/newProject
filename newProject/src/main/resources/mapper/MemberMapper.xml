@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sw.newProject.mapper.MemberMapper">
 
-    <insert id="insertMember" parameterType="com.sw.newProject.dto.MemberDto" useGeneratedKeys="true" keyProperty="memNo">
+    <insert id="insertMember" parameterType="com.sw.newProject.dto.MemberDto" useGeneratedKeys="true" keyProperty="memNo"> -- 자동 증가한 memNo값을 가져온다.
             INSERT INTO member (memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImageName, deleteYn, regDt, modDt)
             VALUES (#{memId}, #{memPw}, #{memNm}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profileImageName}, #{deleteYn}, now(), NULL);
     </insert>
@@ -70,4 +70,20 @@
     <update id="saveProfileImageName" parameterType="com.sw.newProject.dto.MemberDto">
         UPDATE member SET profileImageName = #{profileImageName} WHERE memNo = #{memNo}
     </update>
+
+    <select id="getFollowData" parameterType="Integer" resultType="java.util.HashMap">
+        SELECT follow FROM member WHERE memNo = #{memNo}
+    </select>
+
+    <select id="getFollowingData" resultType="map">
+        SELECT following FROM member WHERE memNo = #{memNo}
+    </select>
+
+    <insert id="insertFollowData" parameterType="java.util.HashMap">
+        UPDATE member SET follow = #{followData} WHERE memNo = #{memNo}
+    </insert>
+
+    <insert id="insertFollowingData" parameterType="java.util.HashMap">
+        UPDATE member SET following = #{followingData} WHERE memNo = #{memNo}
+    </insert>
 </mapper>
