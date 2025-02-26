@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @OpenAPIDefinition(info = @Info(title = "newProject API 명세서",
@@ -43,5 +44,16 @@ public class MypageController {
         MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
         session.setAttribute("member", updatedMemberDto);
         return "/mypage/index";
+    }
+
+    @GetMapping("/follow/list")
+    public String getFollowList(Model model) {
+        
+        return "/mypage/followList";
+    }
+
+    @GetMapping("/following/list")
+    public String getFollowingList(Model model) {
+        return "/mypage/followingList";
     }
 }
