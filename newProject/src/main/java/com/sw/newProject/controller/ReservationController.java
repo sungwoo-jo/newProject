@@ -3,6 +3,7 @@ package com.sw.newProject.controller;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.ReservationDto;
 import com.sw.newProject.service.ReservationService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +32,28 @@ public class ReservationController {
         return "/reservation/list";
     }
 
+    @GetMapping("/new")
+    public String getReservationPage() {
+        return "/reservation/new";
+    }
+
     /*
      * 예약을 생성하는 메서드
      * 아직 userType이 ADMIN인 경우에 처리하는 내용은 구분하지 못했음
      */
     @PostMapping("/create")
-    public void createReservation(@RequestBody ReservationDto reservationDto) {
+    public ResponseEntity<String> createReservation(@RequestBody ReservationDto reservationDto, HttpSession session) {
+        MemberDto member = (MemberDto) session.getAttribute("member");
+        if (member != null) { // 회원으로 로그인 한 상태라면 회원번호를 함께 전달하고, 비회원이면 기본적으로 0으로 세팅된다.
+            Integer memNo = member.getMemNo();
+            log.info("memNo: {}", memNo);
+            reservationDto.setMemNo(memNo);
+        }
+        reservationDto.setPlaceId(11111L); // 테스트를 위해 우선 placeId는 임의로 세팅
+        reservationDto.setRsvStatus("PENDING"); // 테스트를 위해 우선 rsvStatus는 임의로 세팅
         log.info("reservationDto: " + reservationDto);
         int result = reservationService.createReservation(reservationDto);
+        return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
     /*

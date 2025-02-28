@@ -7,7 +7,7 @@
         SELECT * FROM reservation WHERE memNo = #{memNo}
     </select>
     <insert id="createReservation" parameterType="com.sw.newProject.dto.ReservationDto">
-        INSERT INTO reservation(placeId, rsvDt, rsvStatus, reqMsg, regDt) VALUES(#{placeId}, #{rsvDt}, #{rsvStatus}, #{reqMsg}, now())
+        INSERT INTO reservation(memNo, placeId, rsvDt, rsvStatus, reqMsg, regDt) VALUES(#{memNo}, #{placeId}, #{rsvDt}, #{rsvStatus}, #{reqMsg}, now())
     </insert>
     <update id="cancelReservation" parameterType="java.lang.Integer">
         UPDATE reservation SET RSVSTATUS = 'CANCELED' WHERE rsvNo = #{rsvNo}

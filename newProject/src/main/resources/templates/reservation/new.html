@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>호텔 예약</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .form-footer {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>호텔 예약</h1>
+
+    <form id="createReservation">
+        <!-- 예약 날짜 선택 -->
+        <div class="form-group">
+            <label for="rsvDt">체크인 날짜</label>
+            <input type="datetime-local" id="rsvDt" name="rsvDt" required>
+        </div>
+
+        <!-- 예약자 성명 입력 -->
+        <div class="form-group">
+            <label for="name">성명</label>
+            <input type="text" id="name" name="name" placeholder="성명을 입력해주세요." required>
+        </div>
+
+        <!-- 예약자 이메일 입력 -->
+        <div class="form-group">
+            <label for="email">이메일 주소</label>
+            <input type="email" id="email" name="email" placeholder="이메일을 입력해주세요." required>
+        </div>
+
+        <!-- 예약자 전화번호 입력 -->
+        <div class="form-group">
+            <label for="phone">전화번호</label>
+            <input type="tel" id="phone" name="phone" placeholder="ex) 010-1234-5678" required>
+        </div>
+
+        <!-- 예약자 요청사항 입력 -->
+        <div class="form-group">
+            <label for="reqMsg">요청사항</label>
+            <input type="text" id="reqMsg" name="reqMsg" placeholder="요청사항을 입력해주세요." required>
+        </div>
+
+        <!-- 예약 버튼 -->
+        <div class="form-footer">
+            <input type="submit" value="예약하기">
+        </div>
+    </form>
+</div>
+<script>
+    document.getElementById('createReservation').addEventListener('submit', function (event) {
+        event.preventDefault();  // 폼 제출 기본 동작을 막습니다.
+    const rsvDt = document.getElementById('rsvDt').value;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const reqMsg = document.getElementById('reqMsg').value;
+
+    const data = {
+        rsvDt: rsvDt,
+        name: name,
+        email: email,
+        phone: phone,
+        reqMsg: reqMsg
+    }
+
+    fetch("./create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
+        },
+        body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
+    })
+        .then(response => response.text())
+        .then(data => {  // 서버에서 반환한 HTML 코드 받기
+            if (data === "success") {  // 상태 코드가 200이면 성공
+                alert('예약이 완료되었습니다.');
+                window.location.href = "./list";
+                // 성공 처리 로직
+            } else {
+                alert('예약에 실패했습니다.');
+                // 실패 처리 로직
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+</script>
+
+</body>
+</html>

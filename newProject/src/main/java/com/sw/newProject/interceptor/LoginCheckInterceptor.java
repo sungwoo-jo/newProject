@@ -16,9 +16,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
         log.info("[{}][requestURI] : {}", this.getClass().getName(), requestURI);
         HttpSession session = request.getSession();
-
         Object obj = session.getAttribute("member");
-        log.info("[{}][memberSession] : {}", this.getClass().getName(), obj);
 
         if(obj == null) {
             // 로그인 되지 않음
@@ -27,8 +25,10 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             //로그인으로 redirect
             response.sendRedirect("/member/login");
             return false;
+        } else {
+            // 로그인 되어있을 떄
+            log.info("[{}][memberSession] : {}", this.getClass().getName(), obj);
+            return true;
         }
-        // 로그인 되어있을 떄
-        return true;
     }
 }
