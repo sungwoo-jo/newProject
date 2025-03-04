@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시글 목록</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
 
@@ -36,7 +36,7 @@
         </thead>
         <tbody>
         <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
-        <tr th:each="board : ${boards}">
+        <tr th:each="board : ${boardDto}">
             <td th:text="${board.boardNo}"></td>
             <td><a th:href="'/board/' + ${boardId} + '/view/' + ${board.boardNo}" th:text="${board.subject}"></a></td>
             <td th:text="${board.writerNm}"></td>
@@ -50,6 +50,32 @@
     <!-- 게시글 추가 페이지로 이동하는 링크 (옵션) -->
     <a href="/board/travel/write" class="btn btn-success">새 게시글 작성</a>
 </div>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <!-- Previous 버튼 처리 -->
+        <li class="page-item" th:classappend="${pageDto.startPage == 1} ? 'disabled'" >
+            <a class="page-link" href="#" th:href="@{list(page=${pageDto.startPage - 1})}" th:aria-disabled="${pageDto.startPage == 1}">Previous</a>
+        </li>
+
+        <!-- 페이지 번호 출력 -->
+        <th:block th:each="i : ${#numbers.sequence(pageDto.startPage, pageDto.endPage)}">
+            <!-- 현재 페이지와 일치하는 번호는 disabled 클래스를 추가하여 비활성화 -->
+            <li class="page-item" th:classappend="${i == pageDto.currentPage} ? 'disabled'">
+                <a class="page-link" th:href="@{list(page=${i})}"
+                   th:text="${i}"
+                   th:style="${i == pageDto.currentPage} ? 'background: #e9ecef; color: #8B4513;' : null"></a>
+            </li>
+        </th:block>
+
+        <!-- Next 버튼 처리 -->
+        <li class="page-item" th:classappend="${pageDto.totalPage == pageDto.endPage} ? 'disabled'">
+            <a class="page-link" href="#" th:href="@{list(page=${pageDto.endPage + 1})}" th:aria-disabled="${pageDto.totalPage == pageDto.endPage}">Next</a>
+        </li>
+    </ul>
+</nav>
+
+
 <script>
     // 폼 전송 전 동적으로 action을 설정하는 함수
     document.getElementById("searchForm").onsubmit = function() {

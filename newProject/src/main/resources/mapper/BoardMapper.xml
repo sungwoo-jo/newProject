@@ -4,13 +4,67 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sw.newProject.mapper.BoardMapper">
 
-    <select id="getBoardList" parameterType="String" resultType="com.sw.newProject.dto.BoardDto">
+    <select id="getBoardList" parameterType="java.util.HashMap" resultType="com.sw.newProject.dto.BoardDto">
         SELECT * FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
             <when test="boardId == 'travel'">travel</when>
         </choose>
         WHERE deleteYn = FALSE AND hiddenFl = FALSE
+        LIMIT #{pageDto.start}, #{pageDto.pageLength}
+    </select>
+
+    <select id="getBoardCount" parameterType="String" resultType="int">
+        SELECT count(*) FROM
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        WHERE deleteYn = FALSE AND hiddenFl = FALSE
+    </select>
+
+    <select id="getBoardSearchCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT count(*) FROM
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        WHERE deleteYn = FALSE AND hiddenFl = FALSE AND
+        <choose>
+            <!-- subject 검색 -->
+            <when test="type == 'subject'">
+                subject LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- contents 검색 -->
+            <when test="type == 'contents'">
+                contents LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- all 검색: 제목, 내용, 작성자, 해시태그 등 모든 컬럼에서 검색 -->
+            <when test="type == 'all'">
+                (subject LIKE CONCAT('%', #{keyword}, '%') OR
+                contents LIKE CONCAT('%', #{keyword}, '%') OR
+                writerNm LIKE CONCAT('%', #{keyword}, '%') OR
+                district LIKE CONCAT('%', #{keyword}, '%') OR
+                hashTag LIKE CONCAT('%', #{keyword}, '%'))
+            </when>
+
+            <!-- writerNm 검색 -->
+            <when test="type == 'writerNm'">
+                writerNm LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- district 검색 -->
+            <when test="type == 'district'">
+                district LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+
+            <!-- hashTag 검색 -->
+            <when test="type == 'hashTag'">
+                hashTag LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+        </choose>
     </select>
 
     <insert id="doWrite" parameterType="com.sw.newProject.dto.BoardDto">
@@ -94,6 +148,7 @@
             </otherwise>
         </choose>
         ORDER BY boardNo
+        LIMIT #{pageDto.start}, #{pageDto.pageLength}
     </select>
 
     <update id="incrementHitCnt" parameterType="java.util.HashMap">

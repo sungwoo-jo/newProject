@@ -1,6 +1,7 @@
 package com.sw.newProject.service;
 
 import com.sw.newProject.dto.BoardDto;
+import com.sw.newProject.dto.PageDto;
 import com.sw.newProject.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -16,8 +18,16 @@ public class BoardService {
 
     private final BoardMapper boardMapper;
 
-    public List<BoardDto> getBoardList(String boardId) {
-        return boardMapper.getBoardList(boardId);
+    public List<BoardDto> getBoardList(HashMap<String, Object> map) {
+        return boardMapper.getBoardList(map);
+    }
+
+    public int getBoardCount(String boardId) {
+        return boardMapper.getBoardCount(boardId);
+    }
+
+    public int getBoardSearchCount(HashMap<String, Object> map) {
+        return boardMapper.getBoardSearchCount(map);
     }
 
     public int doWrite(BoardDto boardDto) {
@@ -66,5 +76,39 @@ public class BoardService {
      */
     public List<BoardDto> getPopularBoard(String boardId) {
         return boardMapper.getPopularBoard(boardId);
+    }
+
+    public PageDto Paging(String page, int pageLength, int totalRows) {
+        PageDto pageDto = new PageDto();
+        pageDto.setPageLength(pageLength);
+        pageDto.setTotalRows(totalRows);
+        try {
+            pageDto.setCurrentPage(Integer.parseInt(page));
+        } catch (NumberFormatException e) {
+            pageDto.setCurrentPage(1);
+        }
+
+        pageDto.setTotalPage(pageDto.getTotalRows() % pageDto.getPageLength() == 0 ?
+                pageDto.getTotalRows() / pageDto.getPageLength() :
+                (pageDto.getTotalRows() / pageDto.getPageLength()) + 1);
+
+        if (pageDto.getCurrentPage() > pageDto.getTotalPage() || pageDto.getCurrentPage() <= 0) {
+            pageDto.setCurrentPage(1);
+        }
+
+        pageDto.setCurrentBlock(pageDto.getCurrentPage() % pageDto.getPageLength() == 0 ?
+                pageDto.getCurrentPage() / pageDto.getPageLength() :
+                (pageDto.getCurrentPage() / pageDto.getPageLength()) + 1);
+
+        pageDto.setStartPage((pageDto.getCurrentBlock() - 1) * pageDto.getPageLength() + 1);
+        pageDto.setEndPage(pageDto.getStartPage() + pageDto.getPageLength() - 1);
+
+        if (pageDto.getEndPage() > pageDto.getTotalPage()) {
+            pageDto.setEndPage(pageDto.getTotalPage());
+        }
+
+        pageDto.setStart((pageDto.getCurrentPage() - 1) * pageDto.getPageLength());
+
+        return pageDto;
     }
 }

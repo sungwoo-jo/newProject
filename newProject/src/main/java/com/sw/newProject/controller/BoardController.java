@@ -1,6 +1,7 @@
 package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.BoardDto;
+import com.sw.newProject.dto.PageDto;
 import com.sw.newProject.service.BoardService;
 import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,15 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("{boardId}/list") // 게시글 리스트 페이지 호출
-    public String getBoardList(@PathVariable String boardId, Model model) {
-        List<BoardDto> boardDto = boardService.getBoardList(boardId);
-        model.addAttribute("boards", boardDto);
+    public String getBoardList(@PathVariable String boardId, Model model, @RequestParam(defaultValue = "1") String page) {
+        HashMap<String, Object> map = new HashMap<>();
+        int totalRows = boardService.getBoardCount(boardId); // 전체 게시글 갯수
+        PageDto pageDto = boardService.Paging(page, 10, totalRows); // 10개씩 페이징
+        map.put("boardId", boardId);
+        map.put("pageDto", pageDto);
+        List<BoardDto> boardDto = boardService.getBoardList(map);
+        model.addAttribute("boardDto", boardDto);
+        model.addAttribute("pageDto", pageDto);
         return "board/list";
     }
 
@@ -57,7 +64,7 @@ public class BoardController {
     }
 
     @GetMapping("{boardId}/view/{boardNo}") // 게시글 상세보기 페이지 호출
-    public String getViewPage(@PathVariable String boardId, @PathVariable Integer boardNo, Model model) {
+    public String getViewPage(@RequestHeader (value = "Referer", defaultValue = "/") String referer, @PathVariable String boardId, @PathVariable Integer boardNo, Model model) {
         HashMap<String, Object> map = new HashMap<>();
 
         map.put("boardId", boardId);
@@ -67,6 +74,7 @@ public class BoardController {
         BoardDto boardDto = boardService.getBoardView(map);
 
         if (boardDto.getDeleteYn() != TRUE) {
+            model.addAttribute("previousPage", referer);
             model.addAttribute("boardDto", boardDto);
             model.addAttribute("boardId", boardId);
             log.debug("boardDto: " + boardDto);
@@ -116,14 +124,18 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}/doSearch") // 게시글 검색
-    public String doSearch(@PathVariable String boardId, Model model, @RequestParam String type, @RequestParam String keyword) {
+    public String doSearch(@PathVariable String boardId, Model model, @RequestParam String type, @RequestParam String keyword, @RequestParam(defaultValue = "1") String page) {
         if (!type.equals("") && !keyword.equals("")) {
             HashMap<String, Object> map = new HashMap<>();
             map.put("boardId", boardId);
             map.put("type", type);
             map.put("keyword", keyword);
+            int totalRows = boardService.getBoardSearchCount(map); // 전체 게시글 갯수
+            PageDto pageDto = boardService.Paging(page, 10, totalRows); // 10개씩 페이징
+            map.put("pageDto", pageDto);
             List<BoardDto> boardDto = boardService.doSearch(map);
-            model.addAttribute("boards", boardDto);
+            model.addAttribute("boardDto", boardDto);
+            model.addAttribute("pageDto", pageDto);
         }
         // todo: 검색어가 없을 경우 알럿창 띄우기
         return "board/list";
