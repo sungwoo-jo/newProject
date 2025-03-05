@@ -86,4 +86,12 @@
     <insert id="insertFollowingData" parameterType="java.util.HashMap">
         UPDATE member SET following = #{followingData} WHERE memNo = #{memNo}
     </insert>
+
+    <delete id="doCancelFollow" parameterType="Integer">
+        UPDATE member SET follow = JSON_REMOVE(follow, CONCAT('$.', #{boardDtoNo})) WHERE memNo = #{memberDtoNo}
+    </delete>
+
+    <delete id="doCancelFollowing" parameterType="Integer">
+        UPDATE member SET following = JSON_REMOVE(following, CONCAT('$.', #{memberDtoNo})) WHERE memNo = #{boardDtoNo}
+    </delete>
 </mapper>

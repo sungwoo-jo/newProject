@@ -1,11 +1,15 @@
 package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.BoardDto;
+import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.PageDto;
 import com.sw.newProject.service.BoardService;
+import com.sw.newProject.service.MemberService;
 import io.swagger.models.Response;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 @Slf4j
@@ -25,6 +30,7 @@ import static java.lang.Boolean.TRUE;
 public class BoardController {
 
     private final BoardService boardService;
+    private final MemberService memberService;
 
     @GetMapping("{boardId}/list") // 게시글 리스트 페이지 호출
     public String getBoardList(@PathVariable String boardId, Model model, @RequestParam(defaultValue = "1") String page) {
@@ -64,19 +70,34 @@ public class BoardController {
     }
 
     @GetMapping("{boardId}/view/{boardNo}") // 게시글 상세보기 페이지 호출
-    public String getViewPage(@RequestHeader (value = "Referer", defaultValue = "/") String referer, @PathVariable String boardId, @PathVariable Integer boardNo, Model model) {
+    public String getViewPage(@RequestHeader (value = "Referer", defaultValue = "/") String referer, @PathVariable String boardId, @PathVariable Integer boardNo, Model model, HttpSession session) {
         HashMap<String, Object> map = new HashMap<>();
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
 
         map.put("boardId", boardId);
         map.put("boardNo", boardNo);
 
-        boardService.incrementHitCnt(map); // 조회수 증가 -> 추후 사용자 별 하루 1회씩만 증가하도록 수정 필요
+        boardService.incrementHitCnt(map); // 조회수 증가 -> todo: 사용자 별 하루 1회씩만 증가하도록 수정 필요
         BoardDto boardDto = boardService.getBoardView(map);
+
+        HashMap<String, String> followDataMap = memberService.getFollowData(memberDto.getMemNo()); // 회원의 현재 팔로우 데이터를 가져오기
+        JSONObject prevFollowData = new JSONObject(followDataMap);
+        String followDataJson = prevFollowData.getString("follow");
+        JSONObject followData = new JSONObject(followDataJson);
+
+        boolean alreadyFollowFl;
+
+        if (followData.has(String.valueOf(boardDto.getMemNo()))) {
+            alreadyFollowFl = TRUE;
+        } else {
+            alreadyFollowFl = FALSE;
+        }
 
         if (boardDto.getDeleteYn() != TRUE) {
             model.addAttribute("previousPage", referer);
             model.addAttribute("boardDto", boardDto);
             model.addAttribute("boardId", boardId);
+            model.addAttribute("alreadyFollowFl", alreadyFollowFl);
             log.debug("boardDto: " + boardDto);
             return "board/view";
         } else { // 게시글이 삭제된 상태

@@ -50,4 +50,8 @@ public interface MemberMapper {
     HashMap<String, String> getFollowData(Integer memNo);
 
     HashMap<String, String> getFollowingData(Integer memNo);
+
+    void doCancelFollow(HashMap<String, Object> map);
+
+    void doCancelFollowing(HashMap<String, Object> map);
 }

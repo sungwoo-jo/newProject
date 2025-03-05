@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
+
 @OpenAPIDefinition(info = @Info(title = "newProject API 명세서",
         description = "API 명세서",
         version = "v1",
@@ -38,7 +40,7 @@ public class MypageController {
     }
 
     @PostMapping("/doUpdate")
-    public String doUpdate(MemberDto memberDto, HttpSession session) {
+    public String doUpdate(MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
         log.info("memberDto: {}", memberDto);
         memberService.updateMember(memberDto);
         MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());

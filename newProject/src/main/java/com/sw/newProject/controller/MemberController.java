@@ -80,7 +80,7 @@ public class MemberController {
     }
 
     @PatchMapping("/doUpdate") // 정보수정 처리
-    public String updateMember(@RequestBody MemberDto memberDto, HttpSession session) {
+    public String updateMember(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
         memberService.updateMember(memberDto);
         MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
         session.setAttribute("member", updatedMemberDto); // 최신 정보로 세팅
@@ -186,7 +186,7 @@ public class MemberController {
         String memNm = memberDto.getMemNm();
         String email = memberDto.getEmail();
         String memId = memberDto.getMemId();
-        if (memberService.findPw(memberDto.getMemNm(), memberDto.getEmail(), memberDto.getMemId()) == null) {
+        if (memberService.findPw(memNm, email, memId) == null) {
             log.info("member fot nound");
             throw new NotFoundException("입력하신 회원 정보를 다시 한 번 확인해주세요.");
         }
@@ -221,10 +221,12 @@ public class MemberController {
         log.info("대상 게시글: {}", boardDto);
         MemberDto memberDto = (MemberDto)session.getAttribute("member");
         log.info("memberDto: {}", memberDto);
+
+
+        HashMap<String, String> followData = new HashMap<>(); // 팔로우, 팔로잉데이터 담는 맵
+
         Date now = new Date();
         SimpleDateFormat followDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        HashMap<String, String> followData = new HashMap<>(), followerData = new HashMap<>(); // 팔로우, 팔로잉데이터 담는 맵
 
         HashMap<String, String> recentFollowData = memberService.getFollowData(memberDto.getMemNo()); // 회원의 현재 팔로우 데이터를 가져오기
         JSONObject recentFollowDataJson = new JSONObject(recentFollowData);
@@ -258,8 +260,12 @@ public class MemberController {
 
         memberService.insertFollowData(followData); // 팔로우 데이터 insert
 
-        HashMap<String, String> recentFollwingData = memberService.getFollowingData(boardDto.getMemNo()); // 회원의 현재 팔로잉 데이터를 가져오기
-            if (recentFollwingData == null) { // 팔로잉 데이터가 없는 경우
+        HashMap<String, String> followerData = new HashMap<>(); // 팔로우, 팔로워데이터 담는 맵
+
+
+
+        HashMap<String, String> recentFollwingData = memberService.getFollowingData(boardDto.getMemNo()); // 회원의 현재 팔로워 데이터를 가져오기
+            if (recentFollwingData == null) { // 팔로워 데이터가 없는 경우
                 recentFollwingData = new HashMap<>(); // 새롭게 초기화
                 recentFollwingData.put(String.valueOf(memberDto.getMemNo()), followDt.format(now)); // 팔로잉하는 유저의 데이터에 팔로우 유저의 데이터를 추가
                 JSONObject newRecentFollowingData = new JSONObject(recentFollwingData);
@@ -284,6 +290,25 @@ public class MemberController {
                 memberService.insertFollowData(followData);
                 memberService.insertFollowingData(followerData);
             }
+
+        return ResponseEntity.ok("success");
+    }
+
+    /*
+     * 팔로우 취소 처리하는 메서드
+     * 해당 메서드 내에서 이미 팔로우된 정보를 삭제한다.
+     */
+    @DeleteMapping("/cancelFollow") // 팔로우 취소 처리
+    public ResponseEntity<String> doCancelFollow(@RequestBody BoardDto boardDto, HttpSession session) {
+        HashMap<String, Object> map = new HashMap<>();
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        Integer memberDtoNo = memberDto.getMemNo(); // 로그인한 사용자
+        Integer boardDtoNo = boardDto.getMemNo(); // 게시글 작성자
+        map.put("memberDtoNo", memberDtoNo);
+        map.put("boardDtoNo", boardDtoNo);
+
+        memberService.doCancelFollow(map);
+        memberService.doCancelFollowing(map);
 
         return ResponseEntity.ok("success");
     }

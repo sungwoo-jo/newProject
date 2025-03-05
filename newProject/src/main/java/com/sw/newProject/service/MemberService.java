@@ -99,7 +99,7 @@ public class MemberService {
         return memberMapper.getMember(memNo);
     }
 
-    public void updateMember(@NotNull MemberDto reqMemberDto) {
+    public void updateMember(@NotNull MemberDto reqMemberDto) throws NoSuchAlgorithmException {
         //  업데이트 하지 않는 값은 기존 값으로 두고, 업데이트 해야 하는 항목들은 업데이트 해주기
         //  업데이트 필요 항목: memPw, nickNm, address1, address2, zipCode, phone, email, profileImage, modDt / 불필요: memNo, memId, deleteYn, regDt
         MemberDto recentMemberDto = getMember(reqMemberDto.getMemNo()); // 기존 정보 조회
@@ -115,7 +115,7 @@ public class MemberService {
 
         // 전달받은 값으로 업데이트
         if (reqMemberDto.getMemPw() != null && !reqMemberDto.getMemPw().equals("")) {
-            updateMemberDto.setMemPw(reqMemberDto.getMemPw());
+            updateMemberDto.setMemPw(passwordEncrypt(reqMemberDto.getMemPw()));
         } else {
             updateMemberDto.setMemPw(recentMemberDto.getMemPw());
         }
@@ -338,6 +338,14 @@ public class MemberService {
 
     public void insertFollowingData(HashMap<String, String> followingData) {
         memberMapper.insertFollowingData(followingData);
+    }
+
+    public void doCancelFollow(HashMap<String, Object> map) {
+        memberMapper.doCancelFollow(map);
+    }
+
+    public void doCancelFollowing(HashMap<String, Object> map) {
+        memberMapper.doCancelFollowing(map);
     }
 }
 
