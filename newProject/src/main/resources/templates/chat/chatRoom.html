@@ -16,7 +16,7 @@
 
 <script th:inline="javascript">
   function enterRoom(socket){
-    var enterMsg={"type" : "ENTER","roomId":[[${room.roomId}]],"sender":"chee","msg":""}; //sender는  글쓸때 수정하자.
+    var enterMsg={"type" : "ENTER","roomId":[[${room.roomId}]],"sender":[[${username}]],"msg":""}; //sender는  글쓸때 수정하자.
     socket.send(JSON.stringify(enterMsg));
   }
   let socket = new WebSocket("ws://localhost:8081/ws/chat");
@@ -46,12 +46,12 @@
   //메세지 보내기 버튼 눌렀을 떄..
   function sendMsg() {
     let content=document.querySelector('.content').value;
-    var talkMsg={"type" : "TALK","roomId":[[${room.roomId}]] ,"sender":"chee","msg":content};
+    var talkMsg={"type" : "TALK","roomId":[[${room.roomId}]] ,"sender":[[${username}]],"msg":content};
     socket.send(JSON.stringify(talkMsg));
   }
 
   function quit(){
-    var quitMsg={"type" : "QUIT","roomId":[[${room.roomId}]] ,"sender":"chee","msg":""};
+    var quitMsg={"type" : "QUIT","roomId":[[${room.roomId}]] ,"sender":[[${username}]],"msg":""};
     socket.send(JSON.stringify(quitMsg));
     socket.close();
     location.href="/chat/chatList";

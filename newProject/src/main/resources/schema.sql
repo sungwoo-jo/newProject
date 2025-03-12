@@ -1,4 +1,5 @@
 use newProjectDB;
+SET sql_mode = ''; -- 테이블을 처음 생성하는 경우 DATETIME의 default value를 설정하기 위해 실행
 
 -- member(회원 테이블)
 DROP TABLE IF EXISTS `member` CASCADE;
