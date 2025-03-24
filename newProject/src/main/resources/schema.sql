@@ -14,11 +14,12 @@ CREATE TABLE `member` (
     address2 VARCHAR(100) DEFAULT NULL comment '상세주소',
     zipCode CHAR(5) DEFAULT NULL comment '우편번호',
     phone VARCHAR(20) DEFAULT NULL comment '휴대폰번호',
-    following JSON DEFAULT NULL comment '팔로잉',
-    follower JSON DEFAULT NULL comment '팔로워',
+    following JSON DEFAULT NULL comment '팔로잉리스트',
+    follower JSON DEFAULT NULL comment '팔로워리스트',
     email VARCHAR(50) DEFAULT NULL comment '이메일',
     profileImageName VARCHAR(200) DEFAULT NULL comment '프로필이미지파일명',
     deleteYn BOOLEAN DEFAULT '0' comment '탈퇴여부',
+    friendList JSON DEFAULT NULL comment '친구리스트',
     regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' comment '생성일',
     modDt DATETIME DEFAULT NULL comment '수정일'
 );
@@ -149,6 +150,18 @@ CREATE TABLE `uploadFile` (
     storedFileName VARCHAR(200) DEFAULT NULL comment '저장된 파일명',
     regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' comment '생성일',
     modDt DATETIME DEFAULT NULL comment '수정일'
+);
+
+DROP TABLE IF EXISTS `friendShip` CASCADE;
+CREATE TABLE friendShip (
+	toMemNo INT DEFAULT NULL NULL COMMENT '보낸사람회원번호',
+	fromMemNo INT DEFAULT NULL NULL COMMENT '받는사람회원번호',
+	status VARCHAR(10) DEFAULT 'REQUEST' NOT NULL COMMENT '친구요청상태',
+	regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' comment '생성일',
+    modDt DATETIME DEFAULT NULL comment '수정일',
+    PRIMARY KEY (toMemNo, fromMemNo),
+    FOREIGN KEY (toMemNo) REFERENCES member(memNo),
+    FOREIGN KEY (fromMemNo) REFERENCES member(memNo)
 );
 
 -- 더미 데이터(회원)

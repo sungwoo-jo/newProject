@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -48,6 +50,7 @@ public class MemberDto {
     private String email;
     private String profileImageName; // MemberDto에서는 파일명만 가지고 있고, 필요 시 첨부파일 테이블에서 파일명을 조회해서 파일을 찾는다.
     private Boolean deleteYn;
+    private List<FriendShipDto> friendShipDtoList = new ArrayList<>(); // 친구 리스트
     private LocalDateTime regDt; // 날짜와 시간이 모두 필요
     private LocalDateTime modDt; // 날짜와 시간이 모두 필요
 }

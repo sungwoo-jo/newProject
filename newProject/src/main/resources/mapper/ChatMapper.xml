@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sw.newProject.mapper.ChatMapper">
+
+    <insert id="saveRoomInfo" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="sno">
+        INSERT INTO chatinfo(roomId, roomNm, regDt)
+        VALUES (#{roomId}, #{roomNm}, now())
+    </insert>
+
+    <update id="saveEntrant" parameterType="com.sw.newProject.dto.SaveEntrantDto">
+        UPDATE chatinfo
+        SET entrant = JSON_ARRAY_APPEND(data, '$', #{entrant})
+        WHERE sno = #{sno}
+    </update>
+</mapper>

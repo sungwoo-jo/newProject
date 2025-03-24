@@ -20,6 +20,9 @@ public enum ErrorCode {
     NOT_ALLOW_EMAIL(HttpStatus.BAD_REQUEST, "009_NOT_ALLOW_EMAIL", "이메일 사용이 허용이 되지 않은 사용자입니다."),
     ALREADY_FOLLOWED(HttpStatus.BAD_REQUEST, "010_ALREADY_FOLLOWED", "이미 팔로우 한 회원입니다."),
     EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "011_EXPIRED_TOKEN", "만료된 토큰입니다."),
+    ALREADY_FRIEND_LIST(HttpStatus.BAD_REQUEST, "012_ALREADY_FRIEND_LIST", "이미 존재하는 친구 요청입니다."),
+    IMPOSSIBLE_REQUEST(HttpStatus.BAD_REQUEST, "013_IMPOSSIBLE_REQUEST", "친구 수락이 불가한 상태입니다."),
+    IMPOSSIBLE_REJECT(HttpStatus.BAD_REQUEST, "014_IMPOSSIBLE_REJECT", "거절이 불가한 상태입니다."),
 
     // 401
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "101_INVALID_TOKEN", "유효하지 않은 토큰입니다."),

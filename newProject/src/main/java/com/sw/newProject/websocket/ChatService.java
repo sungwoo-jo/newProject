@@ -1,6 +1,8 @@
 package com.sw.newProject.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sw.newProject.dto.SaveEntrantDto;
+import com.sw.newProject.mapper.ChatMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ public class ChatService {
 
     private final ObjectMapper objectMapper;
     private Map<String, ChatRoom> chatRooms;
+    private final ChatMapper chatMapper;
 
     @PostConstruct
     private void init() {
@@ -37,5 +40,13 @@ public class ChatService {
                 .build();
         chatRooms.put(randomId, chatRoom);
         return chatRoom;
+    }
+
+    public void saveRoomInfo(HashMap<String, Object> map) {
+        chatMapper.saveRoomInfo(map);
+    }
+
+    public void saveEntrant(SaveEntrantDto saveEntrantDto) {
+        chatMapper.saveEntrant(saveEntrantDto);
     }
 }

@@ -1,6 +1,7 @@
 package com.sw.newProject.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 @Slf4j
 @RequiredArgsConstructor
@@ -21,7 +23,14 @@ public class WebsocketChatHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        // WebSocket 연결이 성공적으로 이루어졌을 때
+        System.out.println("Connected: " + session.getId());
 
+        log.info("connection established, session id={}", session.getId());
+
+        // WebSocketSession에서 HttpSession 가져오기
+        Map<String, Object> sessionVal = session.getAttributes();
+        log.info("sessionVal: {}", sessionVal.get("member"));
     }
 
 
