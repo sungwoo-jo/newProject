@@ -3,6 +3,7 @@ package com.sw.newProject.dto;
 import com.sw.newProject.enumType.FriendShipStatus;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.LocalDateTime;
 

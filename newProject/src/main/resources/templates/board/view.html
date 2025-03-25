@@ -67,8 +67,8 @@
     <button id="doDelete">삭제하기</button><br>
     <button id="like">좋아요</button><br>
     <button th:id="${alreadyFollowFl ? 'cancelFollow' : 'follow'}">
-        <span th:if="${alreadyFollowFl}" th:text="팔로우 중" onclick="cancelFollow()"></span>
-        <span th:unless="${alreadyFollowFl}" th:text="팔로우하기" onclick="follow()"></span>
+        <span th:if="${alreadyFollowFl}" th:text="'팔로우 중'" onclick="cancelFollow()"></span>
+        <span th:unless="${alreadyFollowFl}" th:text="'팔로우하기'" onclick="follow()"></span>
     </button>
 
 </div>

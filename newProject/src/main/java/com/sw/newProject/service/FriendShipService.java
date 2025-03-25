@@ -1,5 +1,9 @@
 package com.sw.newProject.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.enumType.ErrorCode;
 import com.sw.newProject.exception.CustomException;
@@ -8,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -16,6 +22,7 @@ import java.util.List;
 public class FriendShipService {
 
     private final FriendShipMapper friendShipMapper;
+    private final ObjectMapper objectMapper;
 
     public List<FriendShipDto> getSentRequest(int memNo) {
         return friendShipMapper.getSentRequest(memNo);
@@ -33,19 +40,28 @@ public class FriendShipService {
         return friendShipMapper.getReceivedRequest(memNo);
     }
 
-    public void acceptRequest(FriendShipDto friendShipDto) {
+    public void acceptRequest(FriendShipDto friendShipDto) throws JsonProcessingException {
         if (getAlreadyAccept(friendShipDto) < 1) { // 수락 가능한 상태
-            friendShipDto.acceptRequest();
-            changeStatus(friendShipDto);
+            if (getRequest(friendShipDto) > 0) { // 보낸 요청이 있어 수락 가능
+                friendShipDto.acceptRequest();
+                changeStatus(friendShipDto);
+                addFriendList(friendShipDto); // 서로의 친구 리스트에 추가
+            } else {
+                throw new CustomException(ErrorCode.NOT_EXISTED_REQUEST, "보낸 친구 요청이 없습니다.");
+            }
         } else { // 이미 수락이 되어 있거나 거절이 된 적이 있다면
-            throw new CustomException(ErrorCode.IMPOSSIBLE_REQUEST, "친구 수락이 불가한 상태입니다.(status가 REQUEST이거나, REJECT입니다.)");
+            throw new CustomException(ErrorCode.IMPOSSIBLE_REQUEST, "친구 수락이 불가한 상태입니다.(이미 수락되었거나, 거절 되었습니다.)");
         }
     }
 
     public void rejectRequest(FriendShipDto friendShipDto) {
         if (getAlreadyReject(friendShipDto) < 1) {
-            friendShipDto.rejectRequest();
-            changeStatus(friendShipDto);
+            if (getRequest(friendShipDto) > 0) {
+                friendShipDto.rejectRequest();
+                changeStatus(friendShipDto);
+            } else {
+                throw new CustomException(ErrorCode.NOT_EXISTED_REQUEST, "보낸 친구 요청이 없습니다.");
+            }
         } else {
             throw new CustomException(ErrorCode.IMPOSSIBLE_REJECT, "거절이 불가한 상태입니다.(이미 거절된 적 있거나, 친구 요청을 보낸 적이 없습니다.)");
         }
@@ -65,5 +81,44 @@ public class FriendShipService {
 
     public void changeStatus(FriendShipDto friendShipDto) {
         friendShipMapper.changeStatus(friendShipDto);
+    }
+
+    public void addFriendList(FriendShipDto friendShipDto) throws JsonProcessingException { // 친구 리스트에 추가
+        Date date = new Date();
+        SimpleDateFormat followDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String now = followDt.format(date);
+
+        // 요청자의 친구 리스트에 추가한다.
+        String toMemberFriendListJson = getFriendList(friendShipDto.getToMemNo());
+        JsonNode toMemberFriendList = objectMapper.readTree(toMemberFriendListJson);
+
+        try {
+            // 새로운 데이터 추가
+            ((ObjectNode) toMemberFriendList).put(String.valueOf(friendShipDto.getFromMemNo()), now);
+
+            // JSON을 문자열로 변환 후 DB 업데이트
+            friendShipMapper.updateFriendList(friendShipDto.getToMemNo(), toMemberFriendList.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 수락자의 친구 리스트에 추가한다.
+        String fromMemberFriendListJson = getFriendList(friendShipDto.getFromMemNo());
+        JsonNode fromMemberFriendList = objectMapper.readTree(fromMemberFriendListJson);
+
+        try {
+            // 새로운 데이터 추가
+            ((ObjectNode) fromMemberFriendList).put(String.valueOf(friendShipDto.getToMemNo()), now);
+
+            // JSON을 문자열로 변환 후 DB 업데이트
+            friendShipMapper.updateFriendList(friendShipDto.getFromMemNo(), fromMemberFriendList.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public String getFriendList(int memNo) {
+        return friendShipMapper.getFriendList(memNo);
     }
 }

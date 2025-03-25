@@ -21,4 +21,8 @@ public interface FriendShipMapper {
     int getAlreadyAccept(FriendShipDto friendShipDto);
 
     int getAlreadyReject(FriendShipDto friendShipDto);
+
+    String getFriendList(int memNo);
+
+    void updateFriendList(int memNo, String friendListJson);
 }

@@ -99,6 +99,8 @@ public class BoardController {
             model.addAttribute("boardId", boardId);
             model.addAttribute("alreadyFollowFl", alreadyFollowFl);
             log.debug("boardDto: " + boardDto);
+            log.info("prevFollowData: " + prevFollowData);
+            log.info("alreadyFollowFl: " + alreadyFollowFl);
             return "board/view";
         } else { // 게시글이 삭제된 상태
 //            model.addAttribute("boardId", boardId);

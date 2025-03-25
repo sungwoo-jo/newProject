@@ -223,7 +223,7 @@ public class MemberController {
         log.info("memberDto: {}", memberDto);
 
 
-        HashMap<String, String> followData = new HashMap<>(); // 팔로우, 팔로잉데이터 담는 맵
+        HashMap<String, String> followData = new HashMap<>(); // 팔로우데이터 담는 맵
 
         Date now = new Date();
         SimpleDateFormat followDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -260,7 +260,7 @@ public class MemberController {
 
         memberService.insertFollowData(followData); // 팔로우 데이터 insert
 
-        HashMap<String, String> followerData = new HashMap<>(); // 팔로우, 팔로워데이터 담는 맵
+        HashMap<String, String> followerData = new HashMap<>(); // 팔로워데이터 담는 맵
 
 
 

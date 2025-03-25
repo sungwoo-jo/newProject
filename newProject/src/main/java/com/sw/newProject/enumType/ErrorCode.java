@@ -23,6 +23,8 @@ public enum ErrorCode {
     ALREADY_FRIEND_LIST(HttpStatus.BAD_REQUEST, "012_ALREADY_FRIEND_LIST", "이미 존재하는 친구 요청입니다."),
     IMPOSSIBLE_REQUEST(HttpStatus.BAD_REQUEST, "013_IMPOSSIBLE_REQUEST", "친구 수락이 불가한 상태입니다."),
     IMPOSSIBLE_REJECT(HttpStatus.BAD_REQUEST, "014_IMPOSSIBLE_REJECT", "거절이 불가한 상태입니다."),
+    ALREADY_ACCEPT_FRIEND(HttpStatus.BAD_REQUEST, "015_ALREADY_ACCEPT_FRIEND", "이미 추가한 친구입니다."),
+    NOT_EXISTED_REQUEST(HttpStatus.BAD_REQUEST, "016_NOT_EXISTED_REQUEST", "보낸 요청이 없습니다."),
 
     // 401
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "101_INVALID_TOKEN", "유효하지 않은 토큰입니다."),

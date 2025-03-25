@@ -1,5 +1,6 @@
 package com.sw.newProject.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.service.FriendShipService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class FriendShipController {
     }
 
     @PostMapping("/acceptRequest")
-    public ResponseEntity<String> acceptRequest(FriendShipDto friendShipDto) { // 친구 요청 수락
+    public ResponseEntity<String> acceptRequest(FriendShipDto friendShipDto) throws JsonProcessingException { // 친구 요청 수락
         friendShipService.acceptRequest(friendShipDto);
         return ResponseEntity.ok("success");
     }

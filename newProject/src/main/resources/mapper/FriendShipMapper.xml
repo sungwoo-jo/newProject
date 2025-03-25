@@ -46,4 +46,16 @@
         FROM friendShip
         WHERE toMemNo = #{toMemNo} AND fromMemNo = #{fromMemNo} AND status = 'REJECT'
     </select>
+
+    <select id="getFriendList" parameterType="int" resultType="String">
+        SELECT friendList
+        FROM member
+        WHERE memNo = #{memNo}
+    </select>
+
+    <update id="updateFriendList" parameterType="com.fasterxml.jackson.databind.JsonNode">
+        UPDATE member
+        SET friendList = #{friendListJson}
+        WHERE memNo = #{memNo}
+    </update>
 </mapper>

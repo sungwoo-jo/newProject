@@ -5,8 +5,8 @@
 <mapper namespace="com.sw.newProject.mapper.MemberMapper">
 
     <insert id="insertMember" parameterType="com.sw.newProject.dto.MemberDto" useGeneratedKeys="true" keyProperty="memNo"> -- 자동 증가한 memNo값을 가져온다.
-            INSERT INTO member (memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImageName, deleteYn, regDt, modDt)
-            VALUES (#{memId}, #{memPw}, #{memNm}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profileImageName}, #{deleteYn}, now(), NULL);
+            INSERT INTO member (memId, memPw, memNm, nickNm, address1, address2, zipCode, phone, email, profileImageName, deleteYn, regDt, modDt, friendList, follow, following)
+            VALUES (#{memId}, #{memPw}, #{memNm}, #{nickNm}, #{address1}, #{address2}, #{zipCode}, #{phone}, #{email}, #{profileImageName}, #{deleteYn}, now(), NULL, "{}", "{}", "{}");
     </insert>
 
     <select id="getAllMember" resultType="com.sw.newProject.dto.MemberDto">
