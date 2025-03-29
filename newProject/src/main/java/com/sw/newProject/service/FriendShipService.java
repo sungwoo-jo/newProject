@@ -8,12 +8,14 @@ import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.enumType.ErrorCode;
 import com.sw.newProject.exception.CustomException;
 import com.sw.newProject.mapper.FriendShipMapper;
+import io.swagger.v3.core.util.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Slf4j
@@ -75,6 +77,10 @@ public class FriendShipService {
         return friendShipMapper.getAlreadyAccept(friendShipDto);
     }
 
+    public String getStatus(FriendShipDto friendShipDto) {
+        return friendShipMapper.getStatus(friendShipDto);
+    }
+
     public int getAlreadyReject(FriendShipDto friendShipDto) { // 이미 거절이 되어 있는 상태인지 조회
         return friendShipMapper.getAlreadyReject(friendShipDto);
     }
@@ -115,7 +121,24 @@ public class FriendShipService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    public void deleteFriendToMember(FriendShipDto friendShipDto) { // toMemNo의 친구목록에서 fromMemNo 삭제하기
+        friendShipMapper.deleteFriendToMember(friendShipDto);
+    }
+
+    public void deleteFriendFromMember(FriendShipDto friendShipDto) { // fromMemNo의 친구목록에서 toMemNo 삭제하기
+        friendShipMapper.deleteFriendFromMember(friendShipDto);
+    }
+
+    public void deleteFriend(FriendShipDto friendShipDto) { // 서로의 친구 목록에서 삭제
+        deleteFriendToMember(friendShipDto);
+        deleteFriendFromMember(friendShipDto);
+        deleteRequest(friendShipDto); // 친구 요청 목록도 삭제해서 다시 요청할 수 있는 상태를 만듬
+    }
+
+    public void deleteRequest(FriendShipDto friendShipDto) { // 친구 요청 목록 삭제
+        friendShipMapper.deleteRequest(friendShipDto);
     }
 
     public String getFriendList(int memNo) {

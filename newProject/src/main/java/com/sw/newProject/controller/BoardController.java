@@ -1,9 +1,11 @@
 package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.BoardDto;
+import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.PageDto;
 import com.sw.newProject.service.BoardService;
+import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
 import io.swagger.models.Response;
 import jakarta.servlet.http.HttpSession;
@@ -31,6 +33,7 @@ public class BoardController {
 
     private final BoardService boardService;
     private final MemberService memberService;
+    private final FriendShipService friendShipService;
 
     @GetMapping("{boardId}/list") // 게시글 리스트 페이지 호출
     public String getBoardList(@PathVariable String boardId, Model model, @RequestParam(defaultValue = "1") String page) {
@@ -93,11 +96,19 @@ public class BoardController {
             alreadyFollowFl = FALSE;
         }
 
+        FriendShipDto friendShipDto = new FriendShipDto();
+        friendShipDto.setToMemNo(memberDto.getMemNo());
+        friendShipDto.setFromMemNo(boardDto.getMemNo());
+        String alreadyRequestFl = friendShipService.getStatus(friendShipDto);
+        log.info("alreadyRequestFl: {}", alreadyRequestFl);
+
         if (boardDto.getDeleteYn() != TRUE) {
             model.addAttribute("previousPage", referer);
             model.addAttribute("boardDto", boardDto);
             model.addAttribute("boardId", boardId);
             model.addAttribute("alreadyFollowFl", alreadyFollowFl);
+            model.addAttribute("alreadyRequestFl", alreadyRequestFl);
+            model.addAttribute("session", session);
             log.debug("boardDto: " + boardDto);
             log.info("prevFollowData: " + prevFollowData);
             log.info("alreadyFollowFl: " + alreadyFollowFl);

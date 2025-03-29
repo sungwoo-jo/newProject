@@ -17,6 +17,12 @@
             (#{toMemNo}, #{fromMemNo}, now())
     </insert>
 
+    <select id="getStatus" parameterType="com.sw.newProject.dto.FriendShipDto" resultType="String">
+        SELECT status
+        FROM friendShip
+        WHERE toMemNo = #{toMemNo} AND fromMemNo = #{fromMemNo}
+    </select>
+
     <select id="getReceivedRequest" parameterType="int" resultType="com.sw.newProject.dto.FriendShipDto">
         SELECT *
         FROM friendShip
@@ -58,4 +64,22 @@
         SET friendList = #{friendListJson}
         WHERE memNo = #{memNo}
     </update>
+
+    <delete id="deleteFriendToMember" parameterType="com.sw.newProject.dto.FriendShipDto">
+        UPDATE member
+        SET friendList = JSON_REMOVE(friendList, CONCAT('$.', #{fromMemNo}))
+        WHERE memNo = #{toMemNo}
+    </delete>
+
+    <delete id="deleteFriendFromMember" parameterType="com.sw.newProject.dto.FriendShipDto">
+        UPDATE member
+        SET friendList = JSON_REMOVE(friendList, CONCAT('$.', #{toMemNo}))
+        WHERE memNo = #{fromMemNo}
+    </delete>
+
+    <delete id="deleteRequest" parameterType="com.sw.newProject.dto.FriendShipDto">
+        DELETE
+        FROM friendShip
+        WHERE (toMemNo = #{toMemNo} AND fromMemNo = #{fromMemNo}) OR (toMemNo = #{fromMemNo} AND fromMemNo = #{toMemNo})
+    </delete>
 </mapper>

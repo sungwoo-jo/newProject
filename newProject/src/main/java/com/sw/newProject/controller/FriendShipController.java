@@ -2,15 +2,14 @@ package com.sw.newProject.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sw.newProject.dto.FriendShipDto;
+import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.service.FriendShipService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,8 +29,9 @@ public class FriendShipController {
     }
 
     @PostMapping("/createRequest")
-    public ResponseEntity<String> createRequest(FriendShipDto friendShipDto) { // 친구 요청을 전송
-        log.info("friendShipDto: {}", friendShipDto);
+    public ResponseEntity<String> createRequest(@RequestBody FriendShipDto friendShipDto, HttpSession session) { // 친구 요청을 전송
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        friendShipDto.setToMemNo(memberDto.getMemNo());
         friendShipService.createRequest(friendShipDto);
         return ResponseEntity.ok("success");
     }
@@ -51,6 +51,12 @@ public class FriendShipController {
     @PostMapping("/rejectRequest")
     public ResponseEntity<String> rejectRequest(FriendShipDto friendShipDto) { // 친구 요청 거절
         friendShipService.rejectRequest(friendShipDto);
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/deleteFriend")
+    public ResponseEntity<String> deleteFriend(FriendShipDto friendShipDto) { // 친구 삭제(서로의 목록에서 삭제, 요청 목록도 삭제)
+        friendShipService.deleteFriend(friendShipDto);
         return ResponseEntity.ok("success");
     }
 }

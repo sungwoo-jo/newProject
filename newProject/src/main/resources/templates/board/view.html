@@ -63,13 +63,19 @@
 
     </table>
     <a th:href="${previousPage}" class="btn btn-secondary">목록으로 돌아가기</a><br>
-    <a th:href="'/board/' + ${boardId} + '/write/' + ${boardDto.boardNo}" class="btn btn-secondary">수정하기</a><br>
+    <a th:if="${session.member.memNo == boardDto.memNo}" href="'/board/' + ${boardId} + '/write/' + ${boardDto.boardNo}" class="btn btn-secondary">수정하기</a><br>
     <button id="doDelete">삭제하기</button><br>
     <button id="like">좋아요</button><br>
     <button th:id="${alreadyFollowFl ? 'cancelFollow' : 'follow'}">
         <span th:if="${alreadyFollowFl}" th:text="'팔로우 중'" onclick="cancelFollow()"></span>
         <span th:unless="${alreadyFollowFl}" th:text="'팔로우하기'" onclick="follow()"></span>
     </button>
+<!--    <button th:id="${alreadyRequestFl ? 'deleteFriend' : 'createRequest'}">-->
+        <span th:if="${alreadyRequestFl == 'ACCEPT'}" th:text="'✅친구'" th:id="'alreadyFriend'"></span>
+        <span th:if="${alreadyRequestFl == 'REJECT'}" th:text="'❌친구거절됨'" th:id="'rejectFriend'"></span>
+        <span th:if="${alreadyRequestFl == 'REQUEST'}" th:text="'🚀친구요청중'" th:id="'alreadyRequest'"></span>
+        <button th:unless="${alreadyRequestFl}" th:id="'createRequest'" th:text="'친구신청'" onclick="createRequest()"></button>
+<!--    </button>-->
 
 </div>
 <hr>
@@ -342,6 +348,43 @@
         }
     }
     // 팔로우취소하기 E
+
+    // 친구 신청하기 S
+    function createRequest() {
+        if (confirm(document.getElementById('writerNm').value + '님에게 친구 요청을 보내시겠습니까?')) {
+            const createRequestButton = document.getElementById('createRequest');
+            const currentText = createRequestButton.innerText;
+
+            const fromMemNo = document.getElementById('memNo').value;
+            const data = {
+                fromMemNo: fromMemNo
+            };
+            fetch('../../../friend/createRequest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
+                },
+                body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === "success") {
+                        alert('친구 요청을 전송했습니다.');
+                        if (currentText.includes('친구신청')) {
+                            createRequestButton.innerText = createRequestButton.innerText.replace('친구신청', '친구수락대기중');
+                            createRequestButton.id = 'cancelFollow';
+                            createRequestButton.onclick = cancelFollow;
+                        }
+                    } else {
+                        alert('친구 요청에 실패하였습니다.');
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        } else {
+            return false;
+        }
+    }
+    // 친구 신청하기 E
 </script>
 
 </body>
