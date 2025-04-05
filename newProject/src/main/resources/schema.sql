@@ -101,7 +101,7 @@ DROP TABLE IF EXISTS `chatInfo` CASCADE;
 CREATE TABLE `chatInfo` (
     chatNo INT AUTO_INCREMENT PRIMARY KEY NOT NULL comment '채팅방번호',
     chatNm VARCHAR(50) DEFAULT NULL comment '채팅방이름',
-    entrant TEXT DEFAULT NULL comment '참여자리스트',
+    maker INT DEFAULT NULL comment '방 생성자',
     regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' comment '생성일',
     modDt DATETIME DEFAULT NULL comment '수정일'
 );

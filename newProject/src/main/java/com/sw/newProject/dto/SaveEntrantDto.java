@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class SaveEntrantDto { // 채팅방 참여자 정보 저장(chatinfo.entrant)
 
-    private int sno; // chatinfo.sno
+    private Integer sno; // chatinfo.sno
 
-    private Integer entrant; // chatinfo.entrant
+    private List<Integer> entrant; // chatinfo.entrant
 
     private String data;
 

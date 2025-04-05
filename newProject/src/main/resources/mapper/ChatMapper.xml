@@ -5,13 +5,23 @@
 <mapper namespace="com.sw.newProject.mapper.ChatMapper">
 
     <insert id="saveRoomInfo" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="sno">
-        INSERT INTO chatinfo(roomId, roomNm, regDt)
-        VALUES (#{roomId}, #{roomNm}, now())
+        INSERT INTO chatinfo(roomId, roomNm, maker, regDt)
+        VALUES (#{roomId}, #{roomNm}, #{maker}, now())
     </insert>
 
-    <update id="saveEntrant" parameterType="com.sw.newProject.dto.SaveEntrantDto">
-        UPDATE chatinfo
-        SET entrant = JSON_ARRAY_APPEND(data, '$', #{entrant})
-        WHERE sno = #{sno}
+    <update id="saveEntrant" parameterType="com.sw.newProject.dto.ChatEntrantDto">
+        INSERT INTO chat_entrant(sno, entrant, status, regDt)
+        VALUES (#{sno}, #{entrant}, #{status}, now())
     </update>
+
+    <select id="findAllRoom" resultType="com.sw.newProject.websocket.ChatRoom">
+        SELECT *
+        FROM chatinfo
+    </select>
+
+    <select id="findAcceptRoom" resultType="com.sw.newProject.websocket.ChatRoom">
+        SELECT c.sno, c.roomNm, c.roomId
+        FROM chat_entrant ce left join chatinfo c ON ce.sno = c.sno
+        WHERE ce.status = 'ACCEPT' AND ce.entrant = #{memNo}
+    </select>
 </mapper>

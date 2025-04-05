@@ -73,7 +73,7 @@
 <!--    <button th:id="${alreadyRequestFl ? 'deleteFriend' : 'createRequest'}">-->
         <span th:if="${alreadyRequestFl == 'ACCEPT'}" th:text="'✅친구'" th:id="'alreadyFriend'"></span>
         <span th:if="${alreadyRequestFl == 'REJECT'}" th:text="'❌친구거절됨'" th:id="'rejectFriend'"></span>
-        <span th:if="${alreadyRequestFl == 'REQUEST'}" th:text="'🚀친구요청중'" th:id="'alreadyRequest'"></span>
+        <span th:if="${alreadyRequestFl == 'REQUEST'}" th:text="'🚀친구요청취소'" th:id="'alreadyRequest'"></span>
         <button th:unless="${alreadyRequestFl}" th:id="'createRequest'" th:text="'친구신청'" onclick="createRequest()"></button>
 <!--    </button>-->
 
@@ -371,7 +371,7 @@
                     if (data === "success") {
                         alert('친구 요청을 전송했습니다.');
                         if (currentText.includes('친구신청')) {
-                            createRequestButton.innerText = createRequestButton.innerText.replace('친구신청', '친구수락대기중');
+                            createRequestButton.innerText = createRequestButton.innerText.replace('친구신청', '친구요청취소');
                             createRequestButton.id = 'cancelFollow';
                             createRequestButton.onclick = cancelFollow;
                         }

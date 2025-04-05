@@ -2,9 +2,13 @@ package com.sw.newProject.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sw.newProject.dto.ChatEntrantDto;
 import com.sw.newProject.dto.MemberDto;
+import com.sw.newProject.enumType.ChatEntrantStatus;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
+import com.sw.newProject.websocket.ChatRoom;
+import com.sw.newProject.websocket.ChatService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @OpenAPIDefinition(info = @Info(title = "newProject API 명세서",
@@ -35,10 +40,11 @@ public class MypageController {
 
     private final MemberService memberService;
     private final FriendShipService friendShipService;
-    private final ObjectMapper objectMapper;
+    private final ChatService chatService;
+
 
     @GetMapping(value = {"/", "/index", ""})
-    public String getIndexPage(HttpSession session) throws JsonProcessingException {
+    public String getIndexPage(HttpSession session) {
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
         String friendList = friendShipService.getFriendList(memberDto.getMemNo());
 
@@ -47,7 +53,10 @@ public class MypageController {
         // JSON 문자열을 JSONObject로 파싱
         JSONObject friendListJson = new JSONObject(friendList);
 
-        // 친구 목록 순회
+        log.info("friendListJson: {}", friendListJson);
+
+        // 친구 목록 순회(메인에 보여주는 것이기 때문에 3개만)
+        int count = 0;
         for (String friendId : friendListJson.keySet()) {
             String timestamp = friendListJson.getString(friendId);
             System.out.println("Friend ID: " + friendId + ", Time: " + timestamp);
@@ -55,6 +64,8 @@ public class MypageController {
             MemberDto friendMemberDto = memberService.getMember(Integer.parseInt(friendId));
 
             friends.add(friendMemberDto);
+            count++;
+            if (count >= 3) break;
         }
 
         log.info("friends: {}", friends);
@@ -87,5 +98,69 @@ public class MypageController {
     @GetMapping("/following/list")
     public String getFollowingList(Model model) {
         return "/mypage/followingList";
+    }
+
+    @GetMapping("/friendList")
+    public String getFriendList(HttpSession session, Model model) {
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        String friendList = friendShipService.getFriendList(memberDto.getMemNo());
+
+        List<MemberDto> friends = new ArrayList<>();
+
+        // JSON 문자열을 JSONObject로 파싱
+        JSONObject friendListJson = new JSONObject(friendList);
+
+        log.info("friendListJson: {}", friendListJson);
+
+        for (String friendId : friendListJson.keySet()) {
+            String timestamp = friendListJson.getString(friendId);
+            System.out.println("Friend ID: " + friendId + ", Time: " + timestamp);
+
+            MemberDto friendMemberDto = memberService.getMember(Integer.parseInt(friendId));
+
+            friends.add(friendMemberDto);
+        }
+
+        log.info("friends: {}", friends);
+
+        model.addAttribute("friends", friends);
+
+        return "/mypage/friendList";
+    }
+
+    @PostMapping("/inviteChat")
+    public String inviteChat(@RequestParam(name = "friendNo") List<Integer> friendNo, HttpSession session) {
+        HashMap<String, Object> map = new HashMap<>();
+        String chatRoomName = "";
+        if (friendNo.size() > 1) {
+             chatRoomName = memberService.getMember(friendNo.get(0)).getMemNm() + " 외 " + (friendNo.size() - 1) + "명";
+        } else {
+            chatRoomName = memberService.getMember(friendNo.get(0)).getMemNm();
+        }
+        ChatRoom room = chatService.createRoom(chatRoomName);
+        MemberDto memberDto = (MemberDto)session.getAttribute("member");
+        ChatEntrantDto entrant = new ChatEntrantDto();
+
+        map.put("roomNm", room.getRoomNm());
+        map.put("roomId", room.getRoomId());
+        map.put("maker", memberDto.getMemNo()); // 채팅방 생성자
+
+        chatService.saveRoomInfo(map); // 채팅방 생성
+
+        // 생성자의 참여자 데이터 insert
+        entrant.setSno(Integer.parseInt(String.valueOf(map.get("sno")))); // 생성 시 저장된 채팅방 번호
+        entrant.setEntrant(memberDto.getMemNo()); // 생성자는 항상 들어가야 하므로
+        entrant.acceptRequest(); // 바로 수락 처리
+        chatService.saveEntrant(entrant);
+
+        // 초대받은 사람들의 데이터 insert
+        for (Integer friend : friendNo) {
+            entrant.setSno(Integer.parseInt(String.valueOf(map.get("sno")))); // 생성 시 저장된 채팅방 번호
+            entrant.setEntrant(friend);
+            entrant.setStatus(ChatEntrantStatus.REQUEST);
+            chatService.saveEntrant(entrant);
+        }
+
+        return "success";
     }
 }

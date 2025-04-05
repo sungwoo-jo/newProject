@@ -1,7 +1,7 @@
 package com.sw.newProject.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sw.newProject.dto.SaveEntrantDto;
+import com.sw.newProject.dto.ChatEntrantDto;
 import com.sw.newProject.mapper.ChatMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -25,28 +25,40 @@ public class ChatService {
     }
 
     public List<ChatRoom> findAllRoom() {
-        return new ArrayList<>(chatRooms.values());
+        return chatMapper.findAllRoom();
     }
 
     public ChatRoom findRoomById(String roomId) {
         return chatRooms.get(roomId);
     }
 
-    public ChatRoom createRoom(String name) {
+    public ChatRoom createRoom(String roomNm) { // 새로운 채팅방 생성할때
         String randomId = UUID.randomUUID().toString();
         ChatRoom chatRoom = ChatRoom.builder()
                 .roomId(randomId)
-                .name(name)
+                .roomNm(roomNm)
                 .build();
         chatRooms.put(randomId, chatRoom);
         return chatRoom;
+    }
+
+    public void createRoom(String roomNm, String roomId) { // 유저의 채팅방 리스트를 불러올 때 
+        ChatRoom chatRoom = ChatRoom.builder()
+                .roomId(roomId)
+                .roomNm(roomNm)
+                .build();
+        chatRooms.put(roomId, chatRoom);
     }
 
     public void saveRoomInfo(HashMap<String, Object> map) {
         chatMapper.saveRoomInfo(map);
     }
 
-    public void saveEntrant(SaveEntrantDto saveEntrantDto) {
-        chatMapper.saveEntrant(saveEntrantDto);
+    public void saveEntrant(ChatEntrantDto entrant) {
+        chatMapper.saveEntrant(entrant);
+    }
+
+    public List<ChatRoom> findAcceptRoom(int memNo) {
+        return chatMapper.findAcceptRoom(memNo);
     }
 }

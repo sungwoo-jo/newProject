@@ -49,7 +49,7 @@
         justify-content: space-between;
     }
 
-    .profile-details div {
+    .mypage-content {
         width: 45%;
         background-color: #fff;
         padding: 10px;
@@ -81,12 +81,12 @@
     .modal {
         display: none;  /* 기본적으로 숨겨져 있음 */
         position: fixed; /* 화면에 고정 */
-        top: 50%;
+        top: 52%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 100%;
+        width: 50%;
         height: 40%;
-        background-color: rgba(0, 0, 0, 0.5); /* 배경을 반투명 검은색 */
+        background-color: rgba(250, 250, 250, 100%);
         z-index: 1000; /* 모달이 다른 요소들 위에 표시되도록 */
         text-align: center;
     }
@@ -122,8 +122,9 @@
         display: flex;
         list-style: none;
         padding: 0;
-        justify-content: space-between;
+        justify-content: space-evenly;
         height: 18%;
+
     }
     .grid-container li {
         width: 22%;
@@ -161,9 +162,9 @@
 
     <!-- 프로필 세부 사항 -->
     <div class="profile-details">
-        <div>
+        <div class="mypage-content">
             <!-- 친구 목록 버튼 -->
-            <h2>친구목록</h2>
+            <div style="display: flow-root"><h2 style="float: left; display: inline">친구목록</h2><h4 style="float: right; display: inline"><a href="/mypage/friendList">더보기</a></h4></div>
             <button th:each="friend, stat : ${session.friends}"
                     th:id="'openModalBtn' + ${stat.index + 1}"
                     th:data-modal-id="'modal' + ${stat.index + 1}"
@@ -175,10 +176,10 @@
 
             <!-- 각 친구별 모달 창 -->
             <div th:each="friend, stat : ${session.friends}"
-                 th:id="'modal' + ${stat.index + 1}" class="modal">
+                 th:id="'modal' + ${stat.index + 1}" class="modal" style="border-radius: 25px;">
                     <span class="close">&times;</span>
                     <img th:src="@{'/upload/' + ${friend.profileImageName}}" alt="프로필 사진"
-                     style="width: 100%; height: 50%; margin-right: 10px; max-width: 265px;">
+                     style="width: 100%; height: 50%; margin-right: 10px; max-width: 265px; padding-top: 10px;">
                     <h2 th:text="${friend.memNm} + '님의 프로필'"></h2>
                     <p th:text="'ID: ' + ${friend.memId}"></p>
                     <p th:text="'한마디: ' + ${friend.comm}"></p>
@@ -190,17 +191,17 @@
                     </ul>
             </div>
         </div>
-        <div>
+        <div class="mypage-content">
             <h2>최근 알림</h2>
             <p>알림 1</p>
             <p>알림 2</p>
         </div>
-        <div>
+        <div class="mypage-content">
             <h2>팔로잉 소식</h2>
             <p>팔로잉 1</p>
             <p>팔로잉 2</p>
         </div>
-        <div>
+        <div class="mypage-content">
             <h2>팔로워 소식</h2>
             <p>팔로워 1</p>
             <p>팔로워 2</p>

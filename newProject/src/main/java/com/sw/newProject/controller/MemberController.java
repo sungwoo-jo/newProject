@@ -7,6 +7,7 @@ import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.exception.CustomException;
 import com.sw.newProject.service.MemberService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.mail.MessagingException;
@@ -46,11 +47,13 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/join") // 회원가입 페이지 호출
+    @Operation(summary = "회원가입 페이지 호출", description = "회원가입 페이지를 호출합니다.")
     public String getJoinPage() {
         return "/member/join";
     }
 
     @PostMapping("/doJoin") // 회원가입 처리
+    @Operation(summary = "회원가입 처리", description = "실제 회원가입 처리를 합니다.")
     public String insertMember(MemberDto memberDto, @RequestParam("profileImage") MultipartFile file) throws Exception { // 회원가입 처리 후 boolean 으로 가입 여부 반환(0: 실패, 1: 성공)
         log.info("profileImageName fileInfo: {}", file);
 
@@ -68,11 +71,13 @@ public class MemberController {
     }
 
     @GetMapping("/joinSuccess")
+    @Operation(summary = "회원가입 성공 페이지 호출", description = "회원가입 성공 페이지를 호출합니다.")
     public String getJoinSuccessPage() {
         return "/member/joinSuccess";
     }
 
     @GetMapping("/memberList") // 전체 회원 리스트 가져오기
+    @Operation(summary = "전체 회원 리스트 조회", description = "전체 회원 리스트를 조회합니다.")
     public String getAllMember(Model model) {
         List<MemberDto> members = memberService.getAllMember();
         model.addAttribute("members", members);
@@ -80,6 +85,7 @@ public class MemberController {
     }
 
     @PatchMapping("/doUpdate") // 정보수정 처리
+    @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 처리를 합니다.")
     public String updateMember(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
         memberService.updateMember(memberDto);
         MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
@@ -88,11 +94,13 @@ public class MemberController {
     }
 
     @GetMapping("/delete") // 회원 탈퇴 페이지 호출
+    @Operation(summary = "회원 탈퇴 페이지 호출", description = "회원 탈퇴 페이지를 호출합니다.")
     public String getDeletePage() {
         return "/member/delete";
     }
 
     @PostMapping("/doDelete") // 회원탈퇴 처리
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 처리를 합니다.")
     @ResponseBody
     public String deleteMember(@RequestBody MemberDto memberDto, HttpSession session) {
         Integer memNo = memberDto.getMemNo();
@@ -111,6 +119,7 @@ public class MemberController {
     }
 
     @GetMapping("/duplicationIdCheck") // 중복 ID 검증
+    @Operation(summary = "중복 ID 검증", description = "중복된 아이디가 있는 지 검증합니다.")
     @ResponseBody
     public ResponseEntity<Long> duplicationIdCheck(@RequestParam String memId) {
         System.out.println("[memberController][duplicationIdCheck][memId]: " + memId);
@@ -120,6 +129,7 @@ public class MemberController {
     }
 
     @GetMapping("/duplicationNickNmCheck") // 중복 닉네임 검증
+    @Operation(summary = "중복 닉네임 검증", description = "중복된 닉네임이 있는 지 검증합니다.")
     @ResponseBody
     public ResponseEntity<Long> duplicationNickNmCheck(@RequestParam String nickNm) {
         System.out.println("[memberController][duplicationNickNmCheck][nickNm]: " + nickNm);
@@ -129,6 +139,7 @@ public class MemberController {
     }
 
     @GetMapping("/duplicationEmailCheck") // 중복 이메일 검증
+    @Operation(summary = "중복 이메일 검증", description = "중복된 이메일이 있는 지 검증합니다.")
     @ResponseBody
     public ResponseEntity<Long> duplicationEmailCheck(@RequestParam String email) {
         System.out.println("[memberController][duplicationEmailCheck][email]: " + email);
@@ -138,11 +149,13 @@ public class MemberController {
     }
 
     @GetMapping("/login") // 로그인 페이지 호출
+    @Operation(summary = "로그인 페이지 호출", description = "로그인 페이지를 호출합니다.")
     public String getLoginPage() {
         return "/member/login";
     }
 
     @PostMapping("/doLogin") // 로그인 처리
+    @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     public ResponseEntity<String> doLogin(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
         MemberDto member = memberService.doLogin(memberDto);
         if (member != null && member.getDeleteYn() != Boolean.TRUE) { // 로그인 성공
@@ -155,6 +168,7 @@ public class MemberController {
     }
 
     @GetMapping("/logout") // 로그아웃 처리
+    @Operation(summary = "로그아웃 처리", description = "로그아웃을 진행합니다.")
     public String doLogout(HttpSession session) {
         session.removeAttribute("member");
         log.info("로그아웃 진행 -> 세션 삭제 완료");
@@ -162,11 +176,13 @@ public class MemberController {
     }
 
     @GetMapping("/findId") // 아이디 찾기 페이지 호출
+    @Operation(summary = "아이디 찾기 페이지 호출", description = "아이디 찾기 페이지를 호출합니다.")
     public String findId() {
         return "/member/findId";
     }
 
     @PostMapping("/doFindId") // 아이디 찾기 처리
+    @Operation(summary = "아이디 찾기", description = "아이디 찾기를 진행합니다")
     public ResponseEntity<String> doFindId(@RequestBody MemberDto memberDto) throws MessagingException, ExecutionException, InterruptedException, NotFoundException {
         if (memberService.findId(memberDto.getMemNm(), memberDto.getEmail()) == null) {
             log.info("member fot nound");
@@ -177,11 +193,13 @@ public class MemberController {
     }
 
     @GetMapping("/findPw") // 비밀번호 찾기 페이지 호출
+    @Operation(summary = "비밀번호 찾기 페이지 호출", description = "비밀번호 찾기 페이지를 호출합니다.")
     public String findPw() {
         return "/member/findPw";
     }
 
     @PostMapping("doFindPw") // 비밀번호 찾기 처리(회원 정보 일치 여부 확인)
+    @Operation(summary = "비밀번호 찾기", description = "비밀번호 찾기를 진행합니다.")
     public ResponseEntity<String> doFindPw(@RequestBody MemberDto memberDto) throws NoSuchAlgorithmException, NotFoundException {
         String memNm = memberDto.getMemNm();
         String email = memberDto.getEmail();
@@ -195,11 +213,13 @@ public class MemberController {
     }
 
     @GetMapping("resetPw") // 임시 비밀번호 발송 완료 페이지 호출
+    @Operation(summary = "임시 비밀번호 발송 완료 페이지 호출", description = "임시 비밀번호 발송 완료 페이지를 호출합니다.")
     public String resetPw() {
         return "/member/resetPw";
     }
 
     @PatchMapping("doResetPw") // 비밀번호 재설정 처리
+    @Operation(summary = "비밀번호 재설정", description = "비밀번호를 재설정 처리를 진행합니다.")
     public ResponseEntity<String> doResetPw(@RequestBody DoResetPwDto doResetPwDto) throws NoSuchAlgorithmException {
         System.out.println("[MemberController][doResetPw][doResetPwDto]: " + doResetPwDto);
         memberService.doResetPw(doResetPwDto); // 회원 번호, 새롭게 설정할 비밀번호
@@ -207,6 +227,7 @@ public class MemberController {
     }
 
     @GetMapping("resetPwSuccess") // 비밀번호 재설정 완료 페이지 호출
+    @Operation(summary = "비밀번호 재설정 완료 페이지 호출", description = "비밀번호 재설정 완료 페이지를 호출합니다.")
     public String resetPwSuccess() {
         return "/member/resetPwSuccess";
     }
@@ -216,6 +237,7 @@ public class MemberController {
      * 해당 메서드 내에서 팔로우와 팔로잉을 동시에 처리한다.
      */
     @PostMapping("/follow") // 팔로우 처리
+    @Operation(summary = "팔로우 처리", description = "팔로우 처리를 진행합니다.")
     public ResponseEntity<String> doFollow(@RequestBody BoardDto boardDto, HttpSession session) {
         log.info("팔로우 시도: {}", session.getAttribute("member"));
         log.info("대상 게시글: {}", boardDto);
@@ -299,6 +321,7 @@ public class MemberController {
      * 해당 메서드 내에서 이미 팔로우된 정보를 삭제한다.
      */
     @DeleteMapping("/cancelFollow") // 팔로우 취소 처리
+    @Operation(summary = "팔로우 취소", description = "팔로우 취소 처리를 진행합니다.")
     public ResponseEntity<String> doCancelFollow(@RequestBody BoardDto boardDto, HttpSession session) {
         HashMap<String, Object> map = new HashMap<>();
         MemberDto memberDto = (MemberDto) session.getAttribute("member");

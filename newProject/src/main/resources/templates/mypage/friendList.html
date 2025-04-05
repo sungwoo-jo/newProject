@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form id="inviteChat" action="/mypage/inviteChat" method="post">
+    <table class="table table-striped" border="1">
+        <thead>
+        <tr>
+            <th>선택</th>
+            <th>아이디</th>
+            <th>닉네임</th>
+            <th>이메일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
+        <tr th:each="friend, stat : ${friends}">
+            <td><input type="checkbox" th:value="${friend.memNo}" name="friendNo"/></td>
+            <td th:text="${friend.memId}" th:value="${friend.memId}"></td>
+            <td th:text="${friend.nickNm}" th:value="${friend.nickNm}"></td>
+            <td th:text="${friend.email}" th:value="${friend.email}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <button type="submit">채팅방에 초대하기</button>
+</form>
+
+</body>
+</html>

@@ -7,7 +7,7 @@ import com.sw.newProject.dto.PageDto;
 import com.sw.newProject.service.BoardService;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
-import io.swagger.models.Response;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -130,6 +130,7 @@ public class BoardController {
     }
 
     @PostMapping("{boardId}/doWrite") // 게시글 작성 처리
+    @Operation(summary = "게시글 작성 처리", description = "실제 게시글 내용을 입력받아 저장합니다.")
     public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
         int result = 0;
         if (boardDto.getBoardNo() != null) { // 수정
