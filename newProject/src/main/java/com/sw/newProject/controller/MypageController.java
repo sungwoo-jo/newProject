@@ -1,8 +1,8 @@
 package com.sw.newProject.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sw.newProject.dto.ChatEntrantDto;
+import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.enumType.ChatEntrantStatus;
 import com.sw.newProject.service.FriendShipService;
@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @OpenAPIDefinition(info = @Info(title = "newProject API 명세서",
         description = "API 명세서",
@@ -102,10 +104,11 @@ public class MypageController {
 
     @GetMapping("/friendList")
     public String getFriendList(HttpSession session, Model model) {
+        // 1. 친구 목록 조회
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
         String friendList = friendShipService.getFriendList(memberDto.getMemNo());
 
-        List<MemberDto> friends = new ArrayList<>();
+        List<MemberDto> friendLists = new ArrayList<>();
 
         // JSON 문자열을 JSONObject로 파싱
         JSONObject friendListJson = new JSONObject(friendList);
@@ -118,12 +121,20 @@ public class MypageController {
 
             MemberDto friendMemberDto = memberService.getMember(Integer.parseInt(friendId));
 
-            friends.add(friendMemberDto);
+            friendLists.add(friendMemberDto);
         }
 
-        log.info("friends: {}", friends);
+        model.addAttribute("friendLists", friendLists); // 친구 목록 리턴
 
-        model.addAttribute("friends", friends);
+        // 2. 받은 친구 요청 조회(fromMemNo가 자신이고, status가 REQUEST)
+        List<MemberDto> recentFriendLists = friendShipService.getReceivedRequest(memberDto.getMemNo());
+        log.info("recentFriendLists: {}", recentFriendLists);
+        model.addAttribute("recentFriendLists", recentFriendLists); // 받은 친구 요청 리턴
+
+        // 3. 보낸 친구 요청 조회(toMemNo가 자신이고, status가 REQUEST)
+        List<MemberDto> requestFriendLists = friendShipService.getSentRequest(memberDto.getMemNo());
+        log.info("requestFriendLists: {}", requestFriendLists);
+        model.addAttribute("requestFriendLists", requestFriendLists); // 받은 친구 요청 리턴
 
         return "/mypage/friendList";
     }
@@ -162,5 +173,33 @@ public class MypageController {
         }
 
         return "success";
+    }
+
+    @PatchMapping("/acceptFriend")
+    public ResponseEntity<String> acceptFriend(@RequestBody List<Integer> friendNo, HttpSession session) throws JsonProcessingException {
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        FriendShipDto friendShipDto = new FriendShipDto();
+        friendShipDto.setFromMemNo(memberDto.getMemNo());
+        for (Integer friend : friendNo) {
+            log.info("friend: {}", friend);
+            friendShipDto.setToMemNo(friend);
+            friendShipService.acceptRequest(friendShipDto);
+        }
+
+        return ResponseEntity.ok("success");
+    }
+
+    @DeleteMapping("/cancelRequest")
+    public ResponseEntity<String> cancelRequest(@RequestBody List<Integer> friendNo, HttpSession session) throws JsonProcessingException {
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        FriendShipDto friendShipDto = new FriendShipDto();
+        friendShipDto.setToMemNo(memberDto.getMemNo());
+        for (Integer friend : friendNo) {
+            log.info("friend: {}", friend);
+            friendShipDto.setFromMemNo(friend);
+            friendShipService.cancelRequest(friendShipDto);
+        }
+
+        return ResponseEntity.ok("success");
     }
 }

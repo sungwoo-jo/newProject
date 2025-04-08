@@ -5,17 +5,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sw.newProject.dto.FriendShipDto;
+import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.enumType.ErrorCode;
 import com.sw.newProject.exception.CustomException;
 import com.sw.newProject.mapper.FriendShipMapper;
-import io.swagger.v3.core.util.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 @Slf4j
@@ -26,7 +25,7 @@ public class FriendShipService {
     private final FriendShipMapper friendShipMapper;
     private final ObjectMapper objectMapper;
 
-    public List<FriendShipDto> getSentRequest(int memNo) {
+    public List<MemberDto> getSentRequest(int memNo) {
         return friendShipMapper.getSentRequest(memNo);
     }
 
@@ -38,7 +37,7 @@ public class FriendShipService {
         }
     }
 
-    public List<FriendShipDto> getReceivedRequest(int memNo) {
+    public List<MemberDto> getReceivedRequest(int memNo) {
         return friendShipMapper.getReceivedRequest(memNo);
     }
 
@@ -134,11 +133,11 @@ public class FriendShipService {
     public void deleteFriend(FriendShipDto friendShipDto) { // 서로의 친구 목록에서 삭제
         deleteFriendToMember(friendShipDto);
         deleteFriendFromMember(friendShipDto);
-        deleteRequest(friendShipDto); // 친구 요청 목록도 삭제해서 다시 요청할 수 있는 상태를 만듬
+        cancelRequest(friendShipDto); // 친구 요청 목록도 삭제해서 다시 요청할 수 있는 상태를 만듬
     }
 
-    public void deleteRequest(FriendShipDto friendShipDto) { // 친구 요청 목록 삭제
-        friendShipMapper.deleteRequest(friendShipDto);
+    public void cancelRequest(FriendShipDto friendShipDto) { // 친구 요청 목록 삭제
+        friendShipMapper.cancelRequest(friendShipDto);
     }
 
     public String getFriendList(int memNo) {

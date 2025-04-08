@@ -54,7 +54,8 @@ public class WebsocketChatHandler extends TextWebSocketHandler {
             sendToEachSocket(sessions,message); //입장,퇴장 아닐 때는 클라이언트로부터 온 메세지 그대로 전달.
         }
     }
-    private  void sendToEachSocket(Set<WebSocketSession> sessions, TextMessage message){
+
+    private void sendToEachSocket(Set<WebSocketSession> sessions, TextMessage message){
         sessions.parallelStream().forEach( roomSession -> {
             try {
                 roomSession.sendMessage(message);
@@ -63,8 +64,6 @@ public class WebsocketChatHandler extends TextWebSocketHandler {
             }
         });
     }
-
-
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {

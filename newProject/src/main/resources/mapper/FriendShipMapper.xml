@@ -4,10 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sw.newProject.mapper.FriendShipMapper">
 
-    <select id="getSentRequest" parameterType="int" resultType="com.sw.newProject.dto.FriendShipDto">
+    <select id="getSentRequest" parameterType="int" resultType="com.sw.newProject.dto.MemberDto">
         SELECT *
-        FROM friendShip
-        WHERE toMemNo = #{memNo}
+        FROM member
+        WHERE memNo IN (SELECT fromMemNo
+                        FROM friendShip
+                        WHERE toMemNo = #{memNo} AND STATUS = 'REQUEST');
     </select>
 
     <insert id="createRequest" parameterType="com.sw.newProject.dto.FriendShipDto">
@@ -23,10 +25,12 @@
         WHERE toMemNo = #{toMemNo} AND fromMemNo = #{fromMemNo}
     </select>
 
-    <select id="getReceivedRequest" parameterType="int" resultType="com.sw.newProject.dto.FriendShipDto">
+    <select id="getReceivedRequest" parameterType="int" resultType="com.sw.newProject.dto.MemberDto">
         SELECT *
-        FROM friendShip
-        WHERE fromMemNo = #{memNo}
+        FROM member
+        WHERE memNo IN (SELECT toMemNo
+                        FROM friendShip
+                        WHERE fromMemNo = #{memNo} AND STATUS = 'REQUEST');
     </select>
 
     <update id="changeStatus" parameterType="com.sw.newProject.dto.FriendShipDto">
@@ -77,7 +81,7 @@
         WHERE memNo = #{fromMemNo}
     </delete>
 
-    <delete id="deleteRequest" parameterType="com.sw.newProject.dto.FriendShipDto">
+    <delete id="cancelRequest" parameterType="com.sw.newProject.dto.FriendShipDto">
         DELETE
         FROM friendShip
         WHERE (toMemNo = #{toMemNo} AND fromMemNo = #{fromMemNo}) OR (toMemNo = #{fromMemNo} AND fromMemNo = #{toMemNo})

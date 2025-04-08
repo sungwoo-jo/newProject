@@ -6,6 +6,7 @@
 </head>
 <body>
 
+<h2>친구 목록</h2>
 <form id="inviteChat" action="/mypage/inviteChat" method="post">
     <table class="table table-striped" border="1">
         <thead>
@@ -18,17 +19,119 @@
         </thead>
         <tbody>
         <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
-        <tr th:each="friend, stat : ${friends}">
-            <td><input type="checkbox" th:value="${friend.memNo}" name="friendNo"/></td>
-            <td th:text="${friend.memId}" th:value="${friend.memId}"></td>
-            <td th:text="${friend.nickNm}" th:value="${friend.nickNm}"></td>
-            <td th:text="${friend.email}" th:value="${friend.email}"></td>
+        <tr th:each="friendList, stat : ${friendLists}">
+            <td><input type="checkbox" th:value="${friendList.memNo}" name="friendNo"/></td>
+            <td th:text="${friendList.memId}" th:value="${friendList.memId}"></td>
+            <td th:text="${friendList.nickNm}" th:value="${friendList.nickNm}"></td>
+            <td th:text="${friendList.email}" th:value="${friendList.email}"></td>
         </tr>
         </tbody>
     </table>
 
     <button type="submit">채팅방에 초대하기</button>
 </form>
+
+<h2>받은 요청</h2>
+<form id="recentFriendList">
+    <table class="table table-striped" border="1">
+        <thead>
+        <tr>
+            <th>선택</th>
+            <th>닉네임</th>
+            <th>친구요청일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
+        <tr th:each="recentFriendList, stat : ${recentFriendLists}">
+            <td><input type="checkbox" th:value="${recentFriendList.memNo}" id="recentFriendNo" name="friendNo"/></td>
+            <td th:text="${recentFriendList.nickNm}" th:value="${recentFriendList.nickNm}"></td>
+            <td th:text="${recentFriendList.regDt}" th:value="${recentFriendList.regDt}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <button id="acceptFriend">수락하기</button>
+</form>
+
+<h2>보낸 요청</h2>
+<form id="requestFriendList">
+    <table class="table table-striped" border="1">
+        <thead>
+        <tr>
+            <th>선택</th>
+            <th>닉네임</th>
+            <th>친구요청일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
+        <tr th:each="requestFriendList, stat : ${requestFriendLists}">
+            <td><input type="checkbox" th:value="${requestFriendList.memNo}" id="requestFriendNo" name="friendNo"/></td>
+            <td th:text="${requestFriendList.nickNm}" th:value="${requestFriendList.nickNm}"></td>
+            <td th:text="${requestFriendList.regDt}" th:value="${requestFriendList.regDt}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <button id="cancelRequest">취소하기</button>
+</form>
+
+<script>
+    // 받은 요청 수락
+    document.getElementById('acceptFriend').addEventListener('click', function (event) {
+        event.preventDefault();
+        const form = document.querySelector('form[Id="recentFriendList"]');
+        const data = Array.from(form.querySelectorAll('input[Id="recentFriendNo"]:checked'))
+            .map(cb => parseInt(cb.value));
+
+        fetch("./acceptFriend", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
+            },
+            body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
+        })
+            .then(response => response.text())
+            .then(data => {  // 서버에서 반환한 HTML 코드 받기
+                if (data === "success") {  // 상태 코드가 200이면 성공
+                    alert('친구 수락 성공');
+                    location.reload();
+                    // 성공 처리 로직
+                } else {
+                    alert('친구 수락 실패');
+                    // 실패 처리 로직
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+
+    // 보낸 요청 취소
+    document.getElementById('cancelRequest').addEventListener('click', function (event) {
+        event.preventDefault();
+        const form = document.querySelector('form[Id="requestFriendList"]');
+        const data = Array.from(form.querySelectorAll('input[Id="requestFriendNo"]:checked'))
+            .map(cb => parseInt(cb.value));
+
+        fetch("./cancelRequest", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
+            },
+            body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
+        })
+            .then(response => response.text())
+            .then(data => {  // 서버에서 반환한 HTML 코드 받기
+                if (data === "success") {  // 상태 코드가 200이면 성공
+                    alert('요청이 취소되었습니다.');
+                    location.reload();
+                    // 성공 처리 로직
+                } else {
+                    alert('요청 취소 실패');
+                    // 실패 처리 로직
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+</script>
 
 </body>
 </html>

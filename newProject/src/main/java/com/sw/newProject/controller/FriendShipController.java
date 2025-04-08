@@ -22,9 +22,9 @@ public class FriendShipController {
     private final FriendShipService friendShipService;
 
     @GetMapping("/getSentRequest/{memNo}")
-    public ResponseEntity<List<FriendShipDto>> getSentRequest(@PathVariable int memNo) { // 보낸 모든 요청 조회
+    public ResponseEntity<List<MemberDto>> getSentRequest(@PathVariable int memNo) { // 보낸 모든 요청 조회
         log.info("memNo: {}", memNo);
-        List<FriendShipDto> sentRequest = friendShipService.getSentRequest(memNo);
+        List<MemberDto> sentRequest = friendShipService.getSentRequest(memNo);
         return ResponseEntity.ok(sentRequest);
     }
 
@@ -37,8 +37,8 @@ public class FriendShipController {
     }
 
     @GetMapping("/getReceivedRequest/{memNo}")
-    public ResponseEntity<List<FriendShipDto>> getReceivedRequest(@PathVariable int memNo) { // 받은 모든 요청 조회
-        List<FriendShipDto> receivedRequest = friendShipService.getReceivedRequest(memNo);
+    public ResponseEntity<List<MemberDto>> getReceivedRequest(@PathVariable int memNo) { // 받은 모든 요청 조회
+        List<MemberDto> receivedRequest = friendShipService.getReceivedRequest(memNo);
         return ResponseEntity.ok(receivedRequest);
     }
 
@@ -57,6 +57,12 @@ public class FriendShipController {
     @PostMapping("/deleteFriend")
     public ResponseEntity<String> deleteFriend(FriendShipDto friendShipDto) { // 친구 삭제(서로의 목록에서 삭제, 요청 목록도 삭제)
         friendShipService.deleteFriend(friendShipDto);
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/cancelRequest")
+    public ResponseEntity<String> cancelRequest(FriendShipDto friendShipDto) { // 보낸 요청 취소
+        friendShipService.cancelRequest(friendShipDto);
         return ResponseEntity.ok("success");
     }
 }

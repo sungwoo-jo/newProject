@@ -1,6 +1,7 @@
 package com.sw.newProject.mapper;
 
 import com.sw.newProject.dto.FriendShipDto;
+import com.sw.newProject.dto.MemberDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -8,11 +9,11 @@ import java.util.List;
 @Mapper
 public interface FriendShipMapper {
 
-    List<FriendShipDto> getSentRequest(int memNo);
+    List<MemberDto> getSentRequest(int memNo);
 
     void createRequest(FriendShipDto friendShipDto);
 
-    List<FriendShipDto> getReceivedRequest(int memNo);
+    List<MemberDto> getReceivedRequest(int memNo);
 
     void changeStatus(FriendShipDto friendShipDto);
 
@@ -30,7 +31,7 @@ public interface FriendShipMapper {
 
     void deleteFriendFromMember(FriendShipDto friendShipDto);
 
-    void deleteRequest(FriendShipDto friendShipDto);
+    void cancelRequest(FriendShipDto friendShipDto);
 
     String getStatus(FriendShipDto friendShipDto);
 }

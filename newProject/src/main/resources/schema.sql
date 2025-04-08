@@ -164,6 +164,21 @@ CREATE TABLE friendShip (
     FOREIGN KEY (fromMemNo) REFERENCES member(memNo)
 );
 
+DROP TABLE IF EXISTS `notification` CASCADE;
+CREATE TABLE notification (
+	sno INT NOT NULL AUTO_INCREMENT COMMENT '번호',
+	toMemNo INT DEFAULT NULL NULL COMMENT '보낸사람회원번호',
+	fromMemNo INT NOT NULL COMMENT '받는사람회원번호',
+	type VARCHAR(20) NOT NULL COMMENT '알림종류',
+	readYn TINYINT(1) NOT NULL DEFAULT '0' COMMENT '읽음여부',
+	deleteYn TINYINT(1) NOT NULL DEFAULT '0' COMMENT '삭제여부',
+	regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' comment '생성일',
+    modDt DATETIME DEFAULT NULL comment '수정일',
+    PRIMARY KEY (sno),
+    FOREIGN KEY (toMemNo) REFERENCES member(memNo),
+    FOREIGN KEY (fromMemNo) REFERENCES member(memNo)
+);
+
 -- 더미 데이터(회원)
 INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImageName, regDt) 
 VALUES 
