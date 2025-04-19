@@ -1,0 +1,17 @@
+<script>
+    const userId = 'user123';
+    const eventSource = new EventSource(`/sse/subscribe?userId=${userId}`);
+
+    eventSource.onmessage = function(event) {
+    console.log("일반 메시지: ", event.data);
+};
+
+    eventSource.addEventListener("notification", function(event) {
+    alert("알림 도착: " + event.data);
+});
+
+    eventSource.onerror = function() {
+    console.log("연결 끊김");
+    eventSource.close();
+};
+</script>

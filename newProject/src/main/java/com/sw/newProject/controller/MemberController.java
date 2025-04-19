@@ -1,11 +1,17 @@
 package com.sw.newProject.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sw.newProject.dto.BoardDto;
 import com.sw.newProject.dto.DoResetPwDto;
+import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.dto.MemberDto;
 
 import com.sw.newProject.exception.CustomException;
+import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
+import com.sw.newProject.service.NotificationService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -27,7 +33,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static com.sw.newProject.enumType.ErrorCode.ALREADY_FOLLOWED;
@@ -45,6 +53,8 @@ import static com.sw.newProject.enumType.ErrorCode.ALREADY_FOLLOWED;
 @RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
+    private final NotificationService notificationService;
+    private final FriendShipService friendShipService;
 
     @GetMapping("/join") // 회원가입 페이지 호출
     @Operation(summary = "회원가입 페이지 호출", description = "회원가입 페이지를 호출합니다.")
@@ -156,11 +166,26 @@ public class MemberController {
 
     @PostMapping("/doLogin") // 로그인 처리
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
-    public ResponseEntity<String> doLogin(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
-        MemberDto member = memberService.doLogin(memberDto);
+    public ResponseEntity<String> doLogin(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException, JsonProcessingException {
+        MemberDto member = memberService.doLogin(memberDto); // 기본 데이터 가져오기
+        String friendList = friendShipService.getFriendList(member.getMemNo());
+
         if (member != null && member.getDeleteYn() != Boolean.TRUE) { // 로그인 성공
             // 세션 값 설정
             session.setAttribute("member", member);
+            notificationService.subscribe(member.getMemNo()); // 로그인 성공 시 알림 구독
+            log.info("member: {}", member);
+
+            // 친구 리스트 불러와서 알림 전송
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<Integer, String> map = objectMapper.readValue(friendList, new TypeReference<Map<Integer, String>>() {});
+            for (Integer friend : map.keySet())
+            {
+                Executors.newSingleThreadExecutor().submit(() -> { // 알림 보내기 시작
+                    notificationService.notifyOne(friend, member.getMemNm() + "님이 로그인하셨습니다.");
+                    log.info("로그인 알림 전송 완료");
+                });
+            }
             return ResponseEntity.ok("success");
         } else { // 로그인 실패
             return ResponseEntity.badRequest().build();

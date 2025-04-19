@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .badge-dot {
+            position: absolute;
+            top: 20%;
+            right: 90%;
+            transform: translate(50%, -50%);
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px white;
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <a th:if="${session.member}" href="/member/logout">Logout</a>
@@ -20,8 +34,11 @@
 <p th:unless="${session.member}" th:text="'로그인 정보가 없습니다.'"></p>
 
 <hr>
+<div>
+    <h1>인기게시글</h1>
+    <span class="badge-dot"></span>
 
-<h1>인기게시글</h1>
+</div>
 <table class="table table-striped" border="1">
     <thead>
     <tr>
@@ -48,3 +65,27 @@
 
 </body>
 </html>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const eventSource = new EventSource("/notifications/subscribe");
+
+        eventSource.addEventListener("message", function(event) {
+            console.log("서버로부터 알림: " + event.data);
+        });
+
+        eventSource.onerror = function(err) {
+            console.error("SSE 연결 오류:", err);
+            eventSource.close();
+        };
+
+        eventSource.addEventListener("sse", function(event) {
+            console.log("더미 데이터 수신 완료");
+        });
+
+        eventSource.addEventListener("notify", function(event) {
+            console.log("🔔 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
+    })
+</script>
