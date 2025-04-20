@@ -22,8 +22,8 @@ public class NotificationController {
         return notificationService.subscribe(memNo);
     }
 
-    @PostMapping("/send-data/{memNo}")
-    public void sendData(@PathVariable Integer memNo) {
-        notificationService.notifyOne(memNo, "data");
-    }
+//    @PostMapping("/send-data/{memNo}")
+//    public void sendData(@PathVariable Integer memNo) {
+//        notificationService.notifyOne(memNo, "data", );
+//    }
 }

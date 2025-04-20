@@ -3,6 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sw.newProject.mapper.NotificationMapper">
-
-
+    <insert id="saveNotify" parameterType="com.sw.newProject.dto.NotificationDto">
+        INSERT INTO
+            notification(toMemNo, fromMemNo, notificationType, content, url, regDt)
+        VALUES
+            (#{toMemNo}, #{fromMemNo}, #{notificationType}, #{content}, #{url}, now())
+    </insert>
 </mapper>

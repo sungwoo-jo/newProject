@@ -87,5 +87,17 @@
             console.log("🔔 알림: " + event.data);
             document.querySelector(".badge-dot").style.display = "block";
         });
+        eventSource.addEventListener("FRIEND_REQ", function(event) {
+            console.log("🔔 친구 요청 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
+        eventSource.addEventListener("FRIEND_ACC", function(event) {
+            console.log("🔔 친구 요청 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
+        eventSource.addEventListener("FRIEND_REJ", function(event) {
+            console.log("🔔 친구 요청 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
     })
 </script>

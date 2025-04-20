@@ -51,6 +51,7 @@
         </tbody>
     </table>
     <button id="acceptFriend">수락하기</button>
+    <button id="rejectRequest">거절하기</button>
 </form>
 
 <h2>보낸 요청</h2>
@@ -98,6 +99,34 @@
                     // 성공 처리 로직
                 } else {
                     alert('친구 수락 실패');
+                    // 실패 처리 로직
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+
+    // 받은 요청 거절
+    document.getElementById('rejectRequest').addEventListener('click', function (event) {
+        event.preventDefault();
+        const form = document.querySelector('form[Id="recentFriendList"]');
+        const data = Array.from(form.querySelectorAll('input[Id="recentFriendNo"]:checked'))
+            .map(cb => parseInt(cb.value));
+
+        fetch("./rejectRequest", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"  // 서버에게 JSON 형식으로 데이터를 보낸다고 알림
+            },
+            body: JSON.stringify(data)  // 폼 데이터를 JSON 형태로 서버에 전송
+        })
+            .then(response => response.text())
+            .then(data => {  // 서버에서 반환한 HTML 코드 받기
+                if (data === "success") {  // 상태 코드가 200이면 성공
+                    alert('친구 거절 성공');
+                    location.reload();
+                    // 성공 처리 로직
+                } else {
+                    alert('친구 거절 실패');
                     // 실패 처리 로직
                 }
             })

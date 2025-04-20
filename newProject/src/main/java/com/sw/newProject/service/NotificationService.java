@@ -1,5 +1,8 @@
 package com.sw.newProject.service;
 
+import com.sw.newProject.dto.NotificationDto;
+import com.sw.newProject.enumType.NotificationType;
+import com.sw.newProject.mapper.NotificationMapper;
 import com.sw.newProject.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,10 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
 @Slf4j
@@ -19,6 +20,11 @@ import java.util.concurrent.Executors;
 public class NotificationService {
     // 기본 타임아웃 설정
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
+
+    // 모든 Emitters를 저장하는 ConcurrentHashMap
+//    private final Map<Integer, SseEmitter> emitters = new ConcurrentHashMap<>();
+
+    private final NotificationMapper notificationMapper;
 
     private final EmitterRepository emitterRepository;
 
@@ -50,9 +56,9 @@ public class NotificationService {
      * @param memNo - 메세지를 전송할 회원의 번호.
      * @param event  - 전송할 이벤트 객체.
      */
-    public void notifyOne(Integer memNo, Object event) {
-        sendToClient(memNo, event);
-        log.info("{} 에게 {} 알림 전송 완료", memNo, event);
+    public void notifyOne(Integer memNo, Object event, NotificationType type) {
+        sendToClient(memNo, event, type);
+        log.info("{} 에게 {} 알림 전송 완료, type: {}", memNo, event, type);
     }
 
     /**
@@ -73,11 +79,11 @@ public class NotificationService {
      * @param memNo   - 데이터를 받을 회원의 번호.
      * @param data - 전송할 데이터.
      */
-    private void sendToClient(Integer memNo, Object data) {
+    private void sendToClient(Integer memNo, Object data, NotificationType type) {
         SseEmitter emitter = emitterRepository.get(memNo);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().id(String.valueOf(memNo)).name("notify").data(data)); // 여기서 설정한 eventName인 sse가 프론트의 addEventListener 의 값이 된다.
+                emitter.send(SseEmitter.event().id(String.valueOf(memNo)).name(String.valueOf(type)).data(data)); // 여기서 설정한 eventName인 sse가 프론트의 addEventListener 의 값이 된다.
             } catch (IOException exception) {
                 emitterRepository.deleteById(memNo);
                 emitter.completeWithError(exception);
@@ -108,8 +114,14 @@ public class NotificationService {
         log.info("friendList: {}", friendList);
         log.info("emitterRepository.findAll: {}", emitterRepository.findAll());
 
-        for (Integer friend : friendList) {
-            notifyOne(friend, emitterRepository.get(friend));
-        }
+//        for (Integer friend : friendList) {
+//            notifyOne(friend, emitterRepository.get(friend));
+//        }
+    }
+    /*
+     * 보낸 알림을 저장
+     */
+    public void saveNotify(NotificationDto notificationDto) {
+        notificationMapper.saveNotify(notificationDto);
     }
 }

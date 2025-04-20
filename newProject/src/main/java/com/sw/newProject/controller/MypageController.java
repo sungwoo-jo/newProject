@@ -189,8 +189,22 @@ public class MypageController {
         return ResponseEntity.ok("success");
     }
 
+    @PatchMapping("/rejectRequest")
+    public ResponseEntity<String> rejectRequest(@RequestBody List<Integer> friendNo, HttpSession session) {
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        FriendShipDto friendShipDto = new FriendShipDto();
+        friendShipDto.setFromMemNo(memberDto.getMemNo());
+        for (Integer friend : friendNo) {
+            log.info("friend: {}", friend);
+            friendShipDto.setToMemNo(friend);
+            friendShipService.rejectRequest(friendShipDto);
+        }
+
+        return ResponseEntity.ok("success");
+    }
+
     @DeleteMapping("/cancelRequest")
-    public ResponseEntity<String> cancelRequest(@RequestBody List<Integer> friendNo, HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<String> cancelRequest(@RequestBody List<Integer> friendNo, HttpSession session) {
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
         FriendShipDto friendShipDto = new FriendShipDto();
         friendShipDto.setToMemNo(memberDto.getMemNo());

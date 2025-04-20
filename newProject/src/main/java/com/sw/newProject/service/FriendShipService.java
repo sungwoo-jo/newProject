@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.dto.MemberDto;
+import com.sw.newProject.dto.NotificationDto;
 import com.sw.newProject.enumType.ErrorCode;
+import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.exception.CustomException;
 import com.sw.newProject.mapper.FriendShipMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,10 @@ public class FriendShipService {
 
     private final FriendShipMapper friendShipMapper;
     private final ObjectMapper objectMapper;
+    private final NotificationService notificationService;
+    private final MemberService memberService;
+
+    NotificationDto notificationDto = new NotificationDto(); // 알림 전송 객체 선언
 
     public List<MemberDto> getSentRequest(int memNo) {
         return friendShipMapper.getSentRequest(memNo);
@@ -31,10 +37,46 @@ public class FriendShipService {
 
     public void createRequest(FriendShipDto friendShipDto) {
         if (getRequest(friendShipDto) < 1) {
-            friendShipMapper.createRequest(friendShipDto);
+            friendShipMapper.createRequest(friendShipDto); // 요청 전송
+
+            log.info("friendShipDto: {}", friendShipDto);
+
+            // 알림 발송 & 알림 발송 내역 저장
+            saveNotifyAndSend(friendShipDto, NotificationType.FRIEND_REQ);
         } else {
             throw new CustomException(ErrorCode.ALREADY_FRIEND_LIST, "이미 존재하는 친구 요청입니다.");
         }
+    }
+
+    public void saveNotifyAndSend(FriendShipDto friendShipDto, NotificationType type) {
+        // 알림 dto 세팅
+
+        notificationDto.setNotificationType(type);
+        switch (type) {
+            case FRIEND_REQ -> {
+                notificationDto.setToMemNo(friendShipDto.getToMemNo());
+                notificationDto.setFromMemNo(friendShipDto.getFromMemNo());
+                notificationDto.setContent(memberService.getMember(notificationDto.getToMemNo()).getMemNm() + "님이 친구 요청을 보냈습니다.");
+                notificationDto.setUrl("/mypage/friendList");
+            }
+            case FRIEND_ACC -> {
+                notificationDto.setFromMemNo(friendShipDto.getToMemNo());
+                notificationDto.setToMemNo(friendShipDto.getFromMemNo());
+                notificationDto.setContent(memberService.getMember(notificationDto.getToMemNo()).getMemNm() + "님이 친구 요청을 수락했습니다.");
+                notificationDto.setUrl("/mypage/friendList");
+            }
+            case FRIEND_REJ -> {
+                notificationDto.setFromMemNo(friendShipDto.getToMemNo());
+                notificationDto.setToMemNo(friendShipDto.getFromMemNo());
+                notificationDto.setContent(memberService.getMember(notificationDto.getToMemNo()).getMemNm() + "님이 친구 요청을 거절했습니다.");
+                notificationDto.setUrl("/mypage/friendList");
+            }
+        }
+        log.info("notificationDt: {}", notificationDto);
+
+        // 알림 내역 저장
+        notificationService.saveNotify(notificationDto);
+        notificationService.notifyOne(notificationDto.getFromMemNo(), notificationDto.getContent(), notificationDto.getNotificationType());
     }
 
     public List<MemberDto> getReceivedRequest(int memNo) {
@@ -47,6 +89,8 @@ public class FriendShipService {
                 friendShipDto.acceptRequest();
                 changeStatus(friendShipDto);
                 addFriendList(friendShipDto); // 서로의 친구 리스트에 추가
+
+                saveNotifyAndSend(friendShipDto, NotificationType.FRIEND_ACC); // 알림 발송 & 알림 발송 내역 저장
             } else {
                 throw new CustomException(ErrorCode.NOT_EXISTED_REQUEST, "보낸 친구 요청이 없습니다.");
             }
@@ -60,6 +104,7 @@ public class FriendShipService {
             if (getRequest(friendShipDto) > 0) {
                 friendShipDto.rejectRequest();
                 changeStatus(friendShipDto);
+                saveNotifyAndSend(friendShipDto, NotificationType.FRIEND_REJ); // 알림 발송 & 알림 발송 내역 저장
             } else {
                 throw new CustomException(ErrorCode.NOT_EXISTED_REQUEST, "보낸 친구 요청이 없습니다.");
             }

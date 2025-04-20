@@ -24,7 +24,7 @@ public class NotificationDto {
 
     private Boolean readYn; // 알림 확인 여부
 
-    private Boolean deleteYn; // 알림 확인 여부
+    private Boolean deleteYn; // 알림 삭제 여부
 
     private String content; // 알림의 내용
 

@@ -168,7 +168,6 @@ public class MemberController {
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     public ResponseEntity<String> doLogin(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException, JsonProcessingException {
         MemberDto member = memberService.doLogin(memberDto); // 기본 데이터 가져오기
-        String friendList = friendShipService.getFriendList(member.getMemNo());
 
         if (member != null && member.getDeleteYn() != Boolean.TRUE) { // 로그인 성공
             // 세션 값 설정
@@ -177,12 +176,13 @@ public class MemberController {
             log.info("member: {}", member);
 
             // 친구 리스트 불러와서 알림 전송
+            String friendList = friendShipService.getFriendList(member.getMemNo());
             ObjectMapper objectMapper = new ObjectMapper();
             Map<Integer, String> map = objectMapper.readValue(friendList, new TypeReference<Map<Integer, String>>() {});
             for (Integer friend : map.keySet())
             {
                 Executors.newSingleThreadExecutor().submit(() -> { // 알림 보내기 시작
-                    notificationService.notifyOne(friend, member.getMemNm() + "님이 로그인하셨습니다.");
+//                    notificationService.notifyOne(friend, member.getMemNm() + "님이 로그인하셨습니다.");
                     log.info("로그인 알림 전송 완료");
                 });
             }
