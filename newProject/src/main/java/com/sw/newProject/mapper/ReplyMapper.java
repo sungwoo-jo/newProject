@@ -10,9 +10,11 @@ import java.util.List;
 public interface ReplyMapper {
     List<ReplyDto> getReply(HashMap<String, Object> map);
 
-    void doWrite(HashMap<String, Object> map);
+    void doWrite(ReplyDto replyDto);
 
     void doDelete(HashMap<String, Object> map);
 
     void doUpdate(HashMap<String, Object> map);
+
+    Integer getWriterNo(HashMap<String, Object> map);
 }

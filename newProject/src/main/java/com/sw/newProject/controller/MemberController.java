@@ -3,11 +3,9 @@ package com.sw.newProject.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sw.newProject.dto.BoardDto;
-import com.sw.newProject.dto.DoResetPwDto;
-import com.sw.newProject.dto.FriendShipDto;
-import com.sw.newProject.dto.MemberDto;
+import com.sw.newProject.dto.*;
 
+import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.exception.CustomException;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
@@ -260,6 +258,7 @@ public class MemberController {
     /*
      * 팔로우 처리하는 메서드
      * 해당 메서드 내에서 팔로우와 팔로잉을 동시에 처리한다.
+     * 팔로우: 내가 다른 사람을 따라가는 것, 팔로잉: 다른 사람이 나를 따라오는 것
      */
     @PostMapping("/follow") // 팔로우 처리
     @Operation(summary = "팔로우 처리", description = "팔로우 처리를 진행합니다.")
@@ -277,6 +276,8 @@ public class MemberController {
 
         HashMap<String, String> recentFollowData = memberService.getFollowData(memberDto.getMemNo()); // 회원의 현재 팔로우 데이터를 가져오기
         JSONObject recentFollowDataJson = new JSONObject(recentFollowData);
+
+        NotificationDto notificationDto = new NotificationDto();
 
         if (recentFollowData == null) { // 팔로우 데이터가 없는 경우
             recentFollowData = new HashMap<>(); // 새롭게 초기화
@@ -310,7 +311,6 @@ public class MemberController {
         HashMap<String, String> followerData = new HashMap<>(); // 팔로워데이터 담는 맵
 
 
-
         HashMap<String, String> recentFollwingData = memberService.getFollowingData(boardDto.getMemNo()); // 회원의 현재 팔로워 데이터를 가져오기
             if (recentFollwingData == null) { // 팔로워 데이터가 없는 경우
                 recentFollwingData = new HashMap<>(); // 새롭게 초기화
@@ -336,6 +336,15 @@ public class MemberController {
                 // 최종적으로 팔로워 데이터 담아주기
                 memberService.insertFollowData(followData);
                 memberService.insertFollowingData(followerData);
+
+                // 팔로잉 알림 전송
+                // 작성자에게 알림 전송
+                notificationDto.setToMemNo(boardDto.getMemNo());
+                notificationDto.setFromMemNo(memberDto.getMemNo());
+                notificationDto.setContent(memberDto.getMemId() + "님이 팔로우 하였습니다.");
+                notificationDto.setUrl("/mypage");
+                notificationDto.setNotificationType(NotificationType.FOLLOW_ADD);
+                notificationService.notifyOne(notificationDto.getToMemNo(), notificationDto.getContent(), notificationDto.getNotificationType());
             }
 
         return ResponseEntity.ok("success");

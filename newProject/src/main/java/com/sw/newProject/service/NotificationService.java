@@ -53,7 +53,7 @@ public class NotificationService {
      * 서버의 이벤트를 클라이언트에게 보내는 메서드
      * 다른 서비스 로직에서 이 메서드를 사용해 데이터를 Object event에 넣고 전송하면 된다.
      *
-     * @param memNo - 메세지를 전송할 회원의 번호.
+     * @param memNo - 메세지를 받을 회원의 번호.
      * @param event  - 전송할 이벤트 객체.
      */
     public void notifyOne(Integer memNo, Object event, NotificationType type) {

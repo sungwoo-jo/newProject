@@ -21,9 +21,4 @@ public class NotificationController {
         Integer memNo = memberDto.getMemNo();
         return notificationService.subscribe(memNo);
     }
-
-//    @PostMapping("/send-data/{memNo}")
-//    public void sendData(@PathVariable Integer memNo) {
-//        notificationService.notifyOne(memNo, "data", );
-//    }
 }

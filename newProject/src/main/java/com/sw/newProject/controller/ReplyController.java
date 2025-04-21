@@ -1,7 +1,9 @@
 package com.sw.newProject.controller;
 
+import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.ReplyDto;
 import com.sw.newProject.service.ReplyService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +33,16 @@ public class ReplyController {
     }
 
     @PostMapping("/{boardId}/doWrite/{boardNo}") // 댓글 작성
-    public void doWrite(@PathVariable String boardId, @PathVariable Integer boardNo, @RequestBody String contents) {
+    public void doWrite(@PathVariable String boardId, @PathVariable Integer boardNo, @RequestBody String contents, HttpSession session) {
+        ReplyDto replyDto = new ReplyDto();
         HashMap<String, Object> map = new HashMap<>();
-        map.put("boardId", boardId);
-        map.put("boardNo", boardNo);
-        map.put("contents", contents);
-        log.info("{}", map);
-        replyService.doWrite(map);
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        replyDto.setBoardId(boardId);
+        replyDto.setBoardNo(boardNo);
+        replyDto.setContents(contents);
+        replyDto.setMemNo(memberDto.getMemNo());
+        log.info("replyDto: {}", map);
+        replyService.doWrite(replyDto, memberDto);
     }
 
     @DeleteMapping("/{boardId}/doDelete/{replyNo}") // 댓글 삭제(softDelete)

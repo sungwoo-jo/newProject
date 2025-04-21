@@ -13,9 +13,15 @@
         UPDATE post SET deleteByReceiver = TRUE WHERE postNo = #{postNo}
     </update>
     <insert id="doWrite" parameterType="com.sw.newProject.dto.PostDto">
-        INSERT INTO post(senderMemId, senderMemNo, receiverMemId, receiverMemNo, subject, contents) VALUES(#{senderMemId}, #{senderMemNo}, #{receiverMemId}, #{receiverMemNo}, #{subject}, #{contents})
+        INSERT INTO post(senderMemId, senderMemNo, receiverMemId, receiverMemNo, subject, contents, regDt) VALUES(#{senderMemId}, #{senderMemNo}, #{receiverMemId}, #{receiverMemNo}, #{subject}, #{contents}, now())
     </insert>
     <select id="getMemNoOfMemId" parameterType="java.lang.String" resultType="java.lang.Integer">
         SELECT memNo FROM member WHERE memId = #{memId}
     </select>
+
+    <update id="updateReadYn" parameterType="Integer">
+        UPDATE post
+        SET readYn = TRUE, readDt = now()
+        WHERE postNo = #{postNo}
+    </update>
 </mapper>

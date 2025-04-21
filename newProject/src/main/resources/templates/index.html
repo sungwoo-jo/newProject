@@ -92,12 +92,29 @@
             document.querySelector(".badge-dot").style.display = "block";
         });
         eventSource.addEventListener("FRIEND_ACC", function(event) {
-            console.log("🔔 친구 요청 알림: " + event.data);
+            console.log("🔔 친구 수락 알림: " + event.data);
             document.querySelector(".badge-dot").style.display = "block";
         });
         eventSource.addEventListener("FRIEND_REJ", function(event) {
-            console.log("🔔 친구 요청 알림: " + event.data);
+            console.log("🔔 친구 거절 알림: " + event.data);
             document.querySelector(".badge-dot").style.display = "block";
         });
+        eventSource.addEventListener("POST_SEND", function(event) {
+            console.log("🔔 쪽지 수신 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
+        eventSource.addEventListener("POST_READ", function(event) {
+            console.log("🔔 쪽지 읽음 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
+        eventSource.addEventListener("FOLLOW_ADD", function(event) {
+            console.log("🔔 팔로우 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
+        eventSource.addEventListener("REPLY", function(event) {
+            console.log("🔔 댓글 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
+
     })
 </script>

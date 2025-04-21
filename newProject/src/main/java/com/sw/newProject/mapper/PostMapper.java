@@ -16,4 +16,6 @@ public interface PostMapper {
     Integer doWrite(PostDto postDto);
 
     Integer getMemNoOfMemId(String memId);
+
+    void updateReadYn(Integer memNo);
 }

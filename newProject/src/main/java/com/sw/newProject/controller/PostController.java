@@ -1,7 +1,10 @@
 package com.sw.newProject.controller;
 
 import com.sw.newProject.dto.MemberDto;
+import com.sw.newProject.dto.NotificationDto;
 import com.sw.newProject.dto.PostDto;
+import com.sw.newProject.enumType.NotificationType;
+import com.sw.newProject.service.NotificationService;
 import com.sw.newProject.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final NotificationService notificationService;
 
     /*
      * todo: 보낸 편지함, 받은 편지함으로 구분하기
@@ -57,6 +61,7 @@ public class PostController {
     @PostMapping("/doWrite") // 쪽지 전송 처리
     public ResponseEntity<String> doWrite(@RequestBody PostDto postDto, HttpSession httpSession) {
         MemberDto member = (MemberDto) httpSession.getAttribute("member");
+        NotificationDto notificationDto = new NotificationDto();
         // 보내는사람 세팅
         postDto.setSenderMemId(member.getMemId());
         postDto.setSenderMemNo(member.getMemNo());
@@ -64,6 +69,15 @@ public class PostController {
         postDto.setReceiverMemNo(postService.getMemNoOfMemId(postDto.getReceiverMemId()));
         postDto.setReceiverMemId(postDto.getReceiverMemId());
         Integer result = postService.doWrite(postDto);
+
+        // 받는 사람에게 알림 전송
+        notificationDto.setToMemNo(postDto.getReceiverMemNo());
+        notificationDto.setFromMemNo(postDto.getSenderMemNo());
+        notificationDto.setContent(postDto.getSenderMemId() + "님이 쪽지를 보냈습니다.");
+        notificationDto.setUrl("/post/list");
+        notificationDto.setNotificationType(NotificationType.POST_SEND);
+        notificationService.notifyOne(notificationDto.getToMemNo(), notificationDto.getContent(), notificationDto.getNotificationType());
+
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 }

@@ -20,4 +20,14 @@
     <update id="doUpdate" parameterType="java.util.HashMap">
         UPDATE reply SET contents = #{contents} WHERE boardId = #{boardId} AND replyNo = #{replyNo}
     </update>
+
+    <select id="getWriterNo" parameterType="Integer" resultType="Integer">
+        SELECT memNo
+        FROM
+            <choose>
+                <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+                <when test="boardId == 'travel'">travel</when>
+            </choose>
+        WHERE boardNo = #{boardNo}
+    </select>
 </mapper>
