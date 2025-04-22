@@ -181,4 +181,13 @@
         ORDER BY likeCnt DESC
         LIMIT 0, 5
     </select>
+
+    <select id="getMemNoByBoardNo" parameterType="java.util.HashMap" resultType="Integer">
+        SELECT memNo FROM
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        WHERE boardNo = #{boardNo}
+    </select>
 </mapper>

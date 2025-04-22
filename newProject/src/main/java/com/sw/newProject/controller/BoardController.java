@@ -121,10 +121,13 @@ public class BoardController {
     }
 
     @PostMapping("{boardId}/doLike") // 좋아요 처리
-    public ResponseEntity<String> doLike(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
+    public ResponseEntity<String> doLike(@RequestBody BoardDto boardDto, @PathVariable String boardId, HttpSession session) {
+        log.info("boardDto: {}", boardDto);
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
         HashMap<String, Object> map = new HashMap<>();
         map.put("boardDto", boardDto);
         map.put("boardId", boardId);
+        map.put("memNo", memberDto.getMemNo()); // 좋아요 누른 사람
         int result = boardService.doLike(map);
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }

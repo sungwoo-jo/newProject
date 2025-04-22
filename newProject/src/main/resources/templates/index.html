@@ -115,6 +115,9 @@
             console.log("🔔 댓글 알림: " + event.data);
             document.querySelector(".badge-dot").style.display = "block";
         });
-
+        eventSource.addEventListener("BOARD_LIKE", function(event) {
+            console.log("🔔 좋아요 알림: " + event.data);
+            document.querySelector(".badge-dot").style.display = "block";
+        });
     })
 </script>

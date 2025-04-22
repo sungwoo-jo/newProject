@@ -1,8 +1,12 @@
 package com.sw.newProject.service;
 
 import com.sw.newProject.dto.BoardDto;
+import com.sw.newProject.dto.MemberDto;
+import com.sw.newProject.dto.NotificationDto;
 import com.sw.newProject.dto.PageDto;
+import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.mapper.BoardMapper;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,8 @@ import java.util.Map;
 public class BoardService {
 
     private final BoardMapper boardMapper;
+    private final MemberService memberService;
+    private final NotificationService notificationService;
 
     public List<BoardDto> getBoardList(HashMap<String, Object> map) {
         return boardMapper.getBoardList(map);
@@ -67,6 +73,22 @@ public class BoardService {
     }
 
     public int doLike(HashMap<String, Object> map) {
+        BoardDto boardDto = (BoardDto) map.get("boardDto");
+        Integer boardNo = boardDto.getBoardNo(); // 대상 게시글 번호
+        map.put("boardNo", boardNo);
+        MemberDto memberDto = memberService.getMember((Integer) map.get("memNo")); // 좋아요 누른 사람
+        Integer writerNo = getMemNoByBoardNo(map); // 작성자 정보 가져오기
+        String boardId = (String) map.get("boardId");
+
+        NotificationDto notificationDto = new NotificationDto();
+        // 알림 전송
+        notificationDto.setToMemNo(writerNo);
+        notificationDto.setFromMemNo(memberDto.getMemNo());
+        notificationDto.setNotificationType(NotificationType.BOARD_LIKE);
+        notificationDto.setContent(memberDto.getMemNm() + "님이 내 글을 좋아합니다.");
+        notificationDto.setUrl("/board/" + boardId + "/view/" + boardNo);
+
+        notificationService.notifyOne(notificationDto.getToMemNo(), notificationDto.getContent(), notificationDto.getNotificationType());
         return boardMapper.doLike(map);
     }
 
@@ -110,5 +132,9 @@ public class BoardService {
         pageDto.setStart((pageDto.getCurrentPage() - 1) * pageDto.getPageLength());
 
         return pageDto;
+    }
+
+    public Integer getMemNoByBoardNo(HashMap<String, Object> map) {
+        return boardMapper.getMemNoByBoardNo(map);
     }
 }

@@ -1,7 +1,7 @@
 package com.sw.newProject.enumType;
 
 public enum NotificationType {
-    BOARDLIKE, // 게시글 좋아요
+    BOARD_LIKE, // 게시글 좋아요
     REPLY, // 새로운 댓글 작성
     POST_SEND, // 쪽지 전송
     POST_READ, // 쪽지 읽음
