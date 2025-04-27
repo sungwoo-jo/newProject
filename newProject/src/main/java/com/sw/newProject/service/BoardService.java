@@ -36,20 +36,25 @@ public class BoardService {
         return boardMapper.getBoardSearchCount(map);
     }
 
-    public int doWrite(BoardDto boardDto) {
+    public int doWrite(BoardDto boardDto) { // 회원이 글을 작성할 때는 해당 회원의 회원번호로 세팅한다.
+        int result;
         if (boardDto.getMemNo() != null && !boardDto.getMemNo().equals("")) {
             boardDto.setMemNo(boardDto.getMemNo());
-        } else {
+        } else { // 비회원 글 작성 시 회원번호는 0으로 세팅한다.
             boardDto.setMemNo(0);
         }
-        if (boardDto.getWriterNm() != null && !boardDto.getWriterNm().equals("")) {
+        if (boardDto.getWriterNm() != null && !boardDto.getWriterNm().equals("")) { // 회원이 글을 작성할 때는 해당 회원의 이름으로 세팅한다.
             boardDto.setWriterNm(boardDto.getWriterNm());
-        } else {
+        } else { // 비회원 글 작성 시 이름을 비회원으로 저장한다.
             boardDto.setWriterNm("비회원");
         }
 
         log.debug("doWriteBoardDto: " + boardDto);
-        return boardMapper.doWrite(boardDto);
+        result = boardMapper.doWrite(boardDto);
+
+
+
+        return result;
     }
 
     public int doUpdate(HashMap<String, Object> map) {

@@ -17,4 +17,6 @@ public interface ReplyMapper {
     void doUpdate(HashMap<String, Object> map);
 
     Integer getWriterNo(HashMap<String, Object> map);
+
+    Integer getMaxReplySeqNo(HashMap<String, Object> map);
 }

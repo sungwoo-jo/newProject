@@ -33,15 +33,18 @@ public class ReplyController {
     }
 
     @PostMapping("/{boardId}/doWrite/{boardNo}") // 댓글 작성
-    public void doWrite(@PathVariable String boardId, @PathVariable Integer boardNo, @RequestBody String contents, HttpSession session) {
-        ReplyDto replyDto = new ReplyDto();
-        HashMap<String, Object> map = new HashMap<>();
+    public void doWrite(@PathVariable String boardId, @PathVariable Integer boardNo, @RequestBody ReplyDto replyDto, HttpSession session) {
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        if (replyDto.getParentNo() == null) {
+            replyDto.setDepth(0);
+
+        } else {
+            replyDto.setDepth(1);
+        }
         replyDto.setBoardId(boardId);
         replyDto.setBoardNo(boardNo);
-        replyDto.setContents(contents);
         replyDto.setMemNo(memberDto.getMemNo());
-        log.info("replyDto: {}", map);
+
         replyService.doWrite(replyDto, memberDto);
     }
 

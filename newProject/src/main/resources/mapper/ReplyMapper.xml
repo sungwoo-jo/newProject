@@ -6,11 +6,12 @@
     <select id="getReply" parameterType="java.util.HashMap" resultType="com.sw.newProject.dto.ReplyDto">
         SELECT * FROM reply
         WHERE boardNo = #{boardNo} AND boardId = #{boardId} AND deleteYn = FALSE
+        ORDER BY replyNo ASC, parentNo ASC, seqNo ASC
     </select>
 
-    <insert id="doWrite" parameterType="java.util.HashMap">
-        INSERT INTO reply(boardId, boardNo, contents, regDt)
-        VALUES (#{boardId}, #{boardNo}, #{contents}, now())
+    <insert id="doWrite" parameterType="com.sw.newProject.dto.ReplyDto">
+        INSERT INTO reply(boardId, boardNo, memNo, contents, depth, seqNo, parentNo, regDt)
+        VALUES (#{boardId}, #{boardNo}, #{memNo}, #{contents}, #{depth}, #{seqNo}, #{parentNo}, now())
     </insert>
 
     <update id="doDelete" parameterType="java.util.HashMap">
@@ -29,5 +30,11 @@
                 <when test="boardId == 'travel'">travel</when>
             </choose>
         WHERE boardNo = #{boardNo}
+    </select>
+
+    <select id="getMaxReplySeqNo" parameterType="java.util.HashMap" resultType="Integer">
+        SELECT IFNULL(MAX(seqNo), 0) + 1
+        FROM reply
+        WHERE parentNo = #{parentNo}
     </select>
 </mapper>
