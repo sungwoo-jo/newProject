@@ -29,12 +29,12 @@ public class ReservationController {
         List<ReservationDto> reservationDto = reservationService.getReservationById(member.getMemNo()); // 로그인한 회원의 memNo로 조회
         model.addAttribute("reservationDto", reservationDto);
 
-        return "/reservation/list";
+        return "reservation/list";
     }
 
     @GetMapping("/new")
     public String getReservationPage() {
-        return "/reservation/new";
+        return "reservation/new";
     }
 
     /*
@@ -75,6 +75,6 @@ public class ReservationController {
     public String viewReservation(@PathVariable Integer rsvNo, Model model) {
         ReservationDto result = reservationService.viewReservation(rsvNo);
         model.addAttribute("reservationDto", result);
-        return "/reservation/view";
+        return "reservation/view";
     }
 }

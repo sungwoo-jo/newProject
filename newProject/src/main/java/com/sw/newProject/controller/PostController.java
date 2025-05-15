@@ -33,14 +33,14 @@ public class PostController {
         MemberDto member = (MemberDto) httpSession.getAttribute("member");
         List<PostDto> postDto = postService.getPostList(member.getMemNo());
         model.addAttribute("postDto", postDto);
-        return "/post/list";
+        return "post/list";
     }
 
     @GetMapping("/view/{postNo}") // 쪽지 상세보기 페이지 호출
     public String viewPost(@PathVariable Integer postNo, Model model, HttpSession httpSession) {
         PostDto postDto = postService.viewPost(postNo);
         model.addAttribute("postDto", postDto);
-        return "/post/view";
+        return "post/view";
     }
 
     /*
@@ -55,7 +55,7 @@ public class PostController {
     @GetMapping(value = {"/write", "/write/"}) // 쪽지 작성 페이지 호출
     public String getWritePage(@RequestParam(required = false) String senderMemId, Model model) {
         model.addAttribute("senderMemId", senderMemId);
-        return "/post/write";
+        return "post/write";
     }
 
     @PostMapping("/doWrite") // 쪽지 전송 처리

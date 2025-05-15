@@ -48,7 +48,7 @@ import static com.sw.newProject.enumType.ErrorCode.ALREADY_FOLLOWED;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("member")
+@RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
     private final NotificationService notificationService;
@@ -57,7 +57,7 @@ public class MemberController {
     @GetMapping("/join") // 회원가입 페이지 호출
     @Operation(summary = "회원가입 페이지 호출", description = "회원가입 페이지를 호출합니다.")
     public String getJoinPage() {
-        return "/member/join";
+        return "member/join";
     }
 
     @PostMapping("/doJoin") // 회원가입 처리
@@ -75,13 +75,13 @@ public class MemberController {
         memberDto.setDeleteYn(false);
         memberDto.setMemPw(memberService.passwordEncrypt(memberDto.getMemPw()));
 
-        return "/member/joinSuccess";
+        return "member/joinSuccess";
     }
 
     @GetMapping("/joinSuccess")
     @Operation(summary = "회원가입 성공 페이지 호출", description = "회원가입 성공 페이지를 호출합니다.")
     public String getJoinSuccessPage() {
-        return "/member/joinSuccess";
+        return "member/joinSuccess";
     }
 
     @GetMapping("/memberList") // 전체 회원 리스트 가져오기
@@ -89,7 +89,7 @@ public class MemberController {
     public String getAllMember(Model model) {
         List<MemberDto> members = memberService.getAllMember();
         model.addAttribute("members", members);
-        return "/member/memberList"; // memberList.html
+        return "member/memberList"; // memberList.html
     }
 
     @PatchMapping("/doUpdate") // 정보수정 처리
@@ -98,13 +98,13 @@ public class MemberController {
         memberService.updateMember(memberDto);
         MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
         session.setAttribute("member", updatedMemberDto); // 최신 정보로 세팅
-        return "/member/joinSuccess"; // todo: 마이페이지 메인으로 이동해야 함
+        return "member/joinSuccess"; // todo: 마이페이지 메인으로 이동해야 함
     }
 
     @GetMapping("/delete") // 회원 탈퇴 페이지 호출
     @Operation(summary = "회원 탈퇴 페이지 호출", description = "회원 탈퇴 페이지를 호출합니다.")
     public String getDeletePage() {
-        return "/member/delete";
+        return "member/delete";
     }
 
     @PostMapping("/doDelete") // 회원탈퇴 처리
@@ -159,7 +159,7 @@ public class MemberController {
     @GetMapping("/login") // 로그인 페이지 호출
     @Operation(summary = "로그인 페이지 호출", description = "로그인 페이지를 호출합니다.")
     public String getLoginPage() {
-        return "/member/login";
+        return "member/login";
     }
 
     @PostMapping("/doLogin") // 로그인 처리
@@ -201,7 +201,7 @@ public class MemberController {
     @GetMapping("/findId") // 아이디 찾기 페이지 호출
     @Operation(summary = "아이디 찾기 페이지 호출", description = "아이디 찾기 페이지를 호출합니다.")
     public String findId() {
-        return "/member/findId";
+        return "member/findId";
     }
 
     @PostMapping("/doFindId") // 아이디 찾기 처리
@@ -218,7 +218,7 @@ public class MemberController {
     @GetMapping("/findPw") // 비밀번호 찾기 페이지 호출
     @Operation(summary = "비밀번호 찾기 페이지 호출", description = "비밀번호 찾기 페이지를 호출합니다.")
     public String findPw() {
-        return "/member/findPw";
+        return "member/findPw";
     }
 
     @PostMapping("doFindPw") // 비밀번호 찾기 처리(회원 정보 일치 여부 확인)
@@ -238,7 +238,7 @@ public class MemberController {
     @GetMapping("resetPw") // 임시 비밀번호 발송 완료 페이지 호출
     @Operation(summary = "임시 비밀번호 발송 완료 페이지 호출", description = "임시 비밀번호 발송 완료 페이지를 호출합니다.")
     public String resetPw() {
-        return "/member/resetPw";
+        return "member/resetPw";
     }
 
     @PatchMapping("doResetPw") // 비밀번호 재설정 처리
@@ -252,7 +252,7 @@ public class MemberController {
     @GetMapping("resetPwSuccess") // 비밀번호 재설정 완료 페이지 호출
     @Operation(summary = "비밀번호 재설정 완료 페이지 호출", description = "비밀번호 재설정 완료 페이지를 호출합니다.")
     public String resetPwSuccess() {
-        return "/member/resetPwSuccess";
+        return "member/resetPwSuccess";
     }
 
     /*

@@ -74,12 +74,12 @@ public class MypageController {
 
         session.setAttribute("friends", friends);
 
-        return "/mypage/index";
+        return "mypage/index";
     }
 
     @GetMapping("/update")
     public String update() { // 정보 수정 페이지 호출
-        return "/mypage/update";
+        return "mypage/update";
     }
 
     @PostMapping("/doUpdate")
@@ -88,18 +88,18 @@ public class MypageController {
         memberService.updateMember(memberDto);
         MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
         session.setAttribute("member", updatedMemberDto);
-        return "/mypage/index";
+        return "mypage/index";
     }
 
     @GetMapping("/follow/list")
     public String getFollowList(Model model) {
         
-        return "/mypage/followList";
+        return "mypage/followList";
     }
 
     @GetMapping("/following/list")
     public String getFollowingList(Model model) {
-        return "/mypage/followingList";
+        return "mypage/followingList";
     }
 
     @GetMapping("/friendList")
@@ -136,7 +136,7 @@ public class MypageController {
         log.info("requestFriendLists: {}", requestFriendLists);
         model.addAttribute("requestFriendLists", requestFriendLists); // 받은 친구 요청 리턴
 
-        return "/mypage/friendList";
+        return "mypage/friendList";
     }
 
     @PostMapping("/inviteChat")
