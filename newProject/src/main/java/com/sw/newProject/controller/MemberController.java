@@ -48,7 +48,7 @@ import static com.sw.newProject.enumType.ErrorCode.ALREADY_FOLLOWED;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/member")
+@RequestMapping("member")
 public class MemberController {
     private final MemberService memberService;
     private final NotificationService notificationService;
