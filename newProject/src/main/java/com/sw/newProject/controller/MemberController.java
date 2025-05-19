@@ -259,6 +259,7 @@ public class MemberController {
      * 팔로우 처리하는 메서드
      * 해당 메서드 내에서 팔로우와 팔로잉을 동시에 처리한다.
      * 팔로우: 내가 다른 사람을 따라가는 것, 팔로잉: 다른 사람이 나를 따라오는 것
+     * todo: 해당 메서드 추후 리팩토링 필수
      */
     @PostMapping("/follow") // 팔로우 처리
     @Operation(summary = "팔로우 처리", description = "팔로우 처리를 진행합니다.")
