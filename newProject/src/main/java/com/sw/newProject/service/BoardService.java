@@ -68,6 +68,7 @@ public class BoardService {
      */
     public void incrementHitCnt(HashMap<String, Object> map) {
         Integer result = viewHitCnt(map); // 해당 회원이 오늘 게시글을 조회했었는지 여부를 확인
+        log.info("result: " + result);
 
         if (result <= 0) { // 오늘 조회한 적이 없다면 조회수 증가 처리
             insertHitInfo(map); // 조회수 중복을 방지하기 위한 데이터를 삽입
