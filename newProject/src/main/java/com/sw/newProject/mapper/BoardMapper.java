@@ -32,4 +32,8 @@ public interface BoardMapper {
     int getBoardSearchCount(HashMap<String, Object> map);
 
     Integer getMemNoByBoardNo(HashMap<String, Object> map);
+
+    Integer viewHitCnt(HashMap<String, Object> map);
+
+    void insertHitInfo(HashMap<String, Object> map);
 }

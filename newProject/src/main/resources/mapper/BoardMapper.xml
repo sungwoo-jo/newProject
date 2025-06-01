@@ -190,4 +190,15 @@
         </choose>
         WHERE boardNo = #{boardNo}
     </select>
+
+    <select id="viewHitCnt" parameterType="java.util.HashMap" resultType="Integer">
+        SELECT COUNT(*) FROM
+            boardIncrementCnt
+        WHERE memNo = #{memNo} AND boardId = #{boardId} AND boardNo = #{boardNo} AND DATE(regDt) = CURDATE()
+    </select>
+
+    <insert id="insertHitInfo" parameterType="java.util.HashMap">
+        INSERT INTO boardIncrementCnt(boardNo, boardId, memNo, regDt, ip)
+        VALUES (#{boardNo}, #{boardId}, #{memNo}, now(), #{ip})
+    </insert>
 </mapper>

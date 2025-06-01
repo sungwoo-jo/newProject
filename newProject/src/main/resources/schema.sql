@@ -179,6 +179,18 @@ CREATE TABLE notification (
     FOREIGN KEY (fromMemNo) REFERENCES member(memNo)
 );
 
+DROP TABLE IF EXISTS `boardIncrementCnt` CASCADE;
+CREATE TABLE boardIncrementCnt (
+	sno INT auto_increment NOT NULL COMMENT '번호',
+	boardNo INT NOT NULL COMMENT '게시글번호',
+	boardId varchar(20) NOT NULL COMMENT '게시판종류',
+	memNo INT DEFAULT 0 NULL COMMENT '회원번호(비회원: 0)',
+	regDt DATETIME NOT NULL COMMENT '조회일자',
+	ip varchar(20) NOT NULL COMMENT 'ip',
+	PRIMARY KEY (sno),
+	FOREIGN KEY (memNo) REFERENCES member(memNo)
+);
+
 -- 더미 데이터(회원)
 INSERT INTO member(memId, memPw, memNm, nickNm, comm, address1, address2, zipCode, phone, email, profileImageName, regDt) 
 VALUES 

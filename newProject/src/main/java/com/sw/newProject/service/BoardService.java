@@ -51,9 +51,6 @@ public class BoardService {
 
         log.debug("doWriteBoardDto: " + boardDto);
         result = boardMapper.doWrite(boardDto);
-
-
-
         return result;
     }
 
@@ -66,7 +63,22 @@ public class BoardService {
     }
 
     public void incrementHitCnt(HashMap<String, Object> map) {
-        boardMapper.incrementHitCnt(map);
+        log.info("map: " + map);
+
+        Integer result = viewHitCnt(map);
+
+        if (result <= 0) { // 조회한 데이터가 없는 경우에만 조회수 증가
+            insertHitInfo(map); // 조회수 중복 방지 데이터 삽입
+            boardMapper.incrementHitCnt(map); // 조회수 +1
+        }
+    }
+
+    public void insertHitInfo(HashMap<String, Object> map) {
+        boardMapper.insertHitInfo(map);
+    }
+
+    public Integer viewHitCnt(HashMap<String, Object> map) {
+        return boardMapper.viewHitCnt(map);
     }
 
     public int doDelete(HashMap<String, Object> map) {

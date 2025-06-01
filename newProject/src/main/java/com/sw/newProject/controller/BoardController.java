@@ -8,6 +8,7 @@ import com.sw.newProject.service.BoardService;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,12 +74,15 @@ public class BoardController {
     }
 
     @GetMapping("{boardId}/view/{boardNo}") // 게시글 상세보기 페이지 호출
-    public String getViewPage(@RequestHeader (value = "Referer", defaultValue = "/") String referer, @PathVariable String boardId, @PathVariable Integer boardNo, Model model, HttpSession session) {
+    public String getViewPage(@RequestHeader (value = "Referer", defaultValue = "/") String referer, @PathVariable String boardId, @PathVariable Integer boardNo, Model model, HttpSession session, HttpServletRequest request) {
         HashMap<String, Object> map = new HashMap<>();
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        String ip = request.getRemoteAddr(); // 게시글 조회자 ip 저장
 
         map.put("boardId", boardId);
         map.put("boardNo", boardNo);
+        map.put("memNo", memberDto.getMemNo());
+        map.put("ip", ip);
 
         boardService.incrementHitCnt(map); // 조회수 증가 -> todo: 사용자 별 하루 1회씩만 증가하도록 수정 필요
         BoardDto boardDto = boardService.getBoardView(map);
