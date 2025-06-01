@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -36,7 +35,14 @@ public class BoardController {
     private final MemberService memberService;
     private final FriendShipService friendShipService;
 
-    @GetMapping("{boardId}/list") // 게시글 리스트 페이지 호출
+    /**
+     * 게시글 리스트 조회
+     * @param boardId 게시글 번호
+     * @param model 게시글 리스트 반환 시 사용할 model
+     * @param page 페이지 번호
+     * @return 게시글 리스트를 담아 게시글 리스트 페이지를 반환
+     */
+    @GetMapping("{boardId}/list")
     public String getBoardList(@PathVariable String boardId, Model model, @RequestParam(defaultValue = "1") String page) {
         HashMap<String, Object> map = new HashMap<>();
         int totalRows = boardService.getBoardCount(boardId); // 전체 게시글 갯수
@@ -49,13 +55,25 @@ public class BoardController {
         return "board/list";
     }
 
+    /**
+     * 인기게시글 조회 처리
+     * @param boardId 게시판 id
+     * @return 인기게시글 목록을 반환
+     */
     @ResponseBody
-    @GetMapping("{boardId}/getPopularBoard") // 인기게시글 조회 처리
+    @GetMapping("{boardId}/getPopularBoard")
     public List<BoardDto> getPopularBoard(@PathVariable String boardId) {
         return boardService.getPopularBoard(boardId);
     }
 
-    @GetMapping(value = {"{boardId}/write/{boardNo}", "{boardId}/write", "{boardId}/write/"}) // 게시글 작성 페이지 호출
+    /**
+     * 게시글 작성 페이지 호출
+     * @param boardId 게시판 id
+     * @param boardNo 게시글 번호(파라미터에 게시글 번호가 없으면 신규 게시글 등록, 게시글 번호가 있으면 기존 게시글 수정 처리)
+     * @param model 게시글 수정 시 가져올 기존 작성된 게시글 정보
+     * @return 게시글 작성 페이지 반환
+     */
+    @GetMapping(value = {"{boardId}/write/{boardNo}", "{boardId}/write", "{boardId}/write/"})
     public String getWritePage(@PathVariable String boardId, @PathVariable(value = "boardNo", required = false) Integer boardNo, Model model) {
         log.debug("boardNo: " + boardNo);
         if (boardNo != null) { // 게시글 수정 형식으로 전달
@@ -73,7 +91,17 @@ public class BoardController {
         return "board/write";
     }
 
-    @GetMapping("{boardId}/view/{boardNo}") // 게시글 상세보기 페이지 호출
+    /**
+     * 게시글 상세보기 페이지 호출
+     * @param referer 목록으로 돌아가기 위한 레퍼러
+     * @param boardId 게시판 id
+     * @param boardNo 게시글 번호
+     * @param model 게시글 정보
+     * @param session 세션 정보
+     * @param request ip 주소 저장을 위한 값
+     * @return 게시글 정보를 담아 반환
+     */
+    @GetMapping("{boardId}/view/{boardNo}")
     public String getViewPage(@RequestHeader (value = "Referer", defaultValue = "/") String referer, @PathVariable String boardId, @PathVariable Integer boardNo, Model model, HttpSession session, HttpServletRequest request) {
         HashMap<String, Object> map = new HashMap<>();
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
@@ -84,7 +112,7 @@ public class BoardController {
         map.put("memNo", memberDto.getMemNo());
         map.put("ip", ip);
 
-        boardService.incrementHitCnt(map); // 조회수 증가 -> todo: 사용자 별 하루 1회씩만 증가하도록 수정 필요
+        boardService.incrementHitCnt(map); // 조회수 증가
         BoardDto boardDto = boardService.getBoardView(map);
 
         HashMap<String, String> followDataMap = memberService.getFollowData(memberDto.getMemNo()); // 회원의 현재 팔로우 데이터를 가져오기
@@ -124,7 +152,14 @@ public class BoardController {
         }
     }
 
-    @PostMapping("{boardId}/doLike") // 좋아요 처리
+    /**
+     * 좋아요 처리
+     * @param boardDto 게시글 정보
+     * @param boardId 게시판 id
+     * @param session 세션 정보
+     * @return 좋아요 처리에 따라 결과값 반환
+     */
+    @PostMapping("{boardId}/doLike")
     public ResponseEntity<String> doLike(@RequestBody BoardDto boardDto, @PathVariable String boardId, HttpSession session) {
         log.info("boardDto: {}", boardDto);
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
@@ -136,7 +171,13 @@ public class BoardController {
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
-    @PostMapping("{boardId}/doWrite") // 게시글 작성 처리
+    /**
+     * 게시글 작성 처리
+     * @param boardDto 작성할 게시글 정보
+     * @param boardId 게시판 id
+     * @return 게시글 작성 여부에 따라 결과값 반환
+     */
+    @PostMapping("{boardId}/doWrite")
     @Operation(summary = "게시글 작성 처리", description = "실제 게시글 내용을 입력받아 저장합니다.")
     public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
         int result = 0;
@@ -152,7 +193,13 @@ public class BoardController {
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
-    @PostMapping("{boardId}/doDelete") // 게시글 삭제 처리
+    /**
+     * 게시글 삭제 처리
+     * @param boardDto 게시글 정보
+     * @param boardId 게시판 id
+     * @return 게시글 삭제 여부에 따라 결과값 반환
+     */
+    @PostMapping("{boardId}/doDelete")
     public ResponseEntity<String> doDelete(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
         int result = 0;
         if (boardDto.getBoardNo() != null && boardId != null) { // 삭제 진행
@@ -165,7 +212,16 @@ public class BoardController {
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
-    @GetMapping("/{boardId}/doSearch") // 게시글 검색
+    /**
+     * 게시글 검색
+     * @param boardId 게시판 id
+     * @param model 게시글 정보 및 페이지 정보
+     * @param type 검색 타입 지정(제목, 내용, 제목+내용, 작성자, 지역명, 해시태그)
+     * @param keyword 검색어
+     * @param page 페이징 정보
+     * @return 검색된 게시글 정보를 페이징 정보와 함께 반환
+     */
+    @GetMapping("/{boardId}/doSearch")
     public String doSearch(@PathVariable String boardId, Model model, @RequestParam String type, @RequestParam String keyword, @RequestParam(defaultValue = "1") String page) {
         if (!type.equals("") && !keyword.equals("")) {
             HashMap<String, Object> map = new HashMap<>();
