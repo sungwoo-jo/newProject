@@ -69,7 +69,6 @@ CREATE TABLE `reply` (
     memNo INT DEFAULT NULL comment '회원번호',
     contents TEXT NOT NULL comment '내용',
     depth INT DEFAULT 0 comment '뎁스(대댓글 표현)',
-    seqNo INT DEFAULT 0 comment '댓글순서',
     parentNo INT DEFAULT NULL comment '부모댓글번호',
     deleteYn BOOLEAN DEFAULT '0' comment '삭제여부',
     likeCnt INT DEFAULT 0 comment '좋아요수',

@@ -26,10 +26,8 @@ public class ReplyService {
         return replyMapper.getReply(map);
     }
 
-    public void doWrite(ReplyDto replyDto, MemberDto memberDto) {
+    public void doWrite(ReplyDto replyDto) {
         NotificationDto notificationDto = new NotificationDto();
-        Integer maxReplySeqNo = getMaxReplySeqNo(replyDto.getSeqNo(), replyDto.getParentNo());
-        replyDto.setSeqNo(maxReplySeqNo);
         replyMapper.doWrite(replyDto);
 
         // 알림 전송
@@ -58,15 +56,5 @@ public class ReplyService {
         map.put("boardNo", boardNo);
         map.put("boardId", boardId);
         return replyMapper.getWriterNo(map);
-    }
-
-    /*
-     * 새로운 댓글 작성 시 댓글 순서 정렬을 위해 seqNo 와 parentNo를 전달해서 자식 댓글의 최댓값에 +1한 값을 가져온다.
-     */
-    public Integer getMaxReplySeqNo(Integer seqNo, Integer parentNo) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("seqNo", seqNo);
-        map.put("parentNo", parentNo);
-        return replyMapper.getMaxReplySeqNo(map);
     }
 }

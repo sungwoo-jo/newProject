@@ -6,12 +6,18 @@
     <select id="getReply" parameterType="java.util.HashMap" resultType="com.sw.newProject.dto.ReplyDto">
         SELECT * FROM reply
         WHERE boardNo = #{boardNo} AND boardId = #{boardId} AND deleteYn = FALSE
-        ORDER BY replyNo ASC, parentNo ASC, seqNo ASC
+        ORDER BY
+            CASE
+                WHEN parentNo IS NULL THEN replyNo -- 댓글은 자기 자신 기준
+                ELSE parentNo                      -- 대댓글은 부모 댓글 기준
+            END ASC,
+            depth ASC,  -- 댓글 -> 대댓글 순서로 정렬
+            regDt ASC   -- 같은 그룹 내에서는 등록일 순
     </select>
 
     <insert id="doWrite" parameterType="com.sw.newProject.dto.ReplyDto">
-        INSERT INTO reply(boardId, boardNo, memNo, contents, depth, seqNo, parentNo, regDt)
-        VALUES (#{boardId}, #{boardNo}, #{memNo}, #{contents}, #{depth}, #{seqNo}, #{parentNo}, now())
+        INSERT INTO reply(boardId, boardNo, memNo, contents, depth, parentNo, regDt)
+        VALUES (#{boardId}, #{boardNo}, #{memNo}, #{contents}, #{depth}, #{parentNo}, now())
     </insert>
 
     <update id="doDelete" parameterType="java.util.HashMap">
@@ -30,11 +36,5 @@
                 <when test="boardId == 'travel'">travel</when>
             </choose>
         WHERE boardNo = #{boardNo}
-    </select>
-
-    <select id="getMaxReplySeqNo" parameterType="java.util.HashMap" resultType="Integer">
-        SELECT IFNULL(MAX(seqNo), 0) + 1
-        FROM reply
-        WHERE parentNo = #{parentNo}
     </select>
 </mapper>

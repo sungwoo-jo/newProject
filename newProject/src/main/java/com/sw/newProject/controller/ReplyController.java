@@ -6,9 +6,6 @@ import com.sw.newProject.service.ReplyService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -36,16 +33,15 @@ public class ReplyController {
     public void doWrite(@PathVariable String boardId, @PathVariable Integer boardNo, @RequestBody ReplyDto replyDto, HttpSession session) {
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
         if (replyDto.getParentNo() == null) {
-            replyDto.setDepth(0);
-
+            replyDto.setDepth(0); // 일반 댓글
         } else {
-            replyDto.setDepth(1);
+            replyDto.setDepth(1); // 대댓글
         }
         replyDto.setBoardId(boardId);
         replyDto.setBoardNo(boardNo);
         replyDto.setMemNo(memberDto.getMemNo());
 
-        replyService.doWrite(replyDto, memberDto);
+        replyService.doWrite(replyDto);
     }
 
     @DeleteMapping("/{boardId}/doDelete/{replyNo}") // 댓글 삭제(softDelete)
