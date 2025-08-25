@@ -1,6 +1,7 @@
 package com.sw.newProject.websocket;
 
 import com.sw.newProject.dto.ChatEntrantDto;
+import com.sw.newProject.dto.ChatRoomRequestDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.SaveEntrantDto;
 import jakarta.servlet.http.HttpSession;
@@ -8,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -67,8 +65,10 @@ public class ChatController {
         return "chat/chatRoom";
     }
 
-    @GetMapping("/chat/chatRoom")
-    public String chatRoom(Model model, @RequestParam String roomId, HttpSession session){
+    @PostMapping("/chat/chatRoom")
+//    public String chatRoom(Model model, @RequestParam String roomId, HttpSession session){
+    public String chatRoom(Model model, @RequestBody ChatRoomRequestDto requestDto, HttpSession session){
+        String roomId = requestDto.getRoomId();
         log.info("roomId: {}", roomId);
         ChatRoom room = chatService.findRoomById(roomId);
         log.info("room: {}", room);

@@ -1,24 +1,57 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Title</title>-->
+<!--</head>-->
+<!--<body>-->
 
-<form action="/chat/createRoom" method="post">
-    <input type="text" name="name" placeholder="채팅방 이름">
-    <button type="submit" >방 만들기</button>
-</form>
+<!--<form action="/chat/createRoom" method="post">-->
+<!--    <input type="text" name="name" placeholder="채팅방 이름">-->
+<!--    <button type="submit" >방 만들기</button>-->
+<!--</form>-->
+
+<!--<table>-->
+<!--    <tr th:each="room : ${roomList}" >-->
+<!--        <td>-->
+<!--            <a th:href="@{chatRoom(roomId=${room.roomId} )}"-->
+<!--               th:text="${room.roomNm}"></a>-->
+<!--        </td>-->
+<!--    </tr>-->
+<!--</table>-->
+
+<!--</body>-->
+<!--</html>-->
 
 <table>
-    <tr th:each="room : ${roomList}" >
+    <tr th:each="room : ${roomList}">
         <td>
-            <a th:href="@{chatRoom(roomId=${room.roomId} )}"
-               th:text="${room.roomNm}"></a>
+            <a href="#" th:data-room-id="${room.roomId}" th:text="${room.roomNm}" onclick="enterChatRoom(event)"></a>
         </td>
     </tr>
 </table>
 
-</body>
-</html>
+<script>
+    function enterChatRoom(event) {
+        event.preventDefault(); // a 태그의 기본 동작(페이지 이동)을 막습니다.
+
+        const roomId = event.target.getAttribute('data-room-id');
+
+        // 2. fetch API를 사용해 POST 요청을 보냅니다.
+        fetch('/chat/chatRoom', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ roomId: roomId }) // 3. RequestBody에 JSON 형태로 roomId를 담습니다.
+        })
+            .then(response => response.text()) // 서버로부터 HTML을 텍스트로 받습니다.
+            .then(html => {
+                // 4. 현재 페이지의 내용을 서버에서 받은 HTML로 교체합니다.
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>

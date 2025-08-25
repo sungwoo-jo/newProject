@@ -16,24 +16,74 @@
             box-shadow: 0 0 0 2px white;
             display: none;
         }
+
+        /* 드롭다운 컨테이너 */
+        .dropdown {
+            position: relative;   /* 드롭다운 메뉴 위치 기준 */
+            display: inline-block; /* 옆으로 배치 가능 */
+            float: right;
+            margin-right: 3rem;
+        }
+
+        /* 드롭다운 버튼 */
+        .dropbtn {
+            background-color: #333;
+            color: white;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropbtn:hover {
+            background-color: #575757;
+        }
+
+        /* 드롭다운 내용 */
+        .dropdown-content {
+            display: none; /* 기본은 숨김 */
+            position: absolute;
+            top: 100%; /* 버튼 바로 아래 */
+            left: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* hover 시 표시 */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
 </head>
 <body>
-<a th:if="${session.member}" href="/member/logout">Logout</a>
-    <a th:unless="${session.member}" href="/member/join">Join</a>
-    <a th:unless="${session.member}" href="/member/login">Login</a>
+    <div class="dropdown">
+        <button class="dropbtn">MENU ▼</button>
+        <div class="dropdown-content">
+            <a th:if="${session.member}" th:href="'/mypage'">마이페이지</a>
+            <a th:if="${session.member}" th:href="'/member/delete'">회원탈퇴</a>
+            <a th:if="${session.member}" th:href="'/board/travel/list'">여행게시판</a>
+            <a th:if="${session.member}" th:href="'/post/list'">쪽지 확인하기</a>
+            <a th:if="${session.member}" th:href="'/reservation/list'">예약 확인하기</a>
+            <a th:if="${session.member}" th:href="'/chat/chatList'">채팅</a>
+            <a th:if="${session.member}" href="/member/logout">로그아웃</a>
+            <a th:unless="${session.member}" href="/member/login">로그인</a>
+            <a th:unless="${session.member}" href="/member/join">회원가입</a>
+        </div>
+    </div>
 
-
-<p th:if="${session.member}" th:text="'로그인 사용자 : ' + ${session.member.memNm}"></p>
-<a th:if="${session.member}" th:href="'/mypage'"> > 마이페이지 가기 </a><br>
-<a th:if="${session.member}" th:href="'/member/delete'"> > 회원탈퇴 </a><br>
-<a th:if="${session.member}" th:href="'/board/travel/list'"> > 여행게시판 가기 </a><br>
-<a th:if="${session.member}" th:href="'/post/list'"> > 쪽지 읽기/쓰기 </a><br>
-<a th:if="${session.member}" th:href="'/reservation/list'"> > 예약페이지 가기 </a><br>
-<a th:if="${session.member}" th:href="'/chat/chatList'"> > 채팅 가기 </a><br>
-<p th:unless="${session.member}" th:text="'로그인 정보가 없습니다.'"></p>
-
-<hr>
 <div>
     <h1>인기게시글</h1>
     <span class="badge-dot"></span>
