@@ -31,6 +31,8 @@ public class FriendShipService {
 
     NotificationDto notificationDto = new NotificationDto(); // 알림 전송 객체 선언
 
+    // * 해당 클래스에서 toMember는 수락자, fromMember는 요청자이다. *
+
     public List<MemberDto> getSentRequest(int memNo) {
         return friendShipMapper.getSentRequest(memNo);
     }
@@ -134,37 +136,18 @@ public class FriendShipService {
     }
 
     public void addFriendList(FriendShipDto friendShipDto) throws JsonProcessingException { // 친구 리스트에 추가
+
+
+        friendShipDto.setNow(getNowDate());
+
+        // 서로의 친구 목록에 추가
+        addFriend(friendShipDto);
+    }
+
+    private String getNowDate() { // 친구 수락 시간 설정
         Date date = new Date();
         SimpleDateFormat followDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String now = followDt.format(date);
-
-        // 요청자의 친구 리스트에 추가한다.
-        String toMemberFriendListJson = getFriendList(friendShipDto.getToMemNo());
-        JsonNode toMemberFriendList = objectMapper.readTree(toMemberFriendListJson);
-
-        try {
-            // 새로운 데이터 추가
-            ((ObjectNode) toMemberFriendList).put(String.valueOf(friendShipDto.getFromMemNo()), now);
-
-            // JSON을 문자열로 변환 후 DB 업데이트
-            friendShipMapper.updateFriendList(friendShipDto.getToMemNo(), toMemberFriendList.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // 수락자의 친구 리스트에 추가한다.
-        String fromMemberFriendListJson = getFriendList(friendShipDto.getFromMemNo());
-        JsonNode fromMemberFriendList = objectMapper.readTree(fromMemberFriendListJson);
-
-        try {
-            // 새로운 데이터 추가
-            ((ObjectNode) fromMemberFriendList).put(String.valueOf(friendShipDto.getToMemNo()), now);
-
-            // JSON을 문자열로 변환 후 DB 업데이트
-            friendShipMapper.updateFriendList(friendShipDto.getFromMemNo(), fromMemberFriendList.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return followDt.format(date);
     }
 
     public void deleteFriendToMember(FriendShipDto friendShipDto) { // toMemNo의 친구목록에서 fromMemNo 삭제하기
@@ -179,6 +162,19 @@ public class FriendShipService {
         deleteFriendToMember(friendShipDto);
         deleteFriendFromMember(friendShipDto);
         cancelRequest(friendShipDto); // 친구 요청 목록도 삭제해서 다시 요청할 수 있는 상태를 만듬
+    }
+
+    public void addFriend(FriendShipDto friendShipDto) { // 서로의 친구 목록에 추가
+        addFriendToMember(friendShipDto);
+        addFriendFromMember(friendShipDto);
+    }
+
+    public void addFriendFromMember(FriendShipDto friendShipDto) { // 요청자의 친구 목록에 추가
+        friendShipMapper.addFriendFromMember(friendShipDto);
+    }
+
+    public void addFriendToMember(FriendShipDto friendShipDto) { // 수락자의 친구 목록에 추가
+        friendShipMapper.addFriendToMember(friendShipDto);
     }
 
     public void cancelRequest(FriendShipDto friendShipDto) { // 친구 요청 목록 삭제

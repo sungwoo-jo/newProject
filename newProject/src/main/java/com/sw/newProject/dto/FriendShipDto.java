@@ -19,6 +19,8 @@ public class FriendShipDto extends BaseTimeEntity{
 
     FriendShipStatus status; // 친구 요청 상태(ACCEPT: 수락, REJECT: 거절, REQUEST: 요청)
 
+    String now; // 요청 수락 시간
+
     public void acceptRequest() {
         status = FriendShipStatus.ACCEPT;
     }

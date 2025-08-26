@@ -25,8 +25,6 @@ public interface FriendShipMapper {
 
     String getFriendList(int memNo);
 
-    void updateFriendList(int memNo, String friendListJson);
-
     void deleteFriendToMember(FriendShipDto friendShipDto);
 
     void deleteFriendFromMember(FriendShipDto friendShipDto);
@@ -34,4 +32,8 @@ public interface FriendShipMapper {
     void cancelRequest(FriendShipDto friendShipDto);
 
     String getStatus(FriendShipDto friendShipDto);
+
+    void addFriendToMember(FriendShipDto friendShipDto);
+
+    void addFriendFromMember(FriendShipDto friendShipDto);
 }
