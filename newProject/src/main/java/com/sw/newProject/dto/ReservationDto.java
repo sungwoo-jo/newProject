@@ -33,6 +33,4 @@ public class ReservationDto {
     private String reqMsg; // 요청사항
 
     private Boolean deleteYn; // 삭제여부
-
-
 }

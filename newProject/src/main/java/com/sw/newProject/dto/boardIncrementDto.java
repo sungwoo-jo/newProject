@@ -1,15 +1,12 @@
 package com.sw.newProject.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
-
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class boardIncrementDto {
+public class boardIncrementDto extends BaseTimeEntity{
 
     /*
      * 게시글 조회 Dto
@@ -22,8 +19,6 @@ public class boardIncrementDto {
     private String boardId; // 게시판 종류
 
     private Integer memNo; // 회원번호(비회원: 0)
-
-    private LocalDateTime regDt; // 조회일자
 
     private String IP; // IP(비회원은 IP 기준으로 중복 조회를 제한)
 }

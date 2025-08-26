@@ -2,15 +2,17 @@ package com.sw.newProject.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDto {
+public class BoardDto extends BaseTimeEntity{
 
     /*
      * 게시판 기본 Dto
@@ -44,6 +46,4 @@ public class BoardDto {
     private Integer budget; // 예산
     private String district; // 여행지 정보
     private LocalDateTime visitDt; // 방문일시
-    private LocalDateTime regDt; // 생성일시
-    private LocalDateTime modDt; // 수정일시
 }

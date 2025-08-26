@@ -1,11 +1,13 @@
 package com.sw.newProject.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
-public class PostDto {
+@Getter
+@Setter
+public class PostDto extends BaseTimeEntity{
 
     private Integer postNo; // 쪽지번호
     private String senderMemId; // 발신회원아이디
@@ -19,6 +21,4 @@ public class PostDto {
     private Boolean deleteByReceiver; // 수신회원 삭제여부
     private LocalDateTime sendDt; // 전송일시
     private LocalDateTime readDt; // 확인일시
-    private LocalDateTime regDt; // 생성일시
-    private LocalDateTime modDt; // 수정일시
 }

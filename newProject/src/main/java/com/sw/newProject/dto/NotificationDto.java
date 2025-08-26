@@ -1,18 +1,16 @@
 package com.sw.newProject.dto;
 
 import com.sw.newProject.enumType.NotificationType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationDto {
+public class NotificationDto extends BaseTimeEntity{
 
     private int sno; // 번호
 
@@ -29,8 +27,4 @@ public class NotificationDto {
     private String content; // 알림의 내용
 
     private String url; // 알림 클릭 시 이동할 url
-
-    private LocalDateTime regDt; // 보낸 일시
-
-    private LocalDateTime modDt; // 수정 일시
 }
