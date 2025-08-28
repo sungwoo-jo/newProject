@@ -22,7 +22,8 @@
 
 <!--</body>-->
 <!--</html>-->
-
+<body>
+<div th:replace="~{fragments/header :: header}"></div> <!-- 헤더 파일 로드 -->
 <table>
     <tr th:each="room : ${roomList}">
         <td>
@@ -30,6 +31,7 @@
         </td>
     </tr>
 </table>
+</body>
 
 <script>
     function enterChatRoom(event) {

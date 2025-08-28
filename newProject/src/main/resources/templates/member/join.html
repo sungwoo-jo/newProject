@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div> <!-- 헤더 파일 로드 -->
+
 <div class="signup-container">
     <h2>회원가입</h2>
     <form id="joinForm">
@@ -64,6 +66,6 @@
     </form>
 </div>
 
-<script src="/script/scripts.js"></script>
+<script src="/js/scripts.js"></script>
 </body>
 </html>

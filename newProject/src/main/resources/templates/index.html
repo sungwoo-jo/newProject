@@ -1,88 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-        .badge-dot {
-            position: absolute;
-            top: 20%;
-            right: 90%;
-            transform: translate(50%, -50%);
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            box-shadow: 0 0 0 2px white;
-            display: none;
-        }
-
-        /* 드롭다운 컨테이너 */
-        .dropdown {
-            position: relative;   /* 드롭다운 메뉴 위치 기준 */
-            display: inline-block; /* 옆으로 배치 가능 */
-            float: right;
-            margin-right: 3rem;
-        }
-
-        /* 드롭다운 버튼 */
-        .dropbtn {
-            background-color: #333;
-            color: white;
-            padding: 12px 16px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .dropbtn:hover {
-            background-color: #575757;
-        }
-
-        /* 드롭다운 내용 */
-        .dropdown-content {
-            display: none; /* 기본은 숨김 */
-            position: absolute;
-            top: 100%; /* 버튼 바로 아래 */
-            left: 0;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
-
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-
-        /* hover 시 표시 */
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-    </style>
+    <title>newProject</title>
 </head>
 <body>
-    <div class="dropdown">
-        <button class="dropbtn">MENU ▼</button>
-        <div class="dropdown-content">
-            <a th:if="${session.member}" th:href="'/mypage'">마이페이지</a>
-            <a th:if="${session.member}" th:href="'/member/delete'">회원탈퇴</a>
-            <a th:if="${session.member}" th:href="'/board/travel/list'">여행게시판</a>
-            <a th:if="${session.member}" th:href="'/post/list'">쪽지 확인하기</a>
-            <a th:if="${session.member}" th:href="'/reservation/list'">예약 확인하기</a>
-            <a th:if="${session.member}" th:href="'/chat/chatList'">채팅</a>
-            <a th:if="${session.member}" href="/member/logout">로그아웃</a>
-            <a th:unless="${session.member}" href="/member/login">로그인</a>
-            <a th:unless="${session.member}" href="/member/join">회원가입</a>
-        </div>
-    </div>
+<div th:replace="~{fragments/header :: header}"></div> <!-- 헤더 파일 로드 -->
 
 <div>
     <h1>인기게시글</h1>
@@ -115,59 +38,3 @@
 
 </body>
 </html>
-
-<script>
-    window.addEventListener("DOMContentLoaded", () => {
-        const eventSource = new EventSource("/notifications/subscribe");
-
-        eventSource.addEventListener("message", function(event) {
-            console.log("서버로부터 알림: " + event.data);
-        });
-
-        eventSource.onerror = function(err) {
-            console.error("SSE 연결 오류:", err);
-            eventSource.close();
-        };
-
-        eventSource.addEventListener("sse", function(event) {
-            console.log("더미 데이터 수신 완료");
-        });
-
-        eventSource.addEventListener("notify", function(event) {
-            console.log("🔔 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-        eventSource.addEventListener("FRIEND_REQ", function(event) {
-            console.log("🔔 친구 요청 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-        eventSource.addEventListener("FRIEND_ACC", function(event) {
-            console.log("🔔 친구 수락 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-        eventSource.addEventListener("FRIEND_REJ", function(event) {
-            console.log("🔔 친구 거절 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-        eventSource.addEventListener("POST_SEND", function(event) {
-            console.log("🔔 쪽지 수신 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-        eventSource.addEventListener("POST_READ", function(event) {
-            console.log("🔔 쪽지 읽음 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-        eventSource.addEventListener("FOLLOW_ADD", function(event) {
-            console.log("🔔 팔로우 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-        eventSource.addEventListener("REPLY", function(event) {
-            console.log("🔔 댓글 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-        eventSource.addEventListener("BOARD_LIKE", function(event) {
-            console.log("🔔 좋아요 알림: " + event.data);
-            document.querySelector(".badge-dot").style.display = "block";
-        });
-    })
-</script>

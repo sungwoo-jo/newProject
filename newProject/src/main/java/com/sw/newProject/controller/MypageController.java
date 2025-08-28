@@ -25,7 +25,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @OpenAPIDefinition(info = @Info(title = "newProject API 명세서",
         description = "API 명세서",
@@ -60,8 +59,6 @@ public class MypageController {
         // 친구 목록 순회(메인에 보여주는 것이기 때문에 3개만)
         int count = 0;
         for (String friendId : friendListJson.keySet()) {
-            String timestamp = friendListJson.getString(friendId);
-            System.out.println("Friend ID: " + friendId + ", Time: " + timestamp);
 
             MemberDto friendMemberDto = memberService.getMember(Integer.parseInt(friendId));
 
@@ -117,8 +114,6 @@ public class MypageController {
 
         for (String friendId : friendListJson.keySet()) {
             String timestamp = friendListJson.getString(friendId);
-            System.out.println("Friend ID: " + friendId + ", Time: " + timestamp);
-
             MemberDto friendMemberDto = memberService.getMember(Integer.parseInt(friendId));
 
             friendLists.add(friendMemberDto);

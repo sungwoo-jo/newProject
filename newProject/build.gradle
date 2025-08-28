@@ -47,6 +47,9 @@ dependencies {
 	// 스웨거 의존성
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
+	// 카프카 의존성
+	implementation 'org.springframework.kafka:spring-kafka'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // 테스트 의존성 (필요 시)
 }
 

@@ -19,7 +19,6 @@ public class IndexController {
     public String index(Model model) {
         List<BoardDto> boardDto = boardService.getPopularBoard("travel");
         model.addAttribute("boardDto", boardDto);
-//        return "index";
         return "index";
     }
 }

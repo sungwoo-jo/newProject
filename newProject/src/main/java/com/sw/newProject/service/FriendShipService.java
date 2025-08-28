@@ -10,6 +10,7 @@ import com.sw.newProject.dto.NotificationDto;
 import com.sw.newProject.enumType.ErrorCode;
 import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.exception.CustomException;
+import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.mapper.FriendShipMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,9 @@ import java.util.List;
 public class FriendShipService {
 
     private final FriendShipMapper friendShipMapper;
-    private final ObjectMapper objectMapper;
     private final NotificationService notificationService;
     private final MemberService memberService;
+    private final NotificationProducer notificationProducer;
 
     NotificationDto notificationDto = new NotificationDto(); // 알림 전송 객체 선언
 
@@ -76,9 +77,9 @@ public class FriendShipService {
         }
         log.info("notificationDt: {}", notificationDto);
 
-        // 알림 내역 저장
+        // 알림 내역 저장 & 알림 발송
         notificationService.saveNotify(notificationDto);
-        notificationService.notifyOne(notificationDto.getFromMemNo(), notificationDto.getContent(), notificationDto.getNotificationType());
+        notificationProducer.sendNotification(notificationDto);
     }
 
     public List<MemberDto> getReceivedRequest(int memNo) {

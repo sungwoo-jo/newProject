@@ -7,6 +7,7 @@ import com.sw.newProject.dto.*;
 
 import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.exception.CustomException;
+import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
 import com.sw.newProject.service.NotificationService;
@@ -180,7 +181,7 @@ public class MemberController {
             for (Integer friend : map.keySet())
             {
                 Executors.newSingleThreadExecutor().submit(() -> { // 알림 보내기 시작
-//                    notificationService.notifyOne(friend, member.getMemNm() + "님이 로그인하셨습니다.");
+                    notificationService.notifyOne(friend, member.getMemNm() + "님이 로그인하셨습니다.", NotificationType.LOGIN);
                     log.info("로그인 알림 전송 완료");
                 });
             }

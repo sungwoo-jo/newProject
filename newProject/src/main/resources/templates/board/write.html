@@ -90,6 +90,8 @@
 </head>
 <body>
 
+<div th:replace="~{fragments/header :: header}"></div> <!-- 헤더 파일 로드 -->
+
 <div class="container">
   <h1 th:text="${boardDto != null ? '게시글 수정' : '게시글 작성'}"></h1>
   <form id="writeForm">
