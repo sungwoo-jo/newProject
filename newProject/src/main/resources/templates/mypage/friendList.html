@@ -7,7 +7,7 @@
 <body>
 
 <h2>친구 목록</h2>
-<form id="inviteChat" action="/mypage/inviteChat" method="post">
+<form id="friendList">
     <table class="table table-striped" border="1">
         <thead>
         <tr>
@@ -20,7 +20,7 @@
         <tbody>
         <!-- Thymeleaf를 이용해 게시글 목록 출력 -->
         <tr th:each="friendList, stat : ${friendLists}">
-            <td><input type="checkbox" th:value="${friendList.memNo}" name="friendNo"/></td>
+            <td><input type="checkbox" class="friendList" id="friendNo" th:value="${friendList.memNo}"/></td>
             <td th:text="${friendList.memId}" th:value="${friendList.memId}"></td>
             <td th:text="${friendList.nickNm}" th:value="${friendList.nickNm}"></td>
             <td th:text="${friendList.email}" th:value="${friendList.email}"></td>
@@ -28,7 +28,8 @@
         </tbody>
     </table>
 
-    <button type="submit">채팅방에 초대하기</button>
+    <button id="inviteChat ">채팅방에 초대하기</button>
+    <button id="deleteFriend">친구 삭제</button>
 </form>
 
 <h2>받은 요청</h2>
@@ -156,6 +157,33 @@
                 } else {
                     alert('요청 취소 실패');
                     // 실패 처리 로직
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+
+    document.getElementById('deleteFriend').addEventListener('click', function (event) {
+        event.preventDefault();
+        const form = document.querySelector('form[id="friendList"]');
+        const data = Array.from(form.querySelectorAll('input[id="friendNo"]:checked'))
+            .map(cb => parseInt(cb.value));
+
+        console.log(data);
+
+        fetch("./deleteFriend", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(data => {
+                if (data === "success") {
+                    alert('친구 삭제가 완료되었습니다.');
+                    location.reload();
+                } else {
+                    alert('친구 삭제에 실패했습니다.');
                 }
             })
             .catch(error => console.error("Error:", error));

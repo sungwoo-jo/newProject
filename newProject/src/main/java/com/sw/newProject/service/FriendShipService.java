@@ -1,9 +1,6 @@
 package com.sw.newProject.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.NotificationDto;
@@ -171,10 +168,12 @@ public class FriendShipService {
     }
 
     public void addFriendFromMember(FriendShipDto friendShipDto) { // 요청자의 친구 목록에 추가
+        log.info("수락자: {}, 요청자: {}", friendShipDto.getFromMemNo(), friendShipDto.getToMemNo());
         friendShipMapper.addFriendFromMember(friendShipDto);
     }
 
     public void addFriendToMember(FriendShipDto friendShipDto) { // 수락자의 친구 목록에 추가
+        log.info("요청자: {}, 수락자: {}", friendShipDto.getToMemNo(), friendShipDto.getFromMemNo());
         friendShipMapper.addFriendToMember(friendShipDto);
     }
 

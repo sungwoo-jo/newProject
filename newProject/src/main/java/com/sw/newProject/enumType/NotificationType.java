@@ -9,4 +9,5 @@ public enum NotificationType {
     FRIEND_REJ, // 친구 요청 거절
     FRIEND_ACC, // 친구 요청 수락
     FOLLOW_ADD, // 팔로우 추가
+    LOGIN, // 로그인
 }

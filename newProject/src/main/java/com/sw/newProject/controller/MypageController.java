@@ -211,4 +211,20 @@ public class MypageController {
 
         return ResponseEntity.ok("success");
     }
+
+    @DeleteMapping("/deleteFriend")
+    public ResponseEntity<String> deleteFriend(@RequestBody List<Integer> friendNo, HttpSession session) {
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        FriendShipDto friendShipDto = new FriendShipDto();
+        friendShipDto.setToMemNo(memberDto.getMemNo());
+
+        for (Integer friend : friendNo) {
+            log.info("friend: {}", friend);
+            friendShipDto.setFromMemNo(friend);
+            friendShipService.cancelRequest(friendShipDto);
+            friendShipService.deleteFriend(friendShipDto);
+        }
+
+        return ResponseEntity.ok("success");
+    }
 }

@@ -54,6 +54,7 @@ public class MemberController {
     private final MemberService memberService;
     private final NotificationService notificationService;
     private final FriendShipService friendShipService;
+    private final NotificationProducer notificationProducer;
 
     @GetMapping("/join") // 회원가입 페이지 호출
     @Operation(summary = "회원가입 페이지 호출", description = "회원가입 페이지를 호출합니다.")
@@ -167,12 +168,17 @@ public class MemberController {
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     public ResponseEntity<String> doLogin(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException, JsonProcessingException {
         MemberDto member = memberService.doLogin(memberDto); // 기본 데이터 가져오기
+        NotificationDto notificationDto = new NotificationDto();
 
         if (member != null && member.getDeleteYn() != Boolean.TRUE) { // 로그인 성공
             // 세션 값 설정
             session.setAttribute("member", member);
             notificationService.subscribe(member.getMemNo()); // 로그인 성공 시 알림 구독
             log.info("member: {}", member);
+            notificationDto.setToMemNo(member.getMemNo());
+            notificationDto.setContent(member.getMemNm() + "님이 로그인하셨습니다.");
+            notificationDto.setNotificationType(NotificationType.LOGIN);
+
 
             // 친구 리스트 불러와서 알림 전송
             String friendList = friendShipService.getFriendList(member.getMemNo());
@@ -181,7 +187,9 @@ public class MemberController {
             for (Integer friend : map.keySet())
             {
                 Executors.newSingleThreadExecutor().submit(() -> { // 알림 보내기 시작
-                    notificationService.notifyOne(friend, member.getMemNm() + "님이 로그인하셨습니다.", NotificationType.LOGIN);
+                    notificationDto.setFromMemNo(friend);
+                    notificationProducer.sendNotification(notificationDto);
+//                    notificationService.notifyOne(friend, member.getMemNm() + "님이 로그인하셨습니다.", NotificationType.LOGIN);
                     log.info("로그인 알림 전송 완료");
                 });
             }
