@@ -4,7 +4,7 @@ import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.NotificationDto;
 import com.sw.newProject.dto.PostDto;
 import com.sw.newProject.enumType.NotificationType;
-import com.sw.newProject.service.NotificationService;
+import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final NotificationService notificationService;
+    private final NotificationProducer notificationProducer;
 
     /*
      * todo: 보낸 편지함, 받은 편지함으로 구분하기
@@ -71,12 +71,12 @@ public class PostController {
         Integer result = postService.doWrite(postDto);
 
         // 받는 사람에게 알림 전송
-        notificationDto.setToMemNo(postDto.getReceiverMemNo());
-        notificationDto.setFromMemNo(postDto.getSenderMemNo());
+        notificationDto.setToMemNo(postDto.getSenderMemNo());
+        notificationDto.setFromMemNo(postDto.getReceiverMemNo());
         notificationDto.setContent(postDto.getSenderMemId() + "님이 쪽지를 보냈습니다.");
         notificationDto.setUrl("/post/list");
         notificationDto.setNotificationType(NotificationType.POST_SEND);
-        notificationService.notifyOne(notificationDto.getToMemNo(), notificationDto.getContent(), notificationDto.getNotificationType());
+        notificationProducer.sendNotification(notificationDto);
 
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }

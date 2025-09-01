@@ -189,7 +189,6 @@ public class MemberController {
                 Executors.newSingleThreadExecutor().submit(() -> { // 알림 보내기 시작
                     notificationDto.setFromMemNo(friend);
                     notificationProducer.sendNotification(notificationDto);
-//                    notificationService.notifyOne(friend, member.getMemNm() + "님이 로그인하셨습니다.", NotificationType.LOGIN);
                     log.info("로그인 알림 전송 완료");
                 });
             }
@@ -349,12 +348,12 @@ public class MemberController {
 
                 // 팔로잉 알림 전송
                 // 작성자에게 알림 전송
-                notificationDto.setToMemNo(boardDto.getMemNo());
-                notificationDto.setFromMemNo(memberDto.getMemNo());
+                notificationDto.setToMemNo(memberDto.getMemNo());
+                notificationDto.setFromMemNo(boardDto.getMemNo());
                 notificationDto.setContent(memberDto.getMemId() + "님이 팔로우 하였습니다.");
                 notificationDto.setUrl("/mypage");
                 notificationDto.setNotificationType(NotificationType.FOLLOW_ADD);
-                notificationService.notifyOne(notificationDto.getToMemNo(), notificationDto.getContent(), notificationDto.getNotificationType());
+                notificationProducer.sendNotification(notificationDto);
             }
 
         return ResponseEntity.ok("success");

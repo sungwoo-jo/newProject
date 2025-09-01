@@ -5,15 +5,14 @@ import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.NotificationDto;
 import com.sw.newProject.dto.PageDto;
 import com.sw.newProject.enumType.NotificationType;
+import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.mapper.BoardMapper;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -22,7 +21,7 @@ public class BoardService {
 
     private final BoardMapper boardMapper;
     private final MemberService memberService;
-    private final NotificationService notificationService;
+    private final NotificationProducer notificationProducer;
 
     public List<BoardDto> getBoardList(HashMap<String, Object> map) {
         return boardMapper.getBoardList(map);
@@ -107,13 +106,13 @@ public class BoardService {
 
         NotificationDto notificationDto = new NotificationDto();
         // 알림 전송
-        notificationDto.setToMemNo(writerNo);
-        notificationDto.setFromMemNo(memberDto.getMemNo());
+        notificationDto.setToMemNo(memberDto.getMemNo());
+        notificationDto.setFromMemNo(writerNo);
         notificationDto.setNotificationType(NotificationType.BOARD_LIKE);
         notificationDto.setContent(memberDto.getMemNm() + "님이 내 글을 좋아합니다.");
         notificationDto.setUrl("/board/" + boardId + "/view/" + boardNo);
 
-        notificationService.notifyOne(notificationDto.getToMemNo(), notificationDto.getContent(), notificationDto.getNotificationType());
+        notificationProducer.sendNotification(notificationDto);
         return boardMapper.doLike(map);
     }
 
