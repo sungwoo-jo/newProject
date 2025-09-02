@@ -75,6 +75,10 @@
         SELECT follow FROM member WHERE memNo = #{memNo}
     </select>
 
+    <select id="getFollowDataJson" parameterType="Integer" resultType="String">
+        SELECT JSON_KEYS(following) FROM member WHERE memNo = #{memNo}
+    </select>
+
     <select id="getFollowingData" resultType="map">
         SELECT following FROM member WHERE memNo = #{memNo}
     </select>
@@ -94,4 +98,29 @@
     <delete id="doCancelFollowing" parameterType="Integer">
         UPDATE member SET following = JSON_REMOVE(following, CONCAT('$.', #{memberDtoNo})) WHERE memNo = #{boardDtoNo}
     </delete>
+
+    <select id="getJsonKeysList" parameterType="int" resultType="String">
+        SELECT JSON_UNQUOTE(j.key_name) AS key_name
+        FROM member m,
+             JSON_TABLE(
+            JSON_KEYS(m.following),
+            '$[*]' COLUMNS (key_name JSON PATH '$')
+        ) j
+        WHERE m.memNo = #{memNo}
+    </select>
+
+    <insert id="appendTargetToJson" parameterType="com.sw.newProject.dto.AppendTargetToJsonDto">
+        <if test="columnName == 'follow'">
+            UPDATE member
+            SET
+            follow = JSON_INSERT(follow, CONCAT('$.', #{targetMemNo}), NOW())
+            WHERE memNo = #{ownerMemNo}
+        </if>
+        <if test="columnName == 'following'">
+            UPDATE member
+            SET
+            following = JSON_INSERT(following, CONCAT('$.', #{targetMemNo}), NOW())
+            WHERE memNo = #{ownerMemNo}
+        </if>
+    </insert>
 </mapper>

@@ -1,11 +1,10 @@
 package com.sw.newProject.mapper;
 
+import com.sw.newProject.dto.AppendTargetToJsonDto;
 import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.UploadFileDto;
 import org.apache.ibatis.annotations.Mapper;
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,10 +28,6 @@ public interface MemberMapper {
 
     MemberDto doLogin(MemberDto memberDto);
 
-    Integer validationMemId(String memId);
-
-    Integer validationMemPw(String memPw);
-
     String findId(String memNm, String email);
 
     Integer findPw(String memNm, String email, String memId);
@@ -43,15 +38,13 @@ public interface MemberMapper {
 
     void saveProfileImageName(MemberDto memberDto);
 
-    void insertFollowData(HashMap<String, String> followData);
-
-    void insertFollowingData(HashMap<String, String> followingData);
-
     HashMap<String, String> getFollowData(Integer memNo);
-
-    HashMap<String, String> getFollowingData(Integer memNo);
 
     void doCancelFollow(HashMap<String, Object> map);
 
     void doCancelFollowing(HashMap<String, Object> map);
+
+    List<String> getJsonKeysList(int memNo);
+
+    void appendTargetToJson(AppendTargetToJsonDto appendTargetToJsonDto);
 }

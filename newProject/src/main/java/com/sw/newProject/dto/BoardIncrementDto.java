@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class boardIncrementDto extends BaseTimeEntity{
+public class BoardIncrementDto extends BaseTimeEntity{
 
     /*
      * 게시글 조회 Dto

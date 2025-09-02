@@ -133,10 +133,8 @@ public class FriendShipService {
         friendShipMapper.changeStatus(friendShipDto);
     }
 
-    public void addFriendList(FriendShipDto friendShipDto) throws JsonProcessingException { // 친구 리스트에 추가
-
-
-        friendShipDto.setNow(getNowDate());
+    public void addFriendList(FriendShipDto friendShipDto) { // 친구 리스트에 추가
+        friendShipDto.setNow(getNowDate()); // 친구 추가된 시간 set
 
         // 서로의 친구 목록에 추가
         addFriend(friendShipDto);
