@@ -50,4 +50,8 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log("🔔 좋아요 알림: " + event.data);
         document.querySelector(".badge-dot").style.display = "block";
     });
+    eventSource.addEventListener("LOGIN", function (event) {
+        console.log("🔔 로그인 알림: " + event.data);
+        document.querySelector(".badge-dot").style.display = "block";
+    });
 });

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.Relation;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +27,7 @@ public class FriendShipService {
     private final NotificationService notificationService;
     private final MemberService memberService;
     private final NotificationProducer notificationProducer;
+    private final RelationshipService relationshipService;
 
     NotificationDto notificationDto = new NotificationDto(); // 알림 전송 객체 선언
 
@@ -134,7 +136,6 @@ public class FriendShipService {
     }
 
     public void addFriendList(FriendShipDto friendShipDto) { // 친구 리스트에 추가
-        friendShipDto.setNow(getNowDate()); // 친구 추가된 시간 set
 
         // 서로의 친구 목록에 추가
         addFriend(friendShipDto);
@@ -167,12 +168,12 @@ public class FriendShipService {
 
     public void addFriendFromMember(FriendShipDto friendShipDto) { // 요청자의 친구 목록에 추가
         log.info("수락자: {}, 요청자: {}", friendShipDto.getFromMemNo(), friendShipDto.getToMemNo());
-        friendShipMapper.addFriendFromMember(friendShipDto);
+        relationshipService.addFriendFromMember(friendShipDto);
     }
 
     public void addFriendToMember(FriendShipDto friendShipDto) { // 수락자의 친구 목록에 추가
         log.info("요청자: {}, 수락자: {}", friendShipDto.getToMemNo(), friendShipDto.getFromMemNo());
-        friendShipMapper.addFriendToMember(friendShipDto);
+        relationshipService.addFriendToMember(friendShipDto);
     }
 
     public void cancelRequest(FriendShipDto friendShipDto) { // 친구 요청 목록 삭제

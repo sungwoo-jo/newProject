@@ -1,6 +1,5 @@
 package com.sw.newProject.mapper;
 
-import com.sw.newProject.dto.AppendTargetToJsonDto;
 import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.UploadFileDto;
@@ -43,8 +42,4 @@ public interface MemberMapper {
     void doCancelFollow(HashMap<String, Object> map);
 
     void doCancelFollowing(HashMap<String, Object> map);
-
-    List<String> getJsonKeysList(int memNo);
-
-    void appendTargetToJson(AppendTargetToJsonDto appendTargetToJsonDto);
 }

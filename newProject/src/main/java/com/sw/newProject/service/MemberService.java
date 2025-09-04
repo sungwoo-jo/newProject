@@ -7,13 +7,11 @@ import com.sw.newProject.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.SecureRandom;
 
@@ -28,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 @Slf4j
-@Transactional
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -36,6 +33,7 @@ public class MemberService {
     private final MemberMapper memberMapper;
     private final JavaMailSender javaMailSender;
     private final NotificationProducer notificationProducer;
+    private final RelationshipService relationshipService;
 
     public void insertMember(MemberDto memberDto, MultipartFile file) throws Exception { // 회원가입 로직 처리
         System.out.println("[MemberService][insertMember][projectPath]: " + System.getProperty("user.dir"));
@@ -335,47 +333,9 @@ public class MemberService {
         memberMapper.doCancelFollowing(map);
     }
 
-    public List<String> getJsonKeysList(int memNo) {
-        return memberMapper.getJsonKeysList(memNo);
-    }
-
-    public void appendTargetToJson(AppendTargetToJsonDto appendTargetToJsonDto) { // JSON key에 memNo를 추가
-        memberMapper.appendTargetToJson(appendTargetToJsonDto);
-    }
-
-    public void appendMemNoToJson(AppendTargetToJsonDto appendTargetToJsonDto) {
-        appendTargetToJson(appendTargetToJsonDto);
-    }
-
-    @Transactional
     public void doFollow(MemberDto reqMember, BoardDto accMember) {
-        log.info("reqMember: {}", reqMember.getMemNo());
-        log.info("accMember: {}", accMember.getMemNo());
-
-        List<String> reqMemberFollowData = getJsonKeysList(reqMember.getMemNo()); // 요청자의 현재 팔로우 데이터를 가져오기
-        List<String> accMemberFollowingData = getJsonKeysList(accMember.getMemNo()); // 수락자의 현재 팔로잉 데이터를 가져오기
-
+        relationshipService.doFollow(reqMember, accMember);
         NotificationDto notificationDto = new NotificationDto();
-
-        if (reqMemberFollowData.contains(accMember.getMemNo())) { // 요청자의 팔로우 데이터 중 수락자가 존재하는 지 확인
-            ResponseEntity.badRequest();
-        } else { // 요청자 팔로우 데이터에 대상자를 추가
-            AppendTargetToJsonDto appendTargetToJsonDto = new AppendTargetToJsonDto();
-            appendTargetToJsonDto.setOwnerMemNo(reqMember.getMemNo());
-            appendTargetToJsonDto.setTargetMemNo(accMember.getMemNo());
-            appendTargetToJsonDto.setColumnName("follow");
-            appendMemNoToJson(appendTargetToJsonDto);
-        }
-
-        if (accMemberFollowingData.contains(reqMember.getMemNo())) { // 수락자의 팔로잉 데이터 중 요청자가 존재하는 지 확인
-            ResponseEntity.badRequest();
-        } else { // 수락자 팔로잉 데이터에 요청자를 추가
-            AppendTargetToJsonDto appendTargetToJsonDto = new AppendTargetToJsonDto();
-            appendTargetToJsonDto.setOwnerMemNo(accMember.getMemNo());
-            appendTargetToJsonDto.setTargetMemNo(reqMember.getMemNo());
-            appendTargetToJsonDto.setColumnName("following");
-            appendMemNoToJson(appendTargetToJsonDto);
-        }
         // 팔로잉 알림 전송
         // 작성자에게 알림 전송
         notificationDto.setToMemNo(reqMember.getMemNo());

@@ -180,6 +180,7 @@ public class MemberController {
             for (Integer friend : map.keySet())
             {
                 Executors.newSingleThreadExecutor().submit(() -> { // 알림 보내기 시작
+                    log.info("friend: {}", friend);
                     notificationDto.setFromMemNo(friend);
                     notificationProducer.sendNotification(notificationDto);
                     log.info("로그인 알림 전송 완료");
@@ -289,8 +290,6 @@ public class MemberController {
 
         memberService.doCancelFollow(map);
         memberService.doCancelFollowing(map);
-
-        log.info("after cancel Follow Data: {}", memberService.getJsonKeysList(memberDtoNo));
 
         return ResponseEntity.ok("success");
     }

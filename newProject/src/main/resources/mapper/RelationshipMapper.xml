@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sw.newProject.mapper.RelationshipMapper">
+    <select id="getJsonKeysList" parameterType="int" resultType="String">
+        SELECT JSON_UNQUOTE(j.key_name) AS key_name
+        FROM member m,
+             JSON_TABLE(
+            JSON_KEYS(m.following),
+            '$[*]' COLUMNS (key_name JSON PATH '$')
+        ) j
+        WHERE m.memNo = #{memNo}
+    </select>
+
+    <insert id="appendTargetToJson" parameterType="com.sw.newProject.dto.AppendTargetToJsonDto">
+        <if test="columnName == 'follow'">
+            UPDATE member
+            SET
+            follow = JSON_INSERT(follow, CONCAT('$.', #{targetMemNo}), NOW())
+            WHERE memNo = #{ownerMemNo}
+        </if>
+        <if test="columnName == 'following'">
+            UPDATE member
+            SET
+            following = JSON_INSERT(following, CONCAT('$.', #{targetMemNo}), NOW())
+            WHERE memNo = #{ownerMemNo}
+        </if>
+    </insert>
+
+    <update id="addFriendFromMember" parameterType="com.sw.newProject.dto.FriendShipDto">
+        UPDATE member
+        SET friendList = JSON_INSERT(friendList, CONCAT('$.', #{toMemNo}), NOW())
+        WHERE memNo = #{fromMemNo}
+    </update>
+
+    <update id="addFriendToMember" parameterType="com.sw.newProject.dto.FriendShipDto">
+        UPDATE member
+        SET friendList = JSON_INSERT(friendList, CONCAT('$.', #{fromMemNo}), NOW())
+        WHERE memNo = #{toMemNo}
+    </update>
+</mapper>

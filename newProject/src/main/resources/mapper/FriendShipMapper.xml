@@ -80,16 +80,4 @@
         FROM friendShip
         WHERE (toMemNo = #{toMemNo} AND fromMemNo = #{fromMemNo}) OR (toMemNo = #{fromMemNo} AND fromMemNo = #{toMemNo})
     </delete>
-
-    <update id="addFriendFromMember" parameterType="com.sw.newProject.dto.FriendShipDto">
-        UPDATE member
-        SET friendList = JSON_INSERT(friendList, CONCAT('$.', #{toMemNo}), #{now})
-        WHERE memNo = #{fromMemNo}
-    </update>
-
-    <update id="addFriendToMember" parameterType="com.sw.newProject.dto.FriendShipDto">
-        UPDATE member
-        SET friendList = JSON_INSERT(friendList, CONCAT('$.', #{fromMemNo}), #{now})
-        WHERE memNo = #{toMemNo}
-    </update>
 </mapper>

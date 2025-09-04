@@ -32,8 +32,4 @@ public interface FriendShipMapper {
     void cancelRequest(FriendShipDto friendShipDto);
 
     String getStatus(FriendShipDto friendShipDto);
-
-    void addFriendToMember(FriendShipDto friendShipDto);
-
-    void addFriendFromMember(FriendShipDto friendShipDto);
 }
