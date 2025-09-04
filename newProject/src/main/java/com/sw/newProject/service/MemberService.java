@@ -34,6 +34,7 @@ public class MemberService {
     private final JavaMailSender javaMailSender;
     private final NotificationProducer notificationProducer;
     private final RelationshipService relationshipService;
+    private final NotificationService notificationService;
 
     public void insertMember(MemberDto memberDto, MultipartFile file) throws Exception { // 회원가입 로직 처리
         System.out.println("[MemberService][insertMember][projectPath]: " + System.getProperty("user.dir"));
@@ -333,7 +334,7 @@ public class MemberService {
         memberMapper.doCancelFollowing(map);
     }
 
-    public void doFollow(MemberDto reqMember, BoardDto accMember) {
+    public void doFollow(MemberDto reqMember, BoardDto accMember, String boardId) {
         relationshipService.doFollow(reqMember, accMember);
         NotificationDto notificationDto = new NotificationDto();
         // 팔로잉 알림 전송
@@ -341,9 +342,10 @@ public class MemberService {
         notificationDto.setToMemNo(reqMember.getMemNo());
         notificationDto.setFromMemNo(accMember.getMemNo());
         notificationDto.setContent(reqMember.getMemId() + "님이 팔로우 하였습니다.");
-        notificationDto.setUrl("/mypage");
+        notificationDto.setUrl("/board/" + boardId + "/view/" + accMember.getBoardNo());
         notificationDto.setNotificationType(NotificationType.FOLLOW_ADD);
         notificationProducer.sendNotification(notificationDto);
+        notificationService.saveNotify(notificationDto);
     }
 }
 

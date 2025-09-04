@@ -11,7 +11,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
 @Slf4j
@@ -123,5 +122,9 @@ public class NotificationService {
      */
     public void saveNotify(NotificationDto notificationDto) {
         notificationMapper.saveNotify(notificationDto);
+    }
+
+    public ArrayList<NotificationDto> getRecentNotification(Integer memNo) {
+        return notificationMapper.getRecentNotification(memNo);
     }
 }

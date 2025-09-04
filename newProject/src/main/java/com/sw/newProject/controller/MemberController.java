@@ -266,10 +266,11 @@ public class MemberController {
     @PostMapping("/follow") // 팔로우 처리
     @Operation(summary = "팔로우 처리", description = "팔로우 처리를 진행합니다.")
     public ResponseEntity<String> follow(@RequestBody BoardDto boardDto, HttpSession session) {
+        String boardId = "travel";
         MemberDto reqMember = (MemberDto)session.getAttribute("member");
         BoardDto accMember = boardDto;
 
-        memberService.doFollow(reqMember, accMember);
+        memberService.doFollow(reqMember, accMember, boardId);
 
         return ResponseEntity.ok("success");
     }

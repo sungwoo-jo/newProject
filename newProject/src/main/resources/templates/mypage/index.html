@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:p="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -196,8 +196,11 @@
         </div>
         <div class="mypage-content">
             <h2>최근 알림</h2>
-            <p>알림 1</p>
-            <p>알림 2</p>
+            <ul>
+                <li th:each="recentNotification : ${session.recentNotifications}">
+                    <a th:href="${recentNotification.url}"><span th:text="${recentNotification.content}"></span></a>
+                </li>
+            </ul>
         </div>
         <div class="mypage-content">
             <h2>팔로잉 소식</h2>

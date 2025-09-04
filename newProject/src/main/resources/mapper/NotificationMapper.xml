@@ -9,4 +9,12 @@
         VALUES
             (#{toMemNo}, #{fromMemNo}, #{notificationType}, #{content}, #{url}, now())
     </insert>
+
+    <select id="getRecentNotification" parameterType="Integer" resultType="com.sw.newProject.dto.NotificationDto">
+        SELECT *
+        FROM notification
+        WHERE fromMemNo = #{memNo}
+        ORDER BY regDt DESC
+        LIMIT 3
+    </select>
 </mapper>

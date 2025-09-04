@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sw.newProject.dto.ChatEntrantDto;
 import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.dto.MemberDto;
+import com.sw.newProject.dto.NotificationDto;
 import com.sw.newProject.enumType.ChatEntrantStatus;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
+import com.sw.newProject.service.NotificationService;
 import com.sw.newProject.websocket.ChatRoom;
 import com.sw.newProject.websocket.ChatService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -42,7 +44,7 @@ public class MypageController {
     private final MemberService memberService;
     private final FriendShipService friendShipService;
     private final ChatService chatService;
-
+    private final NotificationService notificationService;
 
     @GetMapping(value = {"/", "/index", ""})
     public String getIndexPage(HttpSession session) {
@@ -51,9 +53,9 @@ public class MypageController {
 
         List<MemberDto> friends = new ArrayList<>();
 
+        // 1. 친구 목록 가져오기(3명)
         // JSON 문자열을 JSONObject로 파싱
         JSONObject friendListJson = new JSONObject(friendList);
-
         log.info("friendListJson: {}", friendListJson);
 
         // 친구 목록 순회(메인에 보여주는 것이기 때문에 3개만)
@@ -69,7 +71,20 @@ public class MypageController {
 
         log.info("friends: {}", friends);
 
+        // 2. 최근 알림 가져오기(3개)
+        ArrayList<NotificationDto> recentNotifications = notificationService.getRecentNotification(memberDto.getMemNo());
+        for (NotificationDto dto : recentNotifications) {
+            log.info("contents: {}", dto.getContent());
+        }
+
+
+        // 3. 팔로잉 소식 가져오기
+
+        // 4. 팔로워 소식 가져오기
+
+
         session.setAttribute("friends", friends);
+        session.setAttribute("recentNotifications", recentNotifications);
 
         return "mypage/index";
     }
