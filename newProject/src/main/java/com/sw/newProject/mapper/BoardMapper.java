@@ -1,6 +1,7 @@
 package com.sw.newProject.mapper;
 
 import com.sw.newProject.dto.BoardDto;
+import com.sw.newProject.dto.GetBoardListDto;
 import com.sw.newProject.dto.PageDto;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface BoardMapper {
-    List<BoardDto> getBoardList(HashMap<String, Object> map);
+    List<BoardDto> getBoardList(GetBoardListDto dto);
 
     int doWrite(BoardDto boardDto);
 

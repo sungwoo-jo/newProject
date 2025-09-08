@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.sw.newProject.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.sw.newProject.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.sw.newProject.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/com.sw.newProject.main~1.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.sw.newProject.main~2.iml" filepath="$PROJECT_DIR$/.idea/modules/com.sw.newProject.main~2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.sw.newProject.main~3.iml" filepath="$PROJECT_DIR$/.idea/modules/com.sw.newProject.main~3.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/newProject.iml" filepath="$PROJECT_DIR$/.idea/newProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/newProject.main.iml" filepath="$PROJECT_DIR$/.idea/modules/newProject.main.iml" />
     </modules>
   </component>
 </project>

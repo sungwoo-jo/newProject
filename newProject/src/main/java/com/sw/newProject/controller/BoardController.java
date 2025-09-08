@@ -1,9 +1,7 @@
 package com.sw.newProject.controller;
 
-import com.sw.newProject.dto.BoardDto;
-import com.sw.newProject.dto.FriendShipDto;
-import com.sw.newProject.dto.MemberDto;
-import com.sw.newProject.dto.PageDto;
+import com.sw.newProject.annotation.LoginMember;
+import com.sw.newProject.dto.*;
 import com.sw.newProject.service.BoardService;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
@@ -43,13 +41,15 @@ public class BoardController {
      * @return 게시글 리스트를 담아 게시글 리스트 페이지를 반환
      */
     @GetMapping("{boardId}/list")
-    public String getBoardList(@PathVariable String boardId, Model model, @RequestParam(defaultValue = "1") String page) {
-        HashMap<String, Object> map = new HashMap<>();
+    public String getBoardList(@PathVariable String boardId,
+                               @RequestParam(defaultValue = "1") String page,
+                               GetBoardListDto dto,
+                               Model model) {
         int totalRows = boardService.getBoardCount(boardId); // 전체 게시글 갯수
         PageDto pageDto = boardService.Paging(page, 10, totalRows); // 10개씩 페이징
-        map.put("boardId", boardId);
-        map.put("pageDto", pageDto);
-        List<BoardDto> boardDto = boardService.getBoardList(map);
+        dto.setBoardId(boardId);
+        dto.setPageDto(pageDto);
+        List<BoardDto> boardDto = boardService.getBoardList(dto);
         model.addAttribute("boardDto", boardDto);
         model.addAttribute("pageDto", pageDto);
         return "board/list";
@@ -74,8 +74,12 @@ public class BoardController {
      * @return 게시글 작성 페이지 반환
      */
     @GetMapping(value = {"{boardId}/write/{boardNo}", "{boardId}/write", "{boardId}/write/"})
-    public String getWritePage(@PathVariable String boardId, @PathVariable(value = "boardNo", required = false) Integer boardNo, Model model) {
-        log.debug("boardNo: " + boardNo);
+    public String getWritePage(@PathVariable String boardId,
+                               @PathVariable(value = "boardNo", required = false) Integer boardNo,
+                               HttpSession session,
+                               Model model) {
+        log.info("boardNo: " + boardNo);
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
         if (boardNo != null) { // 게시글 수정 형식으로 전달
             HashMap<String, Object> map = new HashMap<>();
 
@@ -87,6 +91,8 @@ public class BoardController {
             return "board/write";
         }
         model.addAttribute("boardId", boardId);
+        model.addAttribute("writerNm", memberDto.getMemNm());
+        log.info("memNm: " + session.getAttribute("memNm"));
         log.info("write 페이지를 가져옵니다.");
         return "board/write";
     }
@@ -179,7 +185,10 @@ public class BoardController {
      */
     @PostMapping("{boardId}/doWrite")
     @Operation(summary = "게시글 작성 처리", description = "실제 게시글 내용을 입력받아 저장합니다.")
-    public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
+    public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto,
+                                          @PathVariable String boardId,
+                                          @LoginMember MemberDto memberDto) {
+        log.info("memNo: {}", memberDto.getMemNo());
         int result = 0;
         if (boardDto.getBoardNo() != null) { // 수정
             HashMap<String, Object> map = new HashMap<>();

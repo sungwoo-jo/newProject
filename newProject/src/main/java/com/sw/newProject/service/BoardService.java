@@ -1,9 +1,6 @@
 package com.sw.newProject.service;
 
-import com.sw.newProject.dto.BoardDto;
-import com.sw.newProject.dto.MemberDto;
-import com.sw.newProject.dto.NotificationDto;
-import com.sw.newProject.dto.PageDto;
+import com.sw.newProject.dto.*;
 import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.mapper.BoardMapper;
@@ -23,8 +20,8 @@ public class BoardService {
     private final MemberService memberService;
     private final NotificationProducer notificationProducer;
 
-    public List<BoardDto> getBoardList(HashMap<String, Object> map) {
-        return boardMapper.getBoardList(map);
+    public List<BoardDto> getBoardList(GetBoardListDto dto) {
+        return boardMapper.getBoardList(dto);
     }
 
     public int getBoardCount(String boardId) {
