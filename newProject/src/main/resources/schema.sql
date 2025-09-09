@@ -57,7 +57,8 @@ CREATE TABLE `travel` (
     district VARCHAR(100) DEFAULT NULL comment '여행지',
     visitDt DATETIME DEFAULT NULL comment '방문일',
     regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' comment '생성일',
-    modDt DATETIME DEFAULT NULL comment '수정일'
+    modDt DATETIME DEFAULT NULL comment '수정일',
+    writerIp String DEFAULT NULL comment '작성자 ip'
 );
 
 -- reply(댓글 테이블)

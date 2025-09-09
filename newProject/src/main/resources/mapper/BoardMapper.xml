@@ -4,11 +4,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sw.newProject.mapper.BoardMapper">
 
-    <select id="getBoardList" parameterType="com.sw.newProject.dto.GetBoardListDto" resultType="com.sw.newProject.dto.BoardDto">
+    <select id="getBoardList" parameterType="com.sw.newProject.dto.board.BoardListDto" resultType="com.sw.newProject.dto.board.BoardDto">
         SELECT * FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
-            <when test="boardId == 'travel'">travel</when>
+            <when test="boardDto.boardId == 'travel'">travel</when>
         </choose>
         WHERE deleteYn = FALSE AND hiddenFl = FALSE
         LIMIT #{pageDto.start}, #{pageDto.pageLength}
@@ -23,11 +23,11 @@
         WHERE deleteYn = FALSE AND hiddenFl = FALSE
     </select>
 
-    <select id="getBoardSearchCount" parameterType="java.util.HashMap" resultType="int">
+    <select id="getBoardSearchCount" parameterType="com.sw.newProject.dto.board.BoardSearchDto" resultType="int">
         SELECT count(*) FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
-            <when test="boardId == 'travel'">travel</when>
+            <when test="boardDto.boardId == 'travel'">travel</when>
         </choose>
         WHERE deleteYn = FALSE AND hiddenFl = FALSE AND
         <choose>
@@ -67,11 +67,16 @@
         </choose>
     </select>
 
-    <insert id="doWrite" parameterType="com.sw.newProject.dto.BoardDto">
-        INSERT INTO travel(memNo, writerNm, subject, contents, regDt) VALUES(#{memNo}, #{writerNm}, #{subject}, #{contents}, now())
+    <insert id="doWrite" parameterType="com.sw.newProject.dto.board.BoardDto">
+        INSERT INTO
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+            (memNo, writerNm, subject, contents, regDt) VALUES(#{memNo}, #{writerNm}, #{subject}, #{contents}, now())
     </insert>
 
-    <select id="getBoardView" parameterType="java.util.HashMap">
+    <select id="getBoardView" parameterType="com.sw.newProject.dto.board.BoardDto">
         SELECT * FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
@@ -80,31 +85,31 @@
         WHERE boardNo = #{boardNo}
     </select>
 
-    <update id="doUpdate" parameterType="java.util.HashMap">
+    <update id="doUpdate" parameterType="com.sw.newProject.dto.board.BoardDto">
         UPDATE
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
             <when test="boardId == 'travel'">travel</when>
         </choose>
-        SET subject = #{boardDto.subject}, contents = #{boardDto.contents}
-        WHERE boardNo = #{boardDto.boardNo}
+        SET subject = #{subject}, contents = #{contents}
+        WHERE boardNo = #{boardNo}
     </update>
 
-    <update id="doDelete" parameterType="java.util.HashMap">
+    <update id="doDelete" parameterType="com.sw.newProject.dto.board.BoardDto">
         UPDATE
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
             <when test="boardId == 'travel'">travel</when>
         </choose>
         SET deleteYn = TRUE
-        WHERE boardNo = #{boardDto.boardNo}
+        WHERE boardNo = #{boardNo}
     </update>
 
-    <select id="doSearch" parameterType="java.util.HashMap" resultType="com.sw.newProject.dto.BoardDto">
+    <select id="doSearch" parameterType="com.sw.newProject.dto.board.BoardSearchDto" resultType="com.sw.newProject.dto.board.BoardDto">
         SELECT * FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
-            <when test="boardId == 'travel'">travel</when>
+            <when test="boardDto.boardId == 'travel'">travel</when>
         </choose>
         WHERE deleteYn = FALSE AND
         <choose>
@@ -151,7 +156,7 @@
         LIMIT #{pageDto.start}, #{pageDto.pageLength}
     </select>
 
-    <update id="incrementHitCnt" parameterType="java.util.HashMap">
+    <update id="incrementHitCnt" parameterType="com.sw.newProject.dto.board.BoardDto">
         UPDATE
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
@@ -161,17 +166,17 @@
         WHERE boardNo = #{boardNo}
     </update>
 
-    <update id="doLike" parameterType="java.util.HashMap">
+    <update id="doLike" parameterType="com.sw.newProject.dto.LikeDto">
         UPDATE
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
-            <when test="boardId == 'travel'">travel</when>
+            <when test="boardDto.boardId == 'travel'">travel</when>
         </choose>
         SET likeCnt = likeCnt + 1
         WHERE boardNo = #{boardDto.boardNo}
     </update>
 
-    <select id="getPopularBoard" parameterType="java.lang.String" resultType="com.sw.newProject.dto.BoardDto">
+    <select id="getPopularBoard" parameterType="java.lang.String" resultType="com.sw.newProject.dto.board.BoardDto">
         SELECT * FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
@@ -182,7 +187,7 @@
         LIMIT 0, 5
     </select>
 
-    <select id="getMemNoByBoardNo" parameterType="java.util.HashMap" resultType="Integer">
+    <select id="getWriterMemNo" parameterType="com.sw.newProject.dto.board.BoardDto" resultType="int">
         SELECT memNo FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
@@ -191,14 +196,14 @@
         WHERE boardNo = #{boardNo}
     </select>
 
-    <select id="viewHitCnt" parameterType="java.util.HashMap" resultType="Integer">
+    <select id="viewHitCnt" parameterType="com.sw.newProject.dto.board.BoardDto" resultType="Integer">
         SELECT COUNT(*) FROM
             boardIncrementCnt
         WHERE memNo = #{memNo} AND boardId = #{boardId} AND boardNo = #{boardNo} AND DATE(regDt) = CURDATE()
     </select>
 
-    <insert id="insertHitInfo" parameterType="java.util.HashMap">
+    <insert id="insertHitInfo" parameterType="com.sw.newProject.dto.board.BoardDto">
         INSERT INTO boardIncrementCnt(boardNo, boardId, memNo, regDt, ip)
-        VALUES (#{boardNo}, #{boardId}, #{memNo}, now(), #{ip})
+        VALUES (#{boardNo}, #{boardId}, #{memNo}, now(), #{writerIp})
     </insert>
 </mapper>

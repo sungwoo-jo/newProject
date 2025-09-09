@@ -1,7 +1,7 @@
 package com.sw.newProject.service;
 
 import com.sw.newProject.dto.AppendTargetToJsonDto;
-import com.sw.newProject.dto.BoardDto;
+import com.sw.newProject.dto.board.BoardDto;
 import com.sw.newProject.dto.FriendShipDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.mapper.RelationshipMapper;

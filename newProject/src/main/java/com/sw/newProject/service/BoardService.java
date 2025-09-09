@@ -1,6 +1,9 @@
 package com.sw.newProject.service;
 
 import com.sw.newProject.dto.*;
+import com.sw.newProject.dto.board.BoardDto;
+import com.sw.newProject.dto.board.BoardListDto;
+import com.sw.newProject.dto.board.BoardSearchDto;
 import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.mapper.BoardMapper;
@@ -8,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -17,19 +19,18 @@ import java.util.List;
 public class BoardService {
 
     private final BoardMapper boardMapper;
-    private final MemberService memberService;
     private final NotificationProducer notificationProducer;
 
-    public List<BoardDto> getBoardList(GetBoardListDto dto) {
-        return boardMapper.getBoardList(dto);
+    public List<BoardDto> getBoardList(BoardListDto boardListDto) {
+        return boardMapper.getBoardList(boardListDto);
     }
 
     public int getBoardCount(String boardId) {
         return boardMapper.getBoardCount(boardId);
     }
 
-    public int getBoardSearchCount(HashMap<String, Object> map) {
-        return boardMapper.getBoardSearchCount(map);
+    public int getBoardSearchCount(BoardSearchDto boardSearchDto) {
+        return boardMapper.getBoardSearchCount(boardSearchDto);
     }
 
     /**
@@ -50,67 +51,68 @@ public class BoardService {
         return result;
     }
 
-    public int doUpdate(HashMap<String, Object> map) {
-        return boardMapper.doUpdate(map);
+    public int doUpdate(BoardDto boardDto) {
+        return boardMapper.doUpdate(boardDto);
     }
 
-    public BoardDto getBoardView(HashMap<String, Object> map) {
-        return boardMapper.getBoardView(map);
+    public BoardDto getBoardView(BoardDto boardDto) {
+        return boardMapper.getBoardView(boardDto);
     }
 
     /**
      * 조회수 증가 처리
-     * @param map 게시글 상세 보기 시 호출되며 게시판 id, 게시글 번호, 회원번호, ip 정보가 들어있다.
+     * @param boardDto
      */
-    public void incrementHitCnt(HashMap<String, Object> map) {
-        Integer result = viewHitCnt(map); // 해당 회원이 오늘 게시글을 조회했었는지 여부를 확인
+    public void incrementHitCnt(BoardDto boardDto) {
+        Integer result = viewHitCnt(boardDto); // 해당 회원이 오늘 게시글을 조회했었는지 여부를 확인
         log.info("result: " + result);
 
         if (result <= 0) { // 오늘 조회한 적이 없다면 조회수 증가 처리
-            insertHitInfo(map); // 조회수 중복을 방지하기 위한 데이터를 삽입
-            boardMapper.incrementHitCnt(map); // 조회수 1 증가
+            insertHitInfo(boardDto); // 조회수 중복을 방지하기 위한 데이터를 삽입
+            boardMapper.incrementHitCnt(boardDto); // 조회수 1 증가
         }
     }
 
-    public void insertHitInfo(HashMap<String, Object> map) {
-        boardMapper.insertHitInfo(map);
+    public void insertHitInfo(BoardDto boardDto) {
+        boardMapper.insertHitInfo(boardDto);
     }
 
-    public Integer viewHitCnt(HashMap<String, Object> map) {
-        return boardMapper.viewHitCnt(map);
+    public Integer viewHitCnt(BoardDto boardDto) {
+        return boardMapper.viewHitCnt(boardDto);
     }
 
-    public int doDelete(HashMap<String, Object> map) {
-        return boardMapper.doDelete(map);
+    public int doDelete(BoardDto boardDto) {
+        return boardMapper.doDelete(boardDto);
     }
 
-    public List<BoardDto> doSearch(HashMap<String, Object> map) {
-        return boardMapper.doSearch(map);
+    public List<BoardDto> doSearch(BoardSearchDto boardSearchDto) {
+        return boardMapper.doSearch(boardSearchDto);
     }
 
     /**
      * 좋아요 처리
-     * @param map 게시글 정보, 게시판 id, 좋아요 누른 사용자 정보가 들어가있다.
+     * @param dto 게시글 정보, 좋아요 누른 사용자 정보가 들어가있다.
      * @return 좋아요 처리가 완료되면 게시글 작성자에게 알림을 전송한다.
      */
-    public int doLike(HashMap<String, Object> map) {
-        BoardDto boardDto = (BoardDto) map.get("boardDto");
-        Integer boardNo = boardDto.getBoardNo(); // 대상 게시글 번호
-        map.put("boardNo", boardNo);
-        MemberDto memberDto = memberService.getMember((Integer) map.get("memNo")); // 좋아요 누른 사람
-        Integer writerNo = getMemNoByBoardNo(map); // 작성자 정보 가져오기
-        String boardId = (String) map.get("boardId");
-
+    public int doLike(LikeDto dto,
+                      MemberDto member) {
         NotificationDto notificationDto = new NotificationDto();
+        dto.getBoardDto().setMemNo(getWriterMemNo(dto.getBoardDto()));
+
         // 알림 전송
-        notificationDto.setToMemNo(memberDto.getMemNo());
-        notificationDto.setFromMemNo(writerNo);
+        notificationDto.setToMemNo(dto.getLikerMemNo());
+        notificationDto.setFromMemNo(dto.getBoardDto().getMemNo());
         notificationDto.setNotificationType(NotificationType.BOARD_LIKE);
-        notificationDto.setContent(memberDto.getMemNm() + "님이 내 글을 좋아합니다.");
-        notificationDto.setUrl("/board/" + boardId + "/view/" + boardNo);
+        notificationDto.setContent(member.getMemNm() + "님이 내 글을 좋아합니다.");
+        notificationDto.setUrl("/board/" + dto.getBoardDto().getBoardId() + "/view/" + dto.getBoardDto().getBoardNo());
 
         notificationProducer.sendNotification(notificationDto);
-        return boardMapper.doLike(map);
+
+        return boardMapper.doLike(dto);
+    }
+
+    private int getWriterMemNo(BoardDto boardDto) {
+        return boardMapper.getWriterMemNo(boardDto);
     }
 
     /**
@@ -120,50 +122,5 @@ public class BoardService {
      */
     public List<BoardDto> getPopularBoard(String boardId) {
         return boardMapper.getPopularBoard(boardId);
-    }
-
-    /**
-     * 게시글 조회 시 전역으로 사용되는 페이징 함수
-     * @param page 현재 페이지 번호
-     * @param pageLength 페이징 할 갯수
-     * @param totalRows 총 페이지의 수
-     * @return 페이징 정보를 반환
-     */
-    public PageDto Paging(String page, int pageLength, int totalRows) {
-        PageDto pageDto = new PageDto();
-        pageDto.setPageLength(pageLength);
-        pageDto.setTotalRows(totalRows);
-        try {
-            pageDto.setCurrentPage(Integer.parseInt(page));
-        } catch (NumberFormatException e) {
-            pageDto.setCurrentPage(1);
-        }
-
-        pageDto.setTotalPage(pageDto.getTotalRows() % pageDto.getPageLength() == 0 ?
-                pageDto.getTotalRows() / pageDto.getPageLength() :
-                (pageDto.getTotalRows() / pageDto.getPageLength()) + 1);
-
-        if (pageDto.getCurrentPage() > pageDto.getTotalPage() || pageDto.getCurrentPage() <= 0) {
-            pageDto.setCurrentPage(1);
-        }
-
-        pageDto.setCurrentBlock(pageDto.getCurrentPage() % pageDto.getPageLength() == 0 ?
-                pageDto.getCurrentPage() / pageDto.getPageLength() :
-                (pageDto.getCurrentPage() / pageDto.getPageLength()) + 1);
-
-        pageDto.setStartPage((pageDto.getCurrentBlock() - 1) * pageDto.getPageLength() + 1);
-        pageDto.setEndPage(pageDto.getStartPage() + pageDto.getPageLength() - 1);
-
-        if (pageDto.getEndPage() > pageDto.getTotalPage()) {
-            pageDto.setEndPage(pageDto.getTotalPage());
-        }
-
-        pageDto.setStart((pageDto.getCurrentPage() - 1) * pageDto.getPageLength());
-
-        return pageDto;
-    }
-
-    public Integer getMemNoByBoardNo(HashMap<String, Object> map) {
-        return boardMapper.getMemNoByBoardNo(map);
     }
 }

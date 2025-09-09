@@ -1,40 +1,39 @@
 package com.sw.newProject.mapper;
 
-import com.sw.newProject.dto.BoardDto;
-import com.sw.newProject.dto.GetBoardListDto;
-import com.sw.newProject.dto.PageDto;
+import com.sw.newProject.dto.*;
+import com.sw.newProject.dto.board.BoardDto;
+import com.sw.newProject.dto.board.BoardListDto;
+import com.sw.newProject.dto.board.BoardSearchDto;
 import org.apache.ibatis.annotations.Mapper;
-
-import java.util.HashMap;
 import java.util.List;
 
 @Mapper
 public interface BoardMapper {
-    List<BoardDto> getBoardList(GetBoardListDto dto);
+    List<BoardDto> getBoardList(BoardListDto boardListDto);
 
     int doWrite(BoardDto boardDto);
 
-    BoardDto getBoardView(HashMap<String, Object> map);
+    BoardDto getBoardView(BoardDto boardDto);
 
-    int doUpdate(HashMap<String, Object> map);
+    int doUpdate(BoardDto boardDto);
 
-    int doDelete(HashMap<String, Object> map);
+    int doDelete(BoardDto boardDto);
 
-    List<BoardDto> doSearch(HashMap<String, Object> map);
+    List<BoardDto> doSearch(BoardSearchDto boardSearchDto);
 
-    void incrementHitCnt(HashMap<String, Object> map);
+    void incrementHitCnt(BoardDto boardDto);
 
-    int doLike(HashMap<String, Object> map);
+    int doLike(LikeDto likeDto);
 
     List<BoardDto> getPopularBoard(String boardId);
 
     int getBoardCount(String boardId);
 
-    int getBoardSearchCount(HashMap<String, Object> map);
+    int getBoardSearchCount(BoardSearchDto boardSearchDto);
 
-    Integer getMemNoByBoardNo(HashMap<String, Object> map);
+    Integer viewHitCnt(BoardDto boardDto);
 
-    Integer viewHitCnt(HashMap<String, Object> map);
+    void insertHitInfo(BoardDto boardDto);
 
-    void insertHitInfo(HashMap<String, Object> map);
+    int getWriterMemNo(BoardDto boardDto);
 }

@@ -1,6 +1,6 @@
 package com.sw.newProject.controller;
 
-import com.sw.newProject.dto.BoardDto;
+import com.sw.newProject.dto.board.BoardDto;
 import com.sw.newProject.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

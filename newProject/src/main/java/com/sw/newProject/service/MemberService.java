@@ -1,6 +1,7 @@
 package com.sw.newProject.service;
 
 import com.sw.newProject.dto.*;
+import com.sw.newProject.dto.board.BoardDto;
 import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.mapper.MemberMapper;

@@ -103,7 +103,7 @@
              id="writerNm"
              name="writerNm" required
              placeholder="작성자명을 입력하세요"
-             th:value="${writerNm != null ? writerNm : ''}" th:disabled="${writerNm != null}">
+             th:value="${boardDto.writerNm != null ? boardDto.writerNm : ''}" th:readonly="${boardDto.writerNm != null}">
     </div>
     <div class="form-group">
       <label for="subject">제목</label>

@@ -2,12 +2,15 @@ package com.sw.newProject.controller;
 
 import com.sw.newProject.annotation.LoginMember;
 import com.sw.newProject.dto.*;
+import com.sw.newProject.dto.board.BoardDto;
+import com.sw.newProject.dto.board.BoardListDto;
+import com.sw.newProject.dto.board.BoardSearchDto;
 import com.sw.newProject.service.BoardService;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
+import com.sw.newProject.service.PageService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -32,6 +35,7 @@ public class BoardController {
     private final BoardService boardService;
     private final MemberService memberService;
     private final FriendShipService friendShipService;
+    private final PageService pageService;
 
     /**
      * 게시글 리스트 조회
@@ -43,14 +47,17 @@ public class BoardController {
     @GetMapping("{boardId}/list")
     public String getBoardList(@PathVariable String boardId,
                                @RequestParam(defaultValue = "1") String page,
-                               GetBoardListDto dto,
+                               BoardDto boardDto,
                                Model model) {
-        int totalRows = boardService.getBoardCount(boardId); // 전체 게시글 갯수
-        PageDto pageDto = boardService.Paging(page, 10, totalRows); // 10개씩 페이징
-        dto.setBoardId(boardId);
-        dto.setPageDto(pageDto);
-        List<BoardDto> boardDto = boardService.getBoardList(dto);
-        model.addAttribute("boardDto", boardDto);
+        BoardListDto boardListDto = new BoardListDto();
+        boardDto.setBoardId(boardId);
+        int totalRows = boardService.getBoardCount(boardDto.getBoardId()); // 전체 게시글 갯수
+        PageDto pageDto = pageService.Paging(page, 10, totalRows); // 10개씩 페이징
+
+        boardListDto.setBoardDto(boardDto);
+        boardListDto.setPageDto(pageDto);
+        List<BoardDto> boardList = boardService.getBoardList(boardListDto);
+        model.addAttribute("boardDto", boardList);
         model.addAttribute("pageDto", pageDto);
         return "board/list";
     }
@@ -76,24 +83,22 @@ public class BoardController {
     @GetMapping(value = {"{boardId}/write/{boardNo}", "{boardId}/write", "{boardId}/write/"})
     public String getWritePage(@PathVariable String boardId,
                                @PathVariable(value = "boardNo", required = false) Integer boardNo,
-                               HttpSession session,
+                               @LoginMember MemberDto member,
                                Model model) {
+        BoardDto boardDto = new BoardDto();
         log.info("boardNo: " + boardNo);
-        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        log.info("memNo: " + member.getMemNo());
+        boardDto.setBoardId(boardId);
         if (boardNo != null) { // 게시글 수정 형식으로 전달
-            HashMap<String, Object> map = new HashMap<>();
+            boardDto.setBoardNo(boardNo);
 
-            map.put("boardId", boardId);
-            map.put("boardNo", boardNo);
-
-            BoardDto boardDto = boardService.getBoardView(map);
+            boardDto = boardService.getBoardView(boardDto);
+            log.info("writerNm: {}", boardDto.getWriterNm());
             model.addAttribute("boardDto", boardDto);
             return "board/write";
         }
         model.addAttribute("boardId", boardId);
-        model.addAttribute("writerNm", memberDto.getMemNm());
-        log.info("memNm: " + session.getAttribute("memNm"));
-        log.info("write 페이지를 가져옵니다.");
+        model.addAttribute("writerNm", member.getMemNm());
         return "board/write";
     }
 
@@ -103,25 +108,32 @@ public class BoardController {
      * @param boardId 게시판 id
      * @param boardNo 게시글 번호
      * @param model 게시글 정보
-     * @param session 세션 정보
+     * @param member 세션 정보
      * @param request ip 주소 저장을 위한 값
      * @return 게시글 정보를 담아 반환
      */
     @GetMapping("{boardId}/view/{boardNo}")
-    public String getViewPage(@RequestHeader (value = "Referer", defaultValue = "/") String referer, @PathVariable String boardId, @PathVariable Integer boardNo, Model model, HttpSession session, HttpServletRequest request) {
-        HashMap<String, Object> map = new HashMap<>();
-        MemberDto memberDto = (MemberDto) session.getAttribute("member");
-        String ip = request.getRemoteAddr(); // 게시글 조회자 ip 저장
+    public String getViewPage(@RequestHeader (value = "Referer", defaultValue = "/") String referer,
+                              @PathVariable String boardId,
+                              @PathVariable Integer boardNo,
+                              @LoginMember MemberDto member,
+                              Model model,
+                              HttpServletRequest request) {
+        BoardDto boardDto = new BoardDto();
+        String writerIp = request.getRemoteAddr(); // 게시글 작성자 ip 저장
 
-        map.put("boardId", boardId);
-        map.put("boardNo", boardNo);
-        map.put("memNo", memberDto.getMemNo());
-        map.put("ip", ip);
+        boardDto.setBoardNo(boardNo);
+        log.info("boardId: {}", boardId);
+        log.info("boardNo: {}", boardNo);
+        boardDto.setMemNo(member.getMemNo());
+        boardDto.setWriterIp(writerIp);
+        boardDto.setBoardId(boardId);
 
-        boardService.incrementHitCnt(map); // 조회수 증가
-        BoardDto boardDto = boardService.getBoardView(map);
+        boardService.incrementHitCnt(boardDto); // 조회수 증가
+        BoardDto currentBoardDto = boardService.getBoardView(boardDto);
+        currentBoardDto.setBoardId(boardId);
 
-        HashMap<String, String> followDataMap = memberService.getFollowData(memberDto.getMemNo()); // 회원의 현재 팔로우 데이터를 가져오기
+        HashMap<String, String> followDataMap = memberService.getFollowData(member.getMemNo()); // 회원의 현재 팔로우 데이터를 가져오기
         JSONObject prevFollowData = new JSONObject(followDataMap);
         String followDataJson = prevFollowData.getString("follow");
         JSONObject followData = new JSONObject(followDataJson);
@@ -135,19 +147,18 @@ public class BoardController {
         }
 
         FriendShipDto friendShipDto = new FriendShipDto();
-        friendShipDto.setToMemNo(memberDto.getMemNo());
+        friendShipDto.setToMemNo(member.getMemNo());
         friendShipDto.setFromMemNo(boardDto.getMemNo());
         String alreadyRequestFl = friendShipService.getStatus(friendShipDto);
         log.info("alreadyRequestFl: {}", alreadyRequestFl);
 
+
         if (boardDto.getDeleteYn() != TRUE) {
             model.addAttribute("previousPage", referer);
-            model.addAttribute("boardDto", boardDto);
-            model.addAttribute("boardId", boardId);
+            model.addAttribute("boardDto", currentBoardDto);
             model.addAttribute("alreadyFollowFl", alreadyFollowFl);
             model.addAttribute("alreadyRequestFl", alreadyRequestFl);
-            model.addAttribute("session", session);
-            log.debug("boardDto: " + boardDto);
+            model.addAttribute("session", member);
             log.info("prevFollowData: " + prevFollowData);
             log.info("alreadyFollowFl: " + alreadyFollowFl);
             return "board/view";
@@ -161,19 +172,18 @@ public class BoardController {
     /**
      * 좋아요 처리
      * @param boardDto 게시글 정보
-     * @param boardId 게시판 id
-     * @param session 세션 정보
+     * @param member 회원 세션
      * @return 좋아요 처리에 따라 결과값 반환
      */
     @PostMapping("{boardId}/doLike")
-    public ResponseEntity<String> doLike(@RequestBody BoardDto boardDto, @PathVariable String boardId, HttpSession session) {
-        log.info("boardDto: {}", boardDto);
-        MemberDto memberDto = (MemberDto) session.getAttribute("member");
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("boardDto", boardDto);
-        map.put("boardId", boardId);
-        map.put("memNo", memberDto.getMemNo()); // 좋아요 누른 사람
-        int result = boardService.doLike(map);
+    public ResponseEntity<String> doLike(@RequestBody BoardDto boardDto,
+                                         @LoginMember MemberDto member) {
+        LikeDto likeDto = new LikeDto();
+
+        likeDto.setBoardDto(boardDto);
+        likeDto.setLikerMemNo(member.getMemNo());
+
+        int result = boardService.doLike(likeDto, member);
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
 
@@ -188,14 +198,13 @@ public class BoardController {
     public ResponseEntity<String> doWrite(@RequestBody BoardDto boardDto,
                                           @PathVariable String boardId,
                                           @LoginMember MemberDto memberDto) {
-        log.info("memNo: {}", memberDto.getMemNo());
+        boardDto.setMemNo(memberDto.getMemNo());
+        boardDto.setWriterNm(memberDto.getMemNm());
+        boardDto.setBoardId(boardId);
+
         int result = 0;
         if (boardDto.getBoardNo() != null) { // 수정
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("boardId", boardId);
-            map.put("boardDto", boardDto);
-
-            result = boardService.doUpdate(map);
+            result = boardService.doUpdate(boardDto);
         } else {
             result = boardService.doWrite(boardDto);
         }
@@ -205,18 +214,13 @@ public class BoardController {
     /**
      * 게시글 삭제 처리
      * @param boardDto 게시글 정보
-     * @param boardId 게시판 id
      * @return 게시글 삭제 여부에 따라 결과값 반환
      */
     @PostMapping("{boardId}/doDelete")
-    public ResponseEntity<String> doDelete(@RequestBody BoardDto boardDto, @PathVariable String boardId) {
+    public ResponseEntity<String> doDelete(@RequestBody BoardDto boardDto) {
         int result = 0;
-        if (boardDto.getBoardNo() != null && boardId != null) { // 삭제 진행
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("boardDto", boardDto);
-            map.put("boardId", boardId);
-
-            result = boardService.doDelete(map);
+        if (boardDto.getBoardNo() != null && boardDto.getBoardId() != null) { // 삭제 진행
+            result = boardService.doDelete(boardDto);
         }
         return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
     }
@@ -233,16 +237,17 @@ public class BoardController {
     @GetMapping("/{boardId}/doSearch")
     public String doSearch(@PathVariable String boardId, Model model, @RequestParam String type, @RequestParam String keyword, @RequestParam(defaultValue = "1") String page) {
         if (!type.equals("") && !keyword.equals("")) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("boardId", boardId);
-            map.put("type", type);
-            map.put("keyword", keyword);
-            int totalRows = boardService.getBoardSearchCount(map); // 전체 게시글 갯수
-            PageDto pageDto = boardService.Paging(page, 10, totalRows); // 10개씩 페이징
-            map.put("pageDto", pageDto);
-            List<BoardDto> boardDto = boardService.doSearch(map);
+            BoardSearchDto boardSearchDto = new BoardSearchDto();
+            log.info("boardId: {}", boardId);
+            boardSearchDto.getBoardDto().setBoardId(boardId);
+            boardSearchDto.setType(type);
+            boardSearchDto.setKeyword(keyword);
+            int totalRows = boardService.getBoardSearchCount(boardSearchDto); // 전체 게시글 갯수
+            PageDto pageDto = pageService.Paging(page, 10, totalRows); // 10개씩 페이징
+            boardSearchDto.setPageDto(pageDto);
+            List<BoardDto> boardDto = boardService.doSearch(boardSearchDto);
             model.addAttribute("boardDto", boardDto);
-            model.addAttribute("pageDto", pageDto);
+            model.addAttribute("pageDto", boardSearchDto.getPageDto());
         }
         // todo: 검색어가 없을 경우 알럿창 띄우기
         return "board/list";

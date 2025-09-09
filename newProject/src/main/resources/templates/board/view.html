@@ -13,7 +13,7 @@
 <div class="container mt-5">
     <h2>게시글 상세보기</h2>
     <table class="table" border="1">
-        <input type="hidden" id="boardId" th:value="${boardId}">
+        <input type="hidden" id="boardId" th:value="${boardDto.boardId}">
         <input type="hidden" id="boardNo" th:value="${boardDto.boardNo}">
         <input type="hidden" id="memNo" th:value="${boardDto.memNo}">
         <input type="hidden" id="writerNm" th:value="${boardDto.writerNm}">
@@ -66,7 +66,7 @@
 
     </table>
     <a th:href="${previousPage}" class="btn btn-secondary">목록으로 돌아가기</a><br>
-    <a th:if="${session.member.memNo == boardDto.memNo}" href="'/board/' + ${boardId} + '/write/' + ${boardDto.boardNo}" class="btn btn-secondary">수정하기</a><br>
+    <a th:if="${session.member.memNo == boardDto.memNo}" th:href="@{/board/{boardId}/write/{boardNo}(boardId=${boardDto.boardId}, boardNo=${boardDto.boardNo})}" class="btn btn-secondary">수정하기</a><br>
     <button id="doDelete">삭제하기</button><br>
     <button id="like">좋아요</button><br>
     <button th:id="${alreadyFollowFl ? 'cancelFollow' : 'follow'}">
