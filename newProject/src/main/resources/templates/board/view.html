@@ -1,477 +1,135 @@
-<!DOCTYPE html>
-<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시글 상세보기</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
-<body>
+<body class="board-view" th:data-board-id="${boardDto.boardId}" th:data-board-no="${boardDto.boardNo}">
+    <div th:replace="~{fragments/sub_header :: sub_header}"></div>
+    <div th:replace="~{fragments/header :: header}"></div>
 
-<div th:replace="~{fragments/header :: header}"></div> <!-- 헤더 파일 로드 -->
+    <input type="hidden" id="memNo" th:value="${boardDto.memNo}">
+    <input type="hidden" id="writerNm" th:value="${boardDto.writerNm}">
+    <input type="hidden" id="alreadyFollowFl" th:value="${alreadyFollowFl}">
+    <input type="hidden" id="sessionMemNo" th:value="${session.member.memNo}">
 
-<div class="container mt-5">
-    <h2>게시글 상세보기</h2>
-    <table class="table" border="1">
-        <input type="hidden" id="boardId" th:value="${boardDto.boardId}">
-        <input type="hidden" id="boardNo" th:value="${boardDto.boardNo}">
-        <input type="hidden" id="memNo" th:value="${boardDto.memNo}">
-        <input type="hidden" id="writerNm" th:value="${boardDto.writerNm}">
-        <input type="hidden" id="alreadyFollowFl" th:value="${alreadyFollowFl}">
-        <input type="hidden" id="sessionMemNo" th:value="${session.member.memNo}">
-        <tr>
-            <th>작성자</th>
-            <td th:text="${boardDto.writerNm}"></td>
-        </tr>
-        <tr>
-            <th>제목</th>
-            <td th:text="${boardDto.subject}"></td>
-        </tr>
-        <tr>
-            <th>내용</th>
-            <td th:text="${boardDto.contents}"></td>
-        </tr>
-        <tr>
-            <th>좋아요</th>
-            <td th:text="${boardDto.likeCnt}"></td>
-        </tr>
-        <tr>
-            <th>식비</th>
-            <td th:text="${boardDto.foodCharge}"></td>
-        </tr>
-        <tr>
-            <th>교통비</th>
-            <td th:text="${boardDto.transportCharge}"></td>
-        </tr>
-        <tr>
-            <th>기타 경비</th>
-            <td th:text="${boardDto.etcCharge}"></td>
-        </tr>
-        <tr>
-            <th>여행 예산</th>
-            <td th:text="${boardDto.budget}"></td>
-        </tr>
-        <tr>
-            <th>여행지</th>
-            <td th:text="${boardDto.district}"></td>
-        </tr>
-        <tr>
-            <th>방문일</th>
-            <td th:text="${boardDto.visitDt}"></td>
-        </tr>
-        <tr>
-            <th>조회수</th>
-            <td th:text="${boardDto.hitCnt}"></td>
-        </tr>
+    <main>
+        <section class="post-hero">
+            <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80" alt="background" class="post-hero-img">
+            <div class="post-header-content">
+                <span class="post-category" th:text="${boardDto.district}"></span>
+                <h1 class="post-title" th:text="${boardDto.subject}"></h1>
+            </div>
+        </section>
 
-    </table>
-    <a th:href="${previousPage}" class="btn btn-secondary">목록으로 돌아가기</a><br>
-    <a th:if="${session.member.memNo == boardDto.memNo}" th:href="@{/board/{boardId}/write/{boardNo}(boardId=${boardDto.boardId}, boardNo=${boardDto.boardNo})}" class="btn btn-secondary">수정하기</a><br>
-    <button id="doDelete">삭제하기</button><br>
-    <button id="like">좋아요</button><br>
-    <button th:id="${alreadyFollowFl ? 'cancelFollow' : 'follow'}">
-        <span th:if="${alreadyFollowFl}" th:text="'팔로우 중'" onclick="cancelFollow()"></span>
-        <span th:unless="${alreadyFollowFl}" th:text="'팔로우하기'" onclick="follow()"></span>
-    </button>
-<!--    <button th:id="${alreadyRequestFl ? 'deleteFriend' : 'createRequest'}">-->
-        <span th:if="${alreadyRequestFl == 'ACCEPT'}" th:text="'✅친구'" th:id="'alreadyFriend'"></span>
-        <span th:if="${alreadyRequestFl == 'REJECT'}" th:text="'❌친구거절됨'" th:id="'rejectFriend'"></span>
-        <span th:if="${alreadyRequestFl == 'REQUEST'}" th:text="'🚀친구요청취소'" th:id="'alreadyRequest'"></span>
-        <button th:unless="${alreadyRequestFl}" th:id="'createRequest'" th:text="'친구신청'" onclick="createRequest()"></button>
-<!--    </button>-->
+        <article class="post-container">
+            <div class="post-info">
+                <div class="author-box">
+                    <div class="author-avatar"></div>
+                    <div>
+                        <div class="author-name" th:text="${boardDto.writerNm}"></div>
+                        <div class="post-date" th:text="${boardDto.visitDt}"></div>
+                    </div>
+                </div>
+                <div class="post-stats">
+                    <span>👁️ <span th:text="${boardDto.hitCnt}"></span></span>
+                    <span>❤️ <span th:text="${boardDto.likeCnt}"></span></span>
+                </div>
+            </div>
 
-</div>
+            <div class="post-content">
+                <p th:utext="${boardDto.contents}">
+                    여기에 여행의 상세한 내용이 들어갑니다. <br><br>
+                    제주도의 푸른 바다는 정말 아름다웠습니다. 성산일출봉에서 바라본 일출은 평생 잊지 못할 기억이 될 것 같아요.
+                    여러분도 이번 여름에는 제주도로 떠나보시는 건 어떨까요?
+                </p>
+            </div>
+
+            <div class="post-footer">
+                <a href="#" class="btn btn-like" th:data-board-no="${boardDto.boardNo}" th:data-board-id="${boardDto.boardId}">
+                    <span>❤️</span> 도움돼요 <span th:text="${boardDto.likeCnt}"></span>
+                </a>
+                <a th:href="${previousPage}" class="btn btn-list">목록으로</a>
+            </div>
+        </article>
+    </main>
+
+    <!--    <div class="container mt-5">-->
+<!--        <h2>게시글 상세보기</h2>-->
+<!--        <table class="table" border="1">-->
+
+<!--            <tr>-->
+<!--                <th>작성자</th>-->
+<!--                <td th:text="${boardDto.writerNm}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>제목</th>-->
+<!--                <td th:text="${boardDto.subject}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>내용</th>-->
+<!--                <td th:text="${boardDto.contents}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>좋아요</th>-->
+<!--                <td th:text="${boardDto.likeCnt}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>식비</th>-->
+<!--                <td th:text="${boardDto.foodCharge}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>교통비</th>-->
+<!--                <td th:text="${boardDto.transportCharge}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>기타 경비</th>-->
+<!--                <td th:text="${boardDto.etcCharge}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>여행 예산</th>-->
+<!--                <td th:text="${boardDto.budget}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>여행지</th>-->
+<!--                <td th:text="${boardDto.district}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>방문일</th>-->
+<!--                <td th:text="${boardDto.visitDt}"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>조회수</th>-->
+<!--                <td th:text="${boardDto.hitCnt}"></td>-->
+<!--            </tr>-->
+
+<!--        </table>-->
+<!--        <a th:href="${previousPage}" class="btn btn-secondary">목록으로 돌아가기</a><br>-->
+<!--        <a th:if="${session.member.memNo == boardDto.memNo}" th:href="@{/board/{boardId}/write/{boardNo}(boardId=${boardDto.boardId}, boardNo=${boardDto.boardNo})}" class="btn btn-secondary">수정하기</a><br>-->
+<!--        <button id="doDelete">삭제하기</button><br>-->
+<!--        <button id="like">좋아요</button><br>-->
+<!--        <button th:id="${alreadyFollowFl ? 'cancelFollow' : 'follow'}">-->
+<!--            <span th:if="${alreadyFollowFl}" th:text="'팔로우 중'" onclick="cancelFollow()"></span>-->
+<!--            <span th:unless="${alreadyFollowFl}" th:text="'팔로우하기'" onclick="follow()"></span>-->
+<!--        </button>-->
+<!--    &lt;!&ndash;    <button th:id="${alreadyRequestFl ? 'deleteFriend' : 'createRequest'}">&ndash;&gt;-->
+<!--            <span th:if="${alreadyRequestFl == 'ACCEPT'}" th:text="'✅친구'" th:id="'alreadyFriend'"></span>-->
+<!--            <span th:if="${alreadyRequestFl == 'REJECT'}" th:text="'❌친구거절됨'" th:id="'rejectFriend'"></span>-->
+<!--            <span th:if="${alreadyRequestFl == 'REQUEST'}" th:text="'🚀친구요청취소'" th:id="'alreadyRequest'"></span>-->
+<!--            <button th:unless="${alreadyRequestFl}" th:id="'createRequest'" th:text="'친구신청'" onclick="createRequest()"></button>-->
+<!--    &lt;!&ndash;    </button>&ndash;&gt;-->
+
+<!--    </div>-->
 <hr>
 <div id="count"></div> <!-- 댓글 갯수 표시 영역 -->
 <div id="replys"></div> <!-- 댓글 표시 영역 -->
 <h3>댓글 작성</h3>
-<textarea id="replyContents" placeholder="댓글을 작성하세요"></textarea><br>
-<button onclick="doWrite()">댓글 추가</button>
-
-<script>
-    const boardNo = document.getElementById("boardNo").value; // 게시글 번호
-    const boardId = document.getElementById("boardId").value; // 게시판 종류
-    const sessionMemNo = document.getElementById('sessionMemNo').value; // 로그인 회원
-    // 댓글 조회 함수
-    function getReply() {
-        fetch(`/reply/${boardId}/getReply/${boardNo}`)
-            .then(response => response.json())
-            .then(replys => {
-                const replyDiv = document.getElementById('replys');
-                const replyCnt = document.getElementById('count');
-                replyDiv.innerHTML = ''; // 기존 댓글 초기화
-                replyCnt.innerHTML = ''; // 기존 갯수 초기화
-                const replysCnt = replys.length;
-                const count = document.createElement('count');
-                count.innerHTML = `<h3 id="count">댓글 ${replysCnt}개</h3>`;
-                replyCnt.appendChild(count);
-                replys.forEach(reply => {
-                    const replyElement = document.createElement('div');
-                    replyElement.style.marginBottom = '20px';
-                    replyElement.style.marginLeft = (reply.depth * 50) + 'px';
-                    replyElement.innerHTML = `
-                            <p id="reply-${reply.replyNo}">${reply.contents}</p>
-                            `;
-                    if (reply.memNo == sessionMemNo) {
-                        replyElement.innerHTML += `
-                            <button id="deleteReplyBtn-${reply.replyNo}" name="deleteReplyBtn" style="display:inline-block" onclick="deleteReply(${reply.replyNo})">삭제</button>
-                            <button id="updateReplyBtn-${reply.replyNo}" name="updateReplyBtn" style="display:inline-block" onclick="updateReply(${reply.replyNo})">수정</button>
-                        `;
-                    }
-                    if (reply.depth == 0) {
-                        replyElement.innerHTML += `
-                            <button id="writeNestedReply-${reply.replyNo}" name="writeNestedReply" style="display:inline-block" onclick="writeNestedReply(${reply.replyNo})">답글</button>
-                            `;
-                    }
-                    replyElement.innerHTML += `
-                            <button id="saveReplyBtn-${reply.replyNo}" name="saveReplyBtn" style="display:none;" onclick="saveReply(${reply.replyNo})">저장</button>
-                            <button id="cancelReplyBtn-${reply.replyNo}" name="cancelReplyBtn" style="display:none;" onclick="cancelReply(${reply.replyNo})">취소</button>
-                            <textarea id="reply-textarea-${reply.replyNo}" style="display:none;">${reply.contents}</textarea>
-
-                            <!-- 답글 요소 -->
-                            <textarea id="nestedReplyTextArea-${reply.replyNo}" style="display:none;"></textarea>
-                            <button id="saveNestedReply-${reply.replyNo}" name="saveNestedReplyBtn" style="display:none;" onclick="saveNestedReply(${reply.replyNo})">답글저장</button>
-                            <button id="cancelNestedReply-${reply.replyNo}" name="cancelNestedReply" style="display:none;" onclick="cancelNestedReply(${reply.replyNo})">취소</button>
-                        `;
-                    replyDiv.appendChild(replyElement);
-                });
-            })
-            .catch(error => console.error('Error loading replys:', error));
-    }
-
-
-    // 대댓글 저장 함수 S
-    function saveNestedReply(replyNo) {
-        const contents = document.getElementById('nestedReplyTextArea-' + replyNo).value;
-        if (!contents) {
-            alert("답글 내용을 입력하세요.");
-            return;
-        }
-
-        const data = {
-            contents: contents,
-            parentNo: replyNo
-        };
-
-        fetch(`/reply/${boardId}/doWrite/${boardNo}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(() => {
-                getReply();  // 대댓글 목록 새로고침
-                document.getElementById('nestedReplyTextArea').value = '';  // 텍스트박스 비우기
-            })
-            .catch(error => console.error('Error adding reply:', error));
-    }
-
-    // 댓글 추가 함수
-    function doWrite() {
-        const contents = document.getElementById('replyContents').value;
-        if (!contents) {
-            alert("댓글을 입력하세요.");
-            return;
-        }
-
-        const data = {
-            contents: contents
-        };
-
-        console.log('contents: ' + data.contents);
-
-        fetch(`/reply/${boardId}/doWrite/${boardNo}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(() => {
-                getReply();  // 댓글 목록 새로고침
-                document.getElementById('replyContents').value = '';  // 텍스트박스 비우기
-            })
-            .catch(error => console.error('Error adding reply:', error));
-    }
-
-    // 댓글 삭제 함수
-    function deleteReply(replyNo) {
-        fetch(`/reply/${boardId}/doDelete/${replyNo}`, {
-            method: 'DELETE',
-        })
-            .then(() => {
-                getReply();  // 댓글 목록 새로고침
-            })
-            .catch(error => console.error('Error deleting reply:', error));
-    }
-
-    // 답글 버튼 클릭 시
-    function writeNestedReply(replyNo) {
-        // const replyText = document.getElementById('reply-' + replyNo);
-        const nestedReplyTextArea = document.getElementById('nestedReplyTextArea-' + replyNo);
-        const saveNestedReply = document.getElementById('saveNestedReply-' + replyNo);
-        const cancelNestedReply = document.getElementById('cancelNestedReply-' + replyNo);
-        const writeNestedReply = document.getElementById('writeNestedReply-' + replyNo);
-
-        // textarea를 보여줌
-        nestedReplyTextArea.style.display = 'block';
-        // 답글 버튼은 숨기고 답글저장, 취소 버튼을 보여줌
-        writeNestedReply.style.display = 'none';
-        saveNestedReply.style.display = 'block';
-        cancelNestedReply.style.display = 'block';
-    }
-
-    // 댓글 수정 함수
-    function updateReply(replyNo) {
-        const replyText = document.getElementById('reply-' + replyNo);
-        const replyTextArea = document.getElementById('reply-textarea-' + replyNo);
-        const updateReplyBtn = document.getElementById('updateReplyBtn-' + replyNo);
-        const deleteReplyBtn = document.getElementById('deleteReplyBtn-' + replyNo);
-        const saveReplyBtn = document.getElementById('saveReplyBtn-' + replyNo);
-        const cancelReplyBtn = document.getElementById('cancelReplyBtn-' + replyNo);
-
-        // 수정 버튼 클릭 시
-        // 댓글 텍스트를 숨기고, textarea를 보여줌
-        replyText.style.display = 'none';
-        replyTextArea.style.display = 'block';
-        // 삭제, 수정 버튼을 숨기고 저장, 취소 버튼을 보여줌
-        updateReplyBtn.style.display = 'none';
-        deleteReplyBtn.style.display = 'none';
-        saveReplyBtn.style.display = 'inline-block';
-        cancelReplyBtn.style.display = 'inline-block';
-    }
-
-    // 댓글 취소 버튼 클릭 시
-    function cancelReply(replyNo) {
-        const replyText = document.getElementById('reply-' + replyNo);
-        const replyTextArea = document.getElementById('reply-textarea-' + replyNo);
-        const updateReplyBtn = document.getElementById('updateReplyBtn-' + replyNo);
-        const deleteReplyBtn = document.getElementById('deleteReplyBtn-' + replyNo);
-        const saveReplyBtn = document.getElementById('saveReplyBtn-' + replyNo);
-        const cancelReplyBtn = document.getElementById('cancelReplyBtn-' + replyNo);
-
-        // 취소 버튼 클릭 시
-        // textarea를 숨기고 댓글 텍스트를 보여줌
-        replyTextArea.style.display = 'none';
-        replyText.style.display = 'block';
-        // 저장, 취소 버튼을 숨기고 삭제, 수정 버튼을 보여줌
-        updateReplyBtn.style.display = 'inline-block';
-        deleteReplyBtn.style.display = 'inline-block';
-        saveReplyBtn.style.display = 'none';
-        cancelReplyBtn.style.display = 'none';
-    }
-
-    // 답글 취소 버튼 클릭 시
-    function cancelNestedReply(replyNo) {
-        const nestedReplyTextArea = document.getElementById('nestedReplyTextArea-' + replyNo);
-        const saveNestedReply = document.getElementById('saveNestedReply-' + replyNo);
-        const cancelNestedReply = document.getElementById('cancelNestedReply-' + replyNo);
-        const writeNestedReply = document.getElementById('writeNestedReply-' + replyNo);
-
-        // textarea를 보여줌
-        nestedReplyTextArea.style.display = 'none';
-        // 답글 버튼은 숨기고 답글저장, 취소 버튼을 보여줌
-        writeNestedReply.style.display = 'inline-block';
-        saveNestedReply.style.display = 'none';
-        cancelNestedReply.style.display = 'none';
-    }
-
-    // 좋아요 버튼 함수 S
-    document.getElementById('like').addEventListener('click', function() {
-        const boardNo = document.getElementById('boardNo').value;
-        const boardId = document.getElementById('boardId').value;
-        const data = {
-            boardNo: boardNo,
-            boardId: boardId
-        };
-
-        fetch('../doLike', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
-            },
-            body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
-        })
-            .then(response => response.text())
-            .then(data => {
-                if (data === "success") {
-                    alert('좋아요!');
-                } else {
-                    alert('좋아요 실패!');
-                }
-            })
-            .catch(error => console.error("Error:", error));
-    });
-    // 좋아요 버튼 함수 E
-
-    // 댓글 저장 함수 S
-    function saveReply(replyNo) {
-
-        const contents = document.getElementById('reply-textarea-' + replyNo).value;
-
-        fetch(`/reply/${boardId}/doUpdate/${replyNo}`, {
-            method: 'PATCH',
-            body: contents
-        })
-            .then(() => {
-                getReply();  // 댓글 목록 새로고침
-            })
-            .catch(error => console.error('Error deleting reply:', error));
-    }
-
-    // 페이지 로드 시 댓글 목록 불러오기
-    window.onload = getReply;
-</script>
-
-<script>
-    // 게시글 삭제 S
-    document.getElementById('doDelete').addEventListener('click', function() {
-        const boardId = document.getElementById('boardId').value;
-        const boardNo = document.getElementById('boardNo').value;
-        const data = {
-            boardId: boardId,
-            boardNo: boardNo
-        };
-        fetch('../doDelete', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
-            },
-            body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
-        })
-            .then(response => response.text())
-            .then(data => {
-                if (data === "success") {
-                    console.log('게시글 삭제 성공');
-                    window.location.href="/board/" + boardId + "/list";
-                } else {
-                    alert('게시글 삭제 실패');
-                }
-            })
-            .catch(error => console.error("Error:", error));
-    });
-    // 게시글 삭제 E
-
-    // 팔로우하기 S
-    function follow() {
-        if (confirm(document.getElementById('writerNm').value + '님을 팔로우하시겠습니까?')) {
-            const followButton = document.getElementById('follow');
-            const currentText = followButton.innerText;
-
-            const boardId = document.getElementById('boardId').value;
-            const boardNo = document.getElementById('boardNo').value;
-            const memNo = document.getElementById('memNo').value;
-            const data = {
-                boardId: boardId,
-                boardNo: boardNo,
-                memNo: memNo
-            };
-            fetch('../../../member/follow', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
-                },
-                body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
-            })
-                .then(response => response.text())
-                .then(data => {
-                    if (data === "success") {
-                        alert('팔로우 하였습니다.');
-                        if (currentText.includes('팔로우하기')) {
-                            followButton.innerText = followButton.innerText.replace('팔로우하기', '팔로우 중');
-                            followButton.id = 'cancelFollow';
-                            followButton.onclick = cancelFollow;
-                        }
-                    } else {
-                        alert('팔로우 실패하였습니다.');
-                    }
-                })
-                .catch(error => console.error("Error:", error));
-        } else {
-            return false;
-        }
-    }
-    // 팔로우하기 E
-
-    // 팔로우취소하기 S
-    function cancelFollow() {
-        if (confirm(document.getElementById('writerNm').value + '님 팔로우를 취소하시겠습니까?')) {
-            const followButton = document.getElementById('cancelFollow');
-            const currentText = followButton.innerText;
-
-            const boardId = document.getElementById('boardId').value;
-            const boardNo = document.getElementById('boardNo').value;
-            const memNo = document.getElementById('memNo').value;
-            const data = {
-                boardId: boardId,
-                boardNo: boardNo,
-                memNo: memNo
-            };
-            fetch('../../../member/cancelFollow', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
-                },
-                body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
-            })
-                .then(response => response.text())
-                .then(data => {
-                    if (data === "success") {
-                        alert('팔로우 취소 하였습니다.');
-                        if (currentText.includes('팔로우 중')) {
-                            followButton.innerText = followButton.innerText.replace('팔로우 중', '팔로우하기');
-                            followButton.id = 'follow';
-                            followButton.onclick = follow;
-                        }
-                    } else {
-                        alert('팔로우 취소에 실패하였습니다.');
-                    }
-                })
-                .catch(error => console.error("Error:", error));
-        } else {
-            return false;
-        }
-    }
-    // 팔로우취소하기 E
-
-    // 친구 신청하기 S
-    function createRequest() {
-        if (confirm(document.getElementById('writerNm').value + '님에게 친구 요청을 보내시겠습니까?')) {
-            const createRequestButton = document.getElementById('createRequest');
-            const currentText = createRequestButton.innerText;
-
-            const fromMemNo = document.getElementById('memNo').value;
-            const data = {
-                fromMemNo: fromMemNo
-            };
-            fetch('../../../friend/createRequest', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json' // 요청 헤더에 JSON 타입 지정
-                },
-                body: JSON.stringify(data) // 자바스크립트 객체를 JSON 문자열로 변환하여 전송
-            })
-                .then(response => response.text())
-                .then(data => {
-                    if (data === "success") {
-                        alert('친구 요청을 전송했습니다.');
-                        if (currentText.includes('친구신청')) {
-                            createRequestButton.innerText = createRequestButton.innerText.replace('친구신청', '친구요청취소');
-                            createRequestButton.id = 'cancelFollow';
-                            createRequestButton.onclick = cancelFollow;
-                        }
-                    } else {
-                        alert('친구 요청에 실패하였습니다.');
-                    }
-                })
-                .catch(error => console.error("Error:", error));
-        } else {
-            return false;
-        }
-    }
-    // 친구 신청하기 E
-</script>
-
+    <div class="write-reply-area">
+        <textarea class="replyContents" placeholder="댓글을 작성하세요"></textarea><br>
+        <a href="#" class="do-write">댓글 추가</a>
+    </div>
 </body>
-</html>
+<script src="/js/board/board.js"></script>
+
+<script>
+    window.onload = function() {
+        getReply();
+    }
+</script>

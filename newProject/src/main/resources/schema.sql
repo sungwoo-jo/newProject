@@ -58,7 +58,8 @@ CREATE TABLE `travel` (
     visitDt DATETIME DEFAULT NULL comment '방문일',
     regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' comment '생성일',
     modDt DATETIME DEFAULT NULL comment '수정일',
-    writerIp String DEFAULT NULL comment '작성자 ip'
+    writerIp String DEFAULT NULL comment '작성자 ip',
+    thumbnailImage varchar(200) DEFAULT NULL COMMENT '썸네일 이미지 저장 경로';
 );
 
 -- reply(댓글 테이블)

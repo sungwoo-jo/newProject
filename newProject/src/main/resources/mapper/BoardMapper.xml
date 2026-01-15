@@ -77,7 +77,9 @@
     </insert>
 
     <select id="getBoardView" parameterType="com.sw.newProject.dto.board.BoardDto">
-        SELECT * FROM
+        SELECT boardNo, memNo, writerNm, subject, contents, likeCnt, hitCnt, complaintFl,
+        foodCharge, transportCharge, etcCharge, budget, district, DATE_FORMAT(visitDt, '%Y-%m-%d') as visitDt, regDt, thumbnailImage
+        FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
             <when test="boardId == 'travel'">travel</when>
@@ -177,7 +179,9 @@
     </update>
 
     <select id="getPopularBoard" parameterType="java.lang.String" resultType="com.sw.newProject.dto.board.BoardDto">
-        SELECT * FROM
+        SELECT boardNo, memNo, writerNm, subject, contents, likeCnt, hitCnt, complaintFl,
+               foodCharge, transportCharge, etcCharge, budget, district, DATE_FORMAT(visitDt, '%Y-%m-%d') as visitDt, regDt, thumbnailImage
+        FROM
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
             <when test="boardId == 'travel'">travel</when>

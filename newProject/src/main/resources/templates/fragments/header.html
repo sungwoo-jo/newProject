@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="header">
-<head>
-    <meta charset="UTF-8">
-        <link href="/css/header/header.css" rel="stylesheet" type="text/css">
-</head>
-<body>
+<header th:fragment="header">
 
-<header>
+    <link href="/css/header/header.css" rel="stylesheet" type="text/css">
     <div class="dropdown">
         <button class="dropbtn">MENU ▼</button>
         <div th:if="${session.member}" class="dropdown-content">
@@ -23,8 +17,7 @@
             <a th:href="'/member/join'">회원가입</a>
         </div>
     </div>
-</header>
 
-<script src="/js/scripts.js"></script>
-<script src="/js/notification/notification.js"></script>
-</body>
+    <script th:src="@{/js/scripts.js}"></script>
+    <script th:src="@{/js/notification/notification.js}"></script>
+</header>

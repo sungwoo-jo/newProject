@@ -60,3 +60,10 @@
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+.sub-header {
+    padding: 30px 20px;
+    background: white;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}

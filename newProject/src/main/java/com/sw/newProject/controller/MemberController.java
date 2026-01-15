@@ -176,12 +176,14 @@ public class MemberController {
 
             // 친구 리스트 불러와서 알림 전송
             String friendList = friendShipService.getFriendList(member.getMemNo());
+            log.info("friendList: {}", friendList);
             ObjectMapper objectMapper = new ObjectMapper();
             Map<Integer, String> map = objectMapper.readValue(friendList, new TypeReference<Map<Integer, String>>() {});
             for (Integer friend : map.keySet())
             {
                 Executors.newSingleThreadExecutor().submit(() -> { // 알림 보내기 시작
-                    log.info("friend: {}", friend);
+                    log.info("-- notification start --");
+                    log.info("target friend memNo: {}", friend);
                     notificationDto.setFromMemNo(friend);
                     notificationProducer.sendNotification(notificationDto);
                     log.info("로그인 알림 전송 완료");

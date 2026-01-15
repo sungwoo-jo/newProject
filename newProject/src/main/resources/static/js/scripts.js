@@ -1,5 +1,3 @@
-// scripts.js
-
 // 회원가입 페이지 S
 if (document.getElementById("signup-form")) {
     document.getElementById("signup-form").addEventListener("submit", function (event) {

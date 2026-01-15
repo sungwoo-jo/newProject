@@ -15,7 +15,7 @@ public class NotificationProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendNotification(NotificationDto notificationDto) {
-        log.info("Producing message: {}", notificationDto.getContent());
+        log.info("보낼 메시지: {}", notificationDto.getContent());
         this.kafkaTemplate.send(TOPIC, notificationDto);
     }
 }

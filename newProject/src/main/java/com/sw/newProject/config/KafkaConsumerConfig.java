@@ -18,7 +18,7 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
         Map<String, Object> config = new HashMap<>();
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "121.171.123.7:9092");
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "newProject-group");
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*"); // Deserialization을 위해 모든 패키지를 신뢰
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

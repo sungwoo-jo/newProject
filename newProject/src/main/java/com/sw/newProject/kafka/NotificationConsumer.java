@@ -19,6 +19,9 @@ public class NotificationConsumer {
         log.info("Consumed message: {}", notificationDto.getContent());
 
         // 카프카로부터 받은 메시지로 실제 SSE 알림 전송
+
+        log.info("fromMemNo: {}, toMemNo: {}", notificationDto.getFromMemNo(), notificationDto.getToMemNo());
+
         notificationService.notifyOne(
                 notificationDto.getFromMemNo(),
                 notificationDto.getContent(),

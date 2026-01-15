@@ -1,40 +1,57 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>newProject</title>
+    <title>TRIPTALK</title>
+    <link rel="stylesheet" href="../css/header/header.css"/>
+    <link rel="stylesheet" href="../css/index.css"/>
+    <!-- 1/12 헤더파일 임시로 꺼둠 시작 -->
+     <div th:replace="~{fragments/header :: header}"></div>
+    <!-- 1/12 헤더파일 임시로 꺼둠 끝 -->
 </head>
 <body>
-<div th:replace="~{fragments/header :: header}"></div> <!-- 헤더 파일 로드 -->
+    <div class="main-container">
+        <header class="top-header">
+            <h1 class="logo">
+                <span class="logo-main">TRIPTALK</span>
+                <span class="logo-dot">.</span>
+            </h1>
+            <p class="logo-sub">당신의 여행 이야기가 시작되는 곳</p>
+        </header>
+        <span class="badge-dot"></span>
 
-<div>
-    <h1>인기게시글</h1>
-    <span class="badge-dot"></span>
-
-</div>
-<table class="table table-striped" border="1">
-    <thead>
-    <tr>
-        <th>번호</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>작성일</th>
-        <th>좋아요</th>
-        <th>조회수</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- 인기게시글 리스트 -->
-    <tr th:each="board : ${boardDto}">
-        <td th:text="${board.boardNo}"></td>
-        <td><a th:href="'/board/travel/view/' + ${board.boardNo}" th:text="${board.subject}"></a></td>
-        <td th:text="${board.writerNm}"></td>
-        <td th:text="${board.regDt}"></td>
-        <td th:text="${board.likeCnt}"></td>
-        <td th:text="${board.hitCnt}"></td>
-    </tr>
-    </tbody>
-</table>
+        <div class="main-section">
+            <div class="section-title-box">
+                <h2>지금 뜨는 인기 게시글</h2>
+                <div class="hot-badge">HOT</div>
+            </div>
+            <div class="card-grid">
+                <div class="travel-card" th:each="board : ${boardDto}">
+                    <div class="card-image-wrapper">
+                        <img th:src="${board.thumbnailImage}" alt="travel-img">
+                        <div class="card-overlay">
+                            <span class="hit-count">👁️
+                                <span th:text="${board.hitCnt}"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-subject">
+                            <a th:href="'/board/travel/view/' + ${board.boardNo}" th:text="${board.subject}"></a>
+                        </h3>
+                        <div class="card-meta">
+                            <span class="author" th:text="${board.writerNm}"></span>
+                            <span class="date" th:text="'방문일자 ' + ${board.visitDt}"></span>
+                        </div>
+                        <div class="card-bottom">
+                            <span class="like-btn">❤️
+                                <span th:text="${board.likeCnt}"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
-</html>
+
+<script src="/js/notification/notification.js"></script>
