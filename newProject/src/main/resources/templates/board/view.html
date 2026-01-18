@@ -102,8 +102,8 @@
 
 <!--        </table>-->
 <!--        <a th:href="${previousPage}" class="btn btn-secondary">목록으로 돌아가기</a><br>-->
-<!--        <a th:if="${session.member.memNo == boardDto.memNo}" th:href="@{/board/{boardId}/write/{boardNo}(boardId=${boardDto.boardId}, boardNo=${boardDto.boardNo})}" class="btn btn-secondary">수정하기</a><br>-->
-<!--        <button id="doDelete">삭제하기</button><br>-->
+        <a th:if="${session.member.memNo == boardDto.memNo}" th:href="@{/board/{boardId}/write/{boardNo}(boardId=${boardDto.boardId}, boardNo=${boardDto.boardNo})}" class="btn btn-secondary">수정하기</a><br>
+        <button id="doDelete">삭제하기</button><br>
 <!--        <button id="like">좋아요</button><br>-->
 <!--        <button th:id="${alreadyFollowFl ? 'cancelFollow' : 'follow'}">-->
 <!--            <span th:if="${alreadyFollowFl}" th:text="'팔로우 중'" onclick="cancelFollow()"></span>-->

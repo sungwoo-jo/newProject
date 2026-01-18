@@ -97,8 +97,10 @@ public class BoardController {
             model.addAttribute("boardDto", boardDto);
             return "board/write";
         }
-        model.addAttribute("boardId", boardId);
-        model.addAttribute("writerNm", member.getMemNm());
+        boardDto.setBoardId(boardId);
+        boardDto.setWriterNm(member.getMemNm());
+        model.addAttribute("boardDto", boardDto);
+        log.info("writerNm: {}", member.getMemNm());
         return "board/write";
     }
 
