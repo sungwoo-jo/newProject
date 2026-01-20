@@ -5,6 +5,7 @@ import com.sw.newProject.dto.*;
 import com.sw.newProject.dto.board.BoardDto;
 import com.sw.newProject.dto.board.BoardListDto;
 import com.sw.newProject.dto.board.BoardSearchDto;
+import com.sw.newProject.dto.like.LikeDto;
 import com.sw.newProject.service.BoardService;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;

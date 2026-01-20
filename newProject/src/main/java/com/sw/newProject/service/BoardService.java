@@ -4,6 +4,8 @@ import com.sw.newProject.dto.*;
 import com.sw.newProject.dto.board.BoardDto;
 import com.sw.newProject.dto.board.BoardListDto;
 import com.sw.newProject.dto.board.BoardSearchDto;
+import com.sw.newProject.dto.like.IsLikedDto;
+import com.sw.newProject.dto.like.LikeDto;
 import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.mapper.BoardMapper;
@@ -99,16 +101,48 @@ public class BoardService {
         NotificationDto notificationDto = new NotificationDto();
         dto.getBoardDto().setMemNo(getWriterMemNo(dto.getBoardDto()));
 
-        // 알림 전송
-        notificationDto.setToMemNo(dto.getLikerMemNo());
-        notificationDto.setFromMemNo(dto.getBoardDto().getMemNo());
-        notificationDto.setNotificationType(NotificationType.BOARD_LIKE);
-        notificationDto.setContent(member.getMemNm() + "님이 내 글을 좋아합니다.");
-        notificationDto.setUrl("/board/" + dto.getBoardDto().getBoardId() + "/view/" + dto.getBoardDto().getBoardNo());
+        // 좋아요 중복 처리를 막기위해 기존 좋아요 여부 판단
+        IsLikedDto isLikedDto = new IsLikedDto();
+        isLikedDto.setMemNo(dto.getLikerMemNo());
+        isLikedDto.setBoardNo(dto.getBoardDto().getBoardNo());
+        isLikedDto.setBoardId(dto.getBoardDto().getBoardId());
+        int likeFlag = isLiked(isLikedDto);
 
-        notificationProducer.sendNotification(notificationDto);
+        if (likeFlag == 0) {
+            // 알림 전송
+            notificationDto.setToMemNo(dto.getLikerMemNo());
+            notificationDto.setFromMemNo(dto.getBoardDto().getMemNo());
+            notificationDto.setNotificationType(NotificationType.BOARD_LIKE);
+            notificationDto.setContent(member.getMemNm() + "님이 내 글을 좋아합니다.");
+            notificationDto.setUrl("/board/" + dto.getBoardDto().getBoardId() + "/view/" + dto.getBoardDto().getBoardNo());
 
-        return boardMapper.doLike(dto);
+            notificationProducer.sendNotification(notificationDto);
+
+            // 좋아요 내역 저장
+            saveLikeData(isLikedDto);
+
+            return boardMapper.doLike(dto);
+        } else {
+            log.info("memNo: {}, boardId: {}, boardNo: {}, 이미 좋아요 한 회원입니다.", isLikedDto.getMemNo(), isLikedDto.getBoardId(), isLikedDto.getBoardNo());
+            return 0;
+        }
+    }
+
+    /**
+     * 좋아요 내역 저장
+     * @param isLikedDto 좋아요 누른 회원의 정보와 게시판 아이디, 게시글 번호를 boardLikeInfo 테이블에 저장
+     */
+    private void saveLikeData(IsLikedDto isLikedDto) {
+        boardMapper.saveLikeData(isLikedDto);
+    }
+
+    /**
+     * 기존 좋아요 여부 판단
+     * @param dto 좋아요 누른 회원의 정보와 게시판 아이디, 게시글 번호가 들어가있음
+     * @return 해당 회원의 기존 좋아요 여부를 반환(true, false)
+     */
+    private int isLiked(IsLikedDto dto) {
+        return boardMapper.isLiked(dto);
     }
 
     private int getWriterMemNo(BoardDto boardDto) {

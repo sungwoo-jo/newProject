@@ -1,4 +1,4 @@
-package com.sw.newProject.dto;
+package com.sw.newProject.dto.like;
 
 import com.sw.newProject.dto.board.BoardDto;
 import lombok.Getter;

@@ -168,7 +168,7 @@
         WHERE boardNo = #{boardNo}
     </update>
 
-    <update id="doLike" parameterType="com.sw.newProject.dto.LikeDto">
+    <update id="doLike" parameterType="com.sw.newProject.dto.like.LikeDto">
         UPDATE
         <choose>
             <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
@@ -209,5 +209,13 @@
     <insert id="insertHitInfo" parameterType="com.sw.newProject.dto.board.BoardDto">
         INSERT INTO boardIncrementCnt(boardNo, boardId, memNo, regDt, ip)
         VALUES (#{boardNo}, #{boardId}, #{memNo}, now(), #{writerIp})
+    </insert>
+
+    <select id="isLiked" parameterType="com.sw.newProject.dto.like.IsLikedDto" resultType="int">
+        SELECT COUNT(*) FROM boardLikeInfo WHERE boardId = #{boardId} AND boardNo = #{boardNo} AND memNo = #{memNo}
+    </select>
+
+    <insert id="saveLikeData" parameterType="com.sw.newProject.dto.like.IsLikedDto">
+        INSERT INTO boardLikeInfo(memNo, boardNo, boardId, regDt) VALUES (#{memNo}, #{boardNo}, #{boardId}, now())
     </insert>
 </mapper>

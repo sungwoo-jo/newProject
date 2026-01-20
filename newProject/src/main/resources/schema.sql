@@ -263,3 +263,13 @@ INSERT INTO reservation (memNo, placeId, rsvDt, rsvStatus, reqMsg, deleteYn, reg
 (1, 108, '2025-02-08 17:30:00', 'CANCELED', '예약 취소 부탁드립니다.', 0, '2025-02-08 11:15:00', '2025-02-08 11:30:00'),
 (1, 109, '2025-02-08 19:00:00', 'PENDING', '혼자 예약인데 편안한 자리를 원합니다.', 0, '2025-02-08 12:00:00', NULL),
 (1, 110, '2025-02-09 08:00:00', 'CONFIRMED', '어린이 메뉴 제공 부탁드립니다.', 0, '2025-02-08 13:00:00', '2025-02-08 13:15:00');
+
+-- 게시글 별 회원의 좋아요 정보를 담아줄 테이블 생성
+DROP TABLE IF EXISTS `boardLikeInfo` CASCADE;
+CREATE TABLE boardLikeInfo (
+                               memNo INT NOT NULL COMMENT '회원번호',
+                               boardNo INT NOT NULL COMMENT '게시글번호',
+                               boardId VARCHAR(20) NOT NULL COMMENT '게시판아이디',
+                               regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '생성일',
+                               PRIMARY KEY (memNo, boardNo)
+) COMMENT '회원 별 게시글 좋아요 정보';
