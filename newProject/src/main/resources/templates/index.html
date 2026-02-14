@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="../css/header/header.css"/>
     <link rel="stylesheet" href="../css/index.css"/>
     <!-- 1/12 헤더파일 임시로 꺼둠 시작 -->
-     <div th:replace="~{fragments/header :: header}"></div>
+     <div th:replace="~{fragments/header/header :: header}"></div>
     <!-- 1/12 헤더파일 임시로 꺼둠 끝 -->
 </head>
 <body>
@@ -26,16 +26,18 @@
             <div class="card-grid">
                 <div class="travel-card" th:each="board : ${boardDto}">
                     <div class="card-image-wrapper">
+                        <a th:href="'/board/travel/view/' + ${board.boardNo}">
                         <img th:src="${board.thumbnailImage}" alt="travel-img">
                         <div class="card-overlay">
                             <span class="hit-count">👁️
                                 <span th:text="${board.hitCnt}"></span>
                             </span>
                         </div>
+                        </a>
                     </div>
                     <div class="card-body">
                         <h3 class="card-subject">
-                            <a th:href="'/board/travel/view/' + ${board.boardNo}" th:text="${board.subject}"></a>
+                            <div th:text="${board.subject}"></div>
                         </h3>
                         <div class="card-meta">
                             <span class="author" th:text="${board.writerNm}"></span>

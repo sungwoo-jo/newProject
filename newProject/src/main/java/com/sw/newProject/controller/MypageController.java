@@ -9,6 +9,7 @@ import com.sw.newProject.enumType.ChatEntrantStatus;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
 import com.sw.newProject.service.NotificationService;
+import com.sw.newProject.service.SftpUploaderService;
 import com.sw.newProject.websocket.ChatRoom;
 import com.sw.newProject.websocket.ChatService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -22,7 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,12 +80,6 @@ public class MypageController {
             log.info("contents: {}", dto.getContent());
         }
 
-
-        // 3. 팔로잉 소식 가져오기
-
-        // 4. 팔로워 소식 가져오기
-
-
         session.setAttribute("friends", friends);
         session.setAttribute("recentNotifications", recentNotifications);
 
@@ -95,22 +92,21 @@ public class MypageController {
     }
 
     @PostMapping("/doUpdate")
-    public String doUpdate(MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
+    public String doUpdate(MemberDto memberDto, @RequestParam("profileImage") MultipartFile file, HttpSession session) throws NoSuchAlgorithmException, IOException {
         log.info("memberDto: {}", memberDto);
-        memberService.updateMember(memberDto);
+        memberService.updateMember(memberDto, file);
         MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
         session.setAttribute("member", updatedMemberDto);
-        return "mypage/index";
+        return "redirect:/mypage";
     }
 
     @GetMapping("/follow/list")
-    public String getFollowList(Model model) {
-        
+    public String getFollowList() {
         return "mypage/followList";
     }
 
     @GetMapping("/following/list")
-    public String getFollowingList(Model model) {
+    public String getFollowingList() {
         return "mypage/followingList";
     }
 

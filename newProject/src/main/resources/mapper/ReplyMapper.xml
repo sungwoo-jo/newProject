@@ -3,21 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sw.newProject.mapper.ReplyMapper">
-    <select id="getReply" parameterType="java.util.HashMap" resultType="com.sw.newProject.dto.ReplyDto">
-        SELECT * FROM reply
-        WHERE boardNo = #{boardNo} AND boardId = #{boardId} AND deleteYn = FALSE
+    <select id="getReply" parameterType="com.sw.newProject.dto.reply.ReplyDto" resultType="com.sw.newProject.dto.reply.GetReplyDto">
+        SELECT r.*, m.memNm AS memNm, m.profileImageName AS profileImageName
+        FROM reply r left join member m ON r.memNo = m.memNo
+        WHERE r.boardId = #{boardId} AND r.boardNo = #{boardNo} AND r.deleteYn = FALSE
         ORDER BY
-            CASE
-                WHEN parentNo IS NULL THEN replyNo -- 댓글은 자기 자신 기준
-                ELSE parentNo                      -- 대댓글은 부모 댓글 기준
-            END ASC,
-            depth ASC,  -- 댓글 -> 대댓글 순서로 정렬
-            regDt ASC   -- 같은 그룹 내에서는 등록일 순
+            r.groupNo, r.groupOrder
     </select>
 
-    <insert id="doWrite" parameterType="com.sw.newProject.dto.ReplyDto">
-        INSERT INTO reply(boardId, boardNo, memNo, contents, depth, parentNo, regDt)
-        VALUES (#{boardId}, #{boardNo}, #{memNo}, #{contents}, #{depth}, #{parentNo}, now())
+    <insert id="doWrite" parameterType="com.sw.newProject.dto.reply.ReplyDto">
+        INSERT INTO reply(boardId, boardNo, memNo, contents, groupNo, groupOrder, depth, parentNo, answerCnt, regDt)
+        VALUES (#{boardId}, #{boardNo}, #{memNo}, #{contents}, #{groupNo}, #{groupOrder}, #{depth}, #{parentNo}, #{answerCnt}, now())
     </insert>
 
     <update id="doDelete" parameterType="java.util.HashMap">
@@ -37,4 +33,77 @@
             </choose>
         WHERE boardNo = #{boardNo}
     </select>
+
+    <select id="getMaxGroupNo" parameterType="com.sw.newProject.dto.reply.ReplyDto" resultType="Integer">
+        SELECT MAX(groupNo)
+        FROM reply
+        WHERE boardId = #{boardId} AND boardNo = #{boardNo}
+    </select>
+
+    <select id="getParentGroupNo" parameterType="Integer" resultType="Integer">
+        SELECT groupNo
+        FROM reply
+        WHERE replyNo = #{parentNo}
+    </select>
+
+    <select id="getParentReplyInfo" parameterType="Integer" resultType="com.sw.newProject.dto.reply.ReplyDto">
+        SELECT replyNo, boardId, boardNo, memNo, contents, groupNo, groupOrder, depth, parentNo, answerCnt, deleteYn, likeCnt, regDt, modDt
+        FROM reply
+        WHERE replyNo = #{parentNo}
+    </select>
+
+    <update id="updateParentAnswerCnt" parameterType="Integer">
+        UPDATE reply SET answerCnt = answerCnt + 1 WHERE replyNo = #{parentNo}
+    </update>
+
+    <select id="getMaxGroupOrder" parameterType="com.sw.newProject.dto.reply.ReplyDto" resultType="Integer">
+        SELECT IFNULL(MAX(groupOrder), 0)
+        FROM reply
+        WHERE boardId = #{boardId} AND boardNo = #{boardNo} AND groupNo = #{groupNo} AND parentNo = #{parentNo} AND depth = #{depth}
+    </select>
+
+    <update id="plusGroupOrder" parameterType="com.sw.newProject.dto.reply.ReplyDto">
+        UPDATE reply
+        SET groupOrder = groupOrder + 1
+        WHERE boardId = #{boardId} AND boardNo = #{boardNo} AND groupNo = #{groupNo} AND groupOrder >= #{groupOrder}
+    </update>
+
+    <select id="existGroupOrder" parameterType="com.sw.newProject.dto.reply.ReplyDto" resultType="Integer">
+        SELECT COUNT(*)
+        FROM reply
+        WHERE boardId = #{boardId} AND boardNo = #{boardNo} AND groupNo = #{groupNo} AND groupOrder >= #{groupOrder} + 1
+    </select>
+    
+    <select id="existParentNo" parameterType="com.sw.newProject.dto.reply.ReplyDto" resultType="Integer">
+        SELECT COUNT(*)
+        FROM reply
+        WHERE boardId = #{boardId} AND boardNo = #{boardNo} AND groupNo = #{groupNo} AND parentNo = #{replyNo}
+    </select>
+
+    <select id="existBeforeReply" parameterType="com.sw.newProject.dto.reply.ReplyDto" resultType="Integer">
+        SELECT COUNT(groupOrder)
+        FROM reply
+        WHERE boardId = #{boardId} AND boardNo = #{boardNo} AND parentNo = #{parentNo} AND depth = #{depth}
+    </select>
+
+    <select id="getTargetOrder" parameterType="com.sw.newProject.dto.reply.TargetOrderDto" resultType="Integer">
+        SELECT IFNULL(MIN(groupOrder), (SELECT MAX(groupOrder) + 1 FROM reply WHERE groupNo = #{groupNo}))
+        FROM reply
+        WHERE groupNo = #{groupNo}
+          AND groupOrder > #{parentGroupOrder}
+        <![CDATA[
+          AND depth >= #{parentDepth}
+        ]]>
+    </select>
+
+    <update id="updateExistingReply" parameterType="com.sw.newProject.dto.reply.TargetOrderDto">
+        UPDATE reply
+        SET groupOrder = groupOrder + 1
+        WHERE boardId = #{boardId}
+          AND boardNo = #{boardNo}
+          AND groupNo = #{groupNo}
+        <![CDATA[
+          AND groupOrder >= #{targetOrder}
+        ]]>
+    </update>
 </mapper>

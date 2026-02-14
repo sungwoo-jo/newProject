@@ -152,13 +152,13 @@
     /* 테스트 데이터 E */
 </style>
 
-<div th:replace="~{fragments/header :: header}"></div> <!-- 헤더 파일 로드 -->
+<div th:replace="~{fragments/header/header :: header}"></div> <!-- 헤더 파일 로드 -->
 
 <body>
 <div class="container">
     <!-- 프로필 헤더 -->
     <div class="profile-header">
-        <img th:src="@{'/upload/' + ${session.member.profileImageName}}" alt="프로필 사진">
+        <img th:src="@{'http://121.171.123.7:62334/' + ${session.member.profileImageName}}" alt="프로필 사진">
         <h1>닉네임: <h1 th:text="${session.member.memNm}"></h1></h1>
         <p>코멘트: <h4 th:text="${session.member.comm}"></h4>
     </div>
@@ -172,7 +172,7 @@
                     th:id="'openModalBtn' + ${stat.index + 1}"
                     th:data-modal-id="'modal' + ${stat.index + 1}"
                     style="display: flex; align-items: center; margin-bottom: 10px; width: -webkit-fill-available;">
-                <img th:src="@{'/upload/' + ${friend.profileImageName}}" alt="프로필 사진"
+                <img th:src="@{'http://121.171.123.7:62334/' + ${friend.profileImageName}}" alt="프로필 사진"
                      style="width: 50px; height: 50px; margin-right: 10px;">
                 <h4 th:text="${friend.memNm} + '(' + ${friend.memId} + ')' + '님'"/>
             </button>
@@ -181,7 +181,7 @@
             <div th:each="friend, stat : ${session.friends}"
                  th:id="'modal' + ${stat.index + 1}" class="modal" style="border-radius: 25px;">
                     <span class="close">&times;</span>
-                    <img th:src="@{'/upload/' + ${friend.profileImageName}}" alt="프로필 사진"
+                    <img th:src="@{'http://121.171.123.7:62334/' + ${friend.profileImageName}}" alt="프로필 사진"
                      style="width: 100%; height: 50%; margin-right: 10px; max-width: 265px; padding-top: 10px;">
                     <h2 th:text="${friend.memNm} + '님의 프로필'"></h2>
                     <p th:text="'ID: ' + ${friend.memId}"></p>

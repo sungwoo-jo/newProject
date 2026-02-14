@@ -88,10 +88,22 @@
     </insert>
 
     <delete id="doCancelFollow" parameterType="Integer">
-        UPDATE member SET follow = JSON_REMOVE(follow, CONCAT('$.', #{boardDtoNo})) WHERE memNo = #{memberDtoNo}
+        UPDATE member SET follow = JSON_REMOVE(follow, CONCAT('$.', #{writerMemNo})) WHERE memNo = #{memberDtoNo};
+        UPDATE member SET follow = '{}' WHERE follow IS NULL;
     </delete>
 
     <delete id="doCancelFollowing" parameterType="Integer">
-        UPDATE member SET following = JSON_REMOVE(following, CONCAT('$.', #{memberDtoNo})) WHERE memNo = #{boardDtoNo}
+        UPDATE member SET following = JSON_REMOVE(following, CONCAT('$.', #{memberDtoNo})) WHERE memNo = #{writerMemNo};
+        UPDATE member SET following = '{}' WHERE following IS NULL;
     </delete>
+
+    <select id="getWriterMemberNoByBoardInfo" parameterType="com.sw.newProject.dto.board.BoardDto">
+        SELECT memNo
+        FROM
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardId == 'travel'">travel</when>
+        </choose>
+        WHERE boardNo = #{boardNo}
+    </select>
 </mapper>

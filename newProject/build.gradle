@@ -43,6 +43,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' // MongoDB 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-aop:2.2.6.RELEASE' // Spring AOP 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation("com.hierynomus:sshj:0.40.0") // sshj 라이브러리
 
 
 	// 스웨거 의존성

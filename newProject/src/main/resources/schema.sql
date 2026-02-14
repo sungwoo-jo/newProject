@@ -273,3 +273,10 @@ CREATE TABLE boardLikeInfo (
                                regDt DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '생성일',
                                PRIMARY KEY (memNo, boardNo)
 ) COMMENT '회원 별 게시글 좋아요 정보';
+
+-- 댓글 기능 리팩토링
+ALTER TABLE newProject.reply CHANGE groupNo groupNo int(11) DEFAULT 0 NULL COMMENT '댓글그룹번호' AFTER contents;
+ALTER TABLE newProject.reply ADD groupOrder INT UNSIGNED NULL COMMENT '같은댓글그룹 내 순서';
+ALTER TABLE newProject.reply CHANGE groupOrder groupOrder int(10) unsigned DEFAULT NULL NULL COMMENT '같은댓글그룹 내 순서' AFTER groupNo;
+ALTER TABLE newProject.reply ADD answerCnt INT UNSIGNED DEFAULT 0 NULL COMMENT '자식댓글갯수';
+ALTER TABLE newProject.reply CHANGE answerCnt answerCnt INT UNSIGNED DEFAULT 0 NULL COMMENT '자식댓글갯수' AFTER parentNo;

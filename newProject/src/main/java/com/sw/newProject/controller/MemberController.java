@@ -8,6 +8,7 @@ import com.sw.newProject.dto.*;
 import com.sw.newProject.dto.board.BoardDto;
 import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.kafka.NotificationProducer;
+import com.sw.newProject.service.BoardService;
 import com.sw.newProject.service.FriendShipService;
 import com.sw.newProject.service.MemberService;
 import com.sw.newProject.service.NotificationService;
@@ -25,6 +26,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +52,8 @@ public class MemberController {
     private final NotificationService notificationService;
     private final FriendShipService friendShipService;
     private final NotificationProducer notificationProducer;
+
+    private final BoardService boardService;
 
     @GetMapping("/join") // 회원가입 페이지 호출
     @Operation(summary = "회원가입 페이지 호출", description = "회원가입 페이지를 호출합니다.")
@@ -90,11 +95,11 @@ public class MemberController {
 
     @PatchMapping("/doUpdate") // 정보수정 처리
     @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 처리를 합니다.")
-    public String updateMember(@RequestBody MemberDto memberDto, HttpSession session) throws NoSuchAlgorithmException {
-        memberService.updateMember(memberDto);
+    public String updateMember(@RequestBody MemberDto memberDto, @RequestParam("profileImage") MultipartFile file, HttpSession session) throws NoSuchAlgorithmException, IOException {
+        memberService.updateMember(memberDto, file);
         MemberDto updatedMemberDto = memberService.getMember(memberDto.getMemNo());
         session.setAttribute("member", updatedMemberDto); // 최신 정보로 세팅
-        return "member/joinSuccess"; // todo: 마이페이지 메인으로 이동해야 함
+        return "mypage/index"; // todo: 마이페이지 메인으로 이동해야 함
     }
 
     @GetMapping("/delete") // 회원 탈퇴 페이지 호출
@@ -269,11 +274,8 @@ public class MemberController {
     @PostMapping("/follow") // 팔로우 처리
     @Operation(summary = "팔로우 처리", description = "팔로우 처리를 진행합니다.")
     public ResponseEntity<String> follow(@RequestBody BoardDto boardDto, HttpSession session) {
-        String boardId = "travel";
-        MemberDto reqMember = (MemberDto)session.getAttribute("member");
-        BoardDto accMember = boardDto;
-
-        memberService.doFollow(reqMember, accMember, boardId);
+        MemberDto reqMember = (MemberDto)session.getAttribute("member"); // 팔로우 신청자
+        memberService.doFollow(reqMember, boardDto);
 
         return ResponseEntity.ok("success");
     }
@@ -287,13 +289,13 @@ public class MemberController {
     public ResponseEntity<String> doCancelFollow(@RequestBody BoardDto boardDto, HttpSession session) {
         HashMap<String, Object> map = new HashMap<>();
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        Integer writerMemNo = boardService.getWriterMemNo(boardDto); // 게시글 작성자
         Integer memberDtoNo = memberDto.getMemNo(); // 로그인한 사용자
-        Integer boardDtoNo = boardDto.getMemNo(); // 게시글 작성자
         map.put("memberDtoNo", memberDtoNo);
-        map.put("boardDtoNo", boardDtoNo);
+        map.put("writerMemNo", writerMemNo);
 
-        memberService.doCancelFollow(map);
-        memberService.doCancelFollowing(map);
+        memberService.doCancelFollow(map); // 로그인한 사용자의 팔로우 리스트에서 글 작성자의 memNo를 삭제
+        memberService.doCancelFollowing(map); // 글 작성자의 팔로우 리스트에서 로그인한 사용자의 memNo를 삭제
 
         return ResponseEntity.ok("success");
     }

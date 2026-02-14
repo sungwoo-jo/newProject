@@ -7,7 +7,6 @@ import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,7 +20,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -36,6 +34,7 @@ public class MemberService {
     private final NotificationProducer notificationProducer;
     private final RelationshipService relationshipService;
     private final NotificationService notificationService;
+    private final SftpUploaderService sftpUploaderService; // 외부 경로에 저장하기 위해 sftpUploaderService 추가
 
     public void insertMember(MemberDto memberDto, MultipartFile file) throws Exception { // 회원가입 로직 처리
         System.out.println("[MemberService][insertMember][projectPath]: " + System.getProperty("user.dir"));
@@ -55,13 +54,11 @@ public class MemberService {
 
     /*
      * 프로필 이미지를 저장하는 메서드
-     * file을 전달받아 uploadFile 테이블에 데이터를 저장하고
+     * file을 전달받아 원격 저장소에 첨부파일을 저장한 후 첨부파일 테이블에 관련 데이터를 저장하고
      * member 테이블에 profileImageName을 저장한다.
-     * todo: 회원 별 폴더를 생성하고 폴더 내에 이미지를 저장하는 방식으로 전환해보기(이미지가 없다면 not found 나게끔)
      */
     public String saveProfileImage(MemberDto memberDto, MultipartFile file) throws IOException {
         UploadFileDto uploadFileDto = new UploadFileDto();
-
         String uuid = UUID.randomUUID().toString();
 
         // 확장자 구하기
@@ -70,21 +67,27 @@ public class MemberService {
 
         uploadFileDto.setUploadFileName(file.getOriginalFilename()); // 업로드 원본 파일명
 
-        String directory = System.getProperty("user.dir") + "\\newProject\\src\\main\\resources\\static\\upload\\";
+        String directory = "newProject/img/profileImage/";
 
-        // memNo의 디렉토리가 존재하는지 확인하고 없으면 생성
-        File projectPath = new File(directory + memberDto.getMemNo() + "_" + memberDto.getMemId());
-        if (!projectPath.exists()) {
-            boolean created = projectPath.mkdirs(); // 디렉토리 생성
-            if (!created) {
-                throw new IOException("디렉토리를 생성할 수 없습니다.");
-            }
-        }
-        uploadFileDto.setStoredFileName(projectPath + "\\" + uuid + "." + extension); // uuid로 파일명 변경하여 저장
+        // 프로필 이미지를 업로드 한 회원의 개별 경로를 생성하기 위한 변수
+        // ex. newProject\img\profileImage\1_test1
+        File userPath = new File(directory + memberDto.getMemNo() + "_" + memberDto.getMemId());
 
-        log.info("업로드 경로: {}", uploadFileDto.getStoredFileName());
+        // 실제 저장되는 프로필 이미지명 + 확장자
+        // ex. 189d52dd-8de4-4f36-90b6-598f9c90e07d.png
+        String uuidFileName = uuid + "." + extension;
 
-        file.transferTo(new File(uploadFileDto.getStoredFileName()));
+        // 업로드를 위해 원격 저장소 경로 형식에 맞춤
+        // ex. newProject\img\profileImage\1_test1 -> newProject/img/profileImage/1_test1/
+        String remotePath = userPath.getPath().replace("\\", "/");
+
+        // 첨부파일 테이블에 저장하기 위해 원격 저장 경로 + 파일명 형태로 가공
+        // ex. newProject/img/profileImage/1_test1/189d52dd-8de4-4f36-90b6-598f9c90e07d.png
+        uploadFileDto.setStoredFileName(remotePath + "/" + uuidFileName);
+
+        // 업로드한 파일을 원격 저장소에 실제로 저장한다
+        sftpUploaderService.uploadToRemotePath(file, remotePath, uuidFileName);
+
         memberMapper.saveProfileImage(uploadFileDto);
 
         return memberDto.getMemNo() + "_" + memberDto.getMemId() + "/" + uuid + "." + extension; // 회원 테이블에 저장할 파일명(폴더 + 파일명 + 확장자 형식으로 저장이 됨)
@@ -98,12 +101,11 @@ public class MemberService {
         return memberMapper.getMember(memNo);
     }
 
-    public void updateMember(@NotNull MemberDto reqMemberDto) throws NoSuchAlgorithmException {
+    public void updateMember(MemberDto reqMemberDto, MultipartFile file) throws NoSuchAlgorithmException, IOException {
         //  업데이트 하지 않는 값은 기존 값으로 두고, 업데이트 해야 하는 항목들은 업데이트 해주기
         //  업데이트 필요 항목: memPw, nickNm, address1, address2, zipCode, phone, email, profileImage, modDt / 불필요: memNo, memId, deleteYn, regDt
         MemberDto recentMemberDto = getMember(reqMemberDto.getMemNo()); // 기존 정보 조회
         MemberDto updateMemberDto = new MemberDto(); // 리턴할 데이터
-        LocalDateTime nowDateTime = LocalDateTime.now();
 
         // 기존 값으로 유지
         updateMemberDto.setMemNo(recentMemberDto.getMemNo());
@@ -158,6 +160,12 @@ public class MemberService {
         } else {
             updateMemberDto.setComm(recentMemberDto.getComm());
         }
+
+        if (!file.isEmpty()) { // 프로필이미지 존재하면 업로드 한 이미지 set
+            String newImageName = saveProfileImage(reqMemberDto, file);
+            updateMemberDto.setProfileImageName(newImageName);
+        }
+
         memberMapper.updateMember(updateMemberDto); // 새롭게 세팅한 값으로 업데이트
     }
 
@@ -332,21 +340,29 @@ public class MemberService {
     }
 
     public void doCancelFollowing(HashMap<String, Object> map) {
+        log.info("팔로우 취소하는 사람: {}, 팔로우 취소 당하는 사람: {}", map.get("memberDtoNo"), map.get("writerMemNo"));
         memberMapper.doCancelFollowing(map);
     }
 
-    public void doFollow(MemberDto reqMember, BoardDto accMember, String boardId) {
-        relationshipService.doFollow(reqMember, accMember);
+    public void doFollow(MemberDto reqMember, BoardDto boardDto) {
+        // 팔로우 처리를 위해 게시글 작성자 회원 번호를 조회하여 전달
+        Integer writerMemNo = getWriterMemberNoByBoardInfo(boardDto);
+
+        relationshipService.doFollow(reqMember, writerMemNo);
         NotificationDto notificationDto = new NotificationDto();
         // 팔로잉 알림 전송
         // 작성자에게 알림 전송
         notificationDto.setToMemNo(reqMember.getMemNo());
-        notificationDto.setFromMemNo(accMember.getMemNo());
+        notificationDto.setFromMemNo(writerMemNo);
         notificationDto.setContent(reqMember.getMemId() + "님이 팔로우 하였습니다.");
-        notificationDto.setUrl("/board/" + boardId + "/view/" + accMember.getBoardNo());
+        notificationDto.setUrl("/board/" + boardDto.getBoardId() + "/view/" + boardDto.getBoardNo());
         notificationDto.setNotificationType(NotificationType.FOLLOW_ADD);
         notificationProducer.sendNotification(notificationDto);
         notificationService.saveNotify(notificationDto);
+    }
+
+    private Integer getWriterMemberNoByBoardInfo(BoardDto boardDto) {
+        return memberMapper.getWriterMemberNoByBoardInfo(boardDto);
     }
 }
 

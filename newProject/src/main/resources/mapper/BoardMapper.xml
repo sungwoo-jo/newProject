@@ -11,6 +11,7 @@
             <when test="boardDto.boardId == 'travel'">travel</when>
         </choose>
         WHERE deleteYn = FALSE AND hiddenFl = FALSE
+        ORDER BY boardNo DESC
         LIMIT #{pageDto.start}, #{pageDto.pageLength}
     </select>
 
@@ -218,4 +219,13 @@
     <insert id="saveLikeData" parameterType="com.sw.newProject.dto.like.IsLikedDto">
         INSERT INTO boardLikeInfo(memNo, boardNo, boardId, regDt) VALUES (#{memNo}, #{boardNo}, #{boardId}, now())
     </insert>
+
+    <select id="getBoardLikeCnt" parameterType="com.sw.newProject.dto.like.LikeDto">
+        SELECT likeCnt FROM
+        <choose>
+            <!-- 게시판 생성할 때마다 추가해야 CRUD 가능 -->
+            <when test="boardDto.boardId == 'travel'">travel</when>
+        </choose>
+        WHERE boardNo = #{boardDto.boardNo}
+    </select>
 </mapper>

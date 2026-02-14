@@ -1,7 +1,9 @@
 package com.sw.newProject.service;
 
 import com.sw.newProject.dto.NotificationDto;
-import com.sw.newProject.dto.ReplyDto;
+import com.sw.newProject.dto.reply.GetReplyDto;
+import com.sw.newProject.dto.reply.ReplyDto;
+import com.sw.newProject.dto.reply.TargetOrderDto;
 import com.sw.newProject.enumType.NotificationType;
 import com.sw.newProject.kafka.NotificationProducer;
 import com.sw.newProject.mapper.ReplyMapper;
@@ -21,8 +23,8 @@ public class ReplyService {
     private final MemberService memberService;
     private final NotificationProducer notificationProducer;
 
-    public List<ReplyDto> getReply(HashMap<String, Object> map) {
-        return replyMapper.getReply(map);
+    public List<GetReplyDto> getReply(ReplyDto dto) {
+        return replyMapper.getReply(dto);
     }
 
     public void doWrite(ReplyDto replyDto) {
@@ -54,5 +56,50 @@ public class ReplyService {
         map.put("boardNo", boardNo);
         map.put("boardId", boardId);
         return replyMapper.getWriterNo(map);
+    }
+
+    public Integer getMaxGroupNo(ReplyDto replyDto) {
+        return replyMapper.getMaxGroupNo(replyDto);
+    }
+
+    public Integer getParentGroupNo(Integer parentNo) {
+        return replyMapper.getParentGroupNo(parentNo);
+    }
+
+    public ReplyDto getParentReplyInfo(Integer parentNo) {
+        return replyMapper.getParentReplyInfo(parentNo);
+    }
+
+    public void updateParentAnswerCnt(Integer parentNo) {
+        replyMapper.updateParentAnswerCnt(parentNo);
+    }
+
+    public Integer getMaxGroupOrder(ReplyDto replyDto) {
+        return replyMapper.getMaxGroupOrder(replyDto);
+    }
+
+    public void plusGroupOrder(ReplyDto replyDto) {
+        log.info("replyDto.groupOrder: {}", replyDto.getGroupOrder());
+        replyMapper.plusGroupOrder(replyDto);
+    }
+
+    public Integer existGroupOrder(ReplyDto parentReplyDto) {
+        return replyMapper.existGroupOrder(parentReplyDto);
+    }
+
+    public Integer existParentNo(ReplyDto parentReplyDto) {
+        return replyMapper.existParentNo(parentReplyDto);
+    }
+
+    public Integer existBeforeReply(ReplyDto replyDto) {
+        return replyMapper.existBeforeReply(replyDto);
+    }
+
+    public Integer getTargetOrder(TargetOrderDto targetOrderDto) {
+        return replyMapper.getTargetOrder(targetOrderDto);
+    }
+
+    public int updateExistingReply(TargetOrderDto targetOrderDto) {
+        return replyMapper.updateExistingReply(targetOrderDto);
     }
 }

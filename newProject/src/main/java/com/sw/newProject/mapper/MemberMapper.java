@@ -3,6 +3,7 @@ package com.sw.newProject.mapper;
 import com.sw.newProject.dto.DoResetPwDto;
 import com.sw.newProject.dto.MemberDto;
 import com.sw.newProject.dto.UploadFileDto;
+import com.sw.newProject.dto.board.BoardDto;
 import org.apache.ibatis.annotations.Mapper;
 import java.util.HashMap;
 import java.util.List;
@@ -42,4 +43,6 @@ public interface MemberMapper {
     void doCancelFollow(HashMap<String, Object> map);
 
     void doCancelFollowing(HashMap<String, Object> map);
+
+    Integer getWriterMemberNoByBoardInfo(BoardDto boardDto);
 }

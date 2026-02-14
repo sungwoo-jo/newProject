@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -137,13 +138,15 @@ public class BoardController {
         currentBoardDto.setBoardId(boardId);
 
         HashMap<String, String> followDataMap = memberService.getFollowData(member.getMemNo()); // 회원의 현재 팔로우 데이터를 가져오기
+        log.info("followDataMap: {}", followDataMap);
         JSONObject prevFollowData = new JSONObject(followDataMap);
         String followDataJson = prevFollowData.getString("follow");
+        log.info("followDataJson: {}", followDataJson);
         JSONObject followData = new JSONObject(followDataJson);
 
         boolean alreadyFollowFl;
 
-        if (followData.has(String.valueOf(boardDto.getMemNo()))) {
+        if (followData.has(String.valueOf(currentBoardDto.getMemNo()))) {
             alreadyFollowFl = TRUE;
         } else {
             alreadyFollowFl = FALSE;
@@ -154,7 +157,6 @@ public class BoardController {
         friendShipDto.setFromMemNo(boardDto.getMemNo());
         String alreadyRequestFl = friendShipService.getStatus(friendShipDto);
         log.info("alreadyRequestFl: {}", alreadyRequestFl);
-
 
         if (boardDto.getDeleteYn() != TRUE) {
             model.addAttribute("previousPage", referer);
@@ -179,15 +181,19 @@ public class BoardController {
      * @return 좋아요 처리에 따라 결과값 반환
      */
     @PostMapping("{boardId}/doLike")
-    public ResponseEntity<String> doLike(@RequestBody BoardDto boardDto,
-                                         @LoginMember MemberDto member) {
+    public ResponseEntity<?> doLike(@RequestBody BoardDto boardDto,
+                                          @LoginMember MemberDto member) {
         LikeDto likeDto = new LikeDto();
 
         likeDto.setBoardDto(boardDto);
         likeDto.setLikerMemNo(member.getMemNo());
 
-        int result = boardService.doLike(likeDto, member);
-        return result > 0 ? ResponseEntity.ok("success") : ResponseEntity.ok("fail");
+        try {
+            int result = boardService.doLike(likeDto, member);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 
     /**

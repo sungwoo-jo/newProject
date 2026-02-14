@@ -23,7 +23,7 @@
 <!--</body>-->
 <!--</html>-->
 <body>
-<div th:replace="~{fragments/header :: header}"></div> <!-- 헤더 파일 로드 -->
+<div th:replace="~{fragments/header/header :: header}"></div> <!-- 헤더 파일 로드 -->
 <table>
     <tr th:each="room : ${roomList}">
         <td>

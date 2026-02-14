@@ -24,7 +24,7 @@ public interface BoardMapper {
 
     void incrementHitCnt(BoardDto boardDto);
 
-    int doLike(LikeDto likeDto);
+    void doLike(LikeDto likeDto);
 
     List<BoardDto> getPopularBoard(String boardId);
 
@@ -41,4 +41,6 @@ public interface BoardMapper {
     int isLiked(IsLikedDto dto);
 
     void saveLikeData(IsLikedDto isLikedDto);
+
+    int getBoardLikeCnt(LikeDto dto);
 }

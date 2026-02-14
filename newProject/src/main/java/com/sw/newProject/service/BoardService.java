@@ -12,6 +12,7 @@ import com.sw.newProject.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -93,13 +94,19 @@ public class BoardService {
 
     /**
      * 좋아요 처리
-     * @param dto 게시글 정보, 좋아요 누른 사용자 정보가 들어가있다.
-     * @return 좋아요 처리가 완료되면 게시글 작성자에게 알림을 전송한다.
+     * @param dto 좋아요 한 게시글의 정보
+     * @param member 좋아요를 누른 사용자 정보
+     * @return 게시글 작성자에게 알림 전송 후 좋아요 처리를 진행한다.
      */
     public int doLike(LikeDto dto,
-                      MemberDto member) {
+                                  MemberDto member) throws Exception {
         NotificationDto notificationDto = new NotificationDto();
-        dto.getBoardDto().setMemNo(getWriterMemNo(dto.getBoardDto()));
+        int writerMemNo = getWriterMemNo(dto.getBoardDto()); // 게시글 작성자 회원 번호
+        dto.getBoardDto().setMemNo(writerMemNo);
+
+        if (writerMemNo == member.getMemNo()) {
+            throw new Exception("자기 자신의 게시글은 좋아요 할 수 없습니다.");
+        }
 
         // 좋아요 중복 처리를 막기위해 기존 좋아요 여부 판단
         IsLikedDto isLikedDto = new IsLikedDto();
@@ -107,6 +114,7 @@ public class BoardService {
         isLikedDto.setBoardNo(dto.getBoardDto().getBoardNo());
         isLikedDto.setBoardId(dto.getBoardDto().getBoardId());
         int likeFlag = isLiked(isLikedDto);
+        int likeCnt;
 
         if (likeFlag == 0) {
             // 알림 전송
@@ -118,14 +126,20 @@ public class BoardService {
 
             notificationProducer.sendNotification(notificationDto);
 
-            // 좋아요 내역 저장
-            saveLikeData(isLikedDto);
-
-            return boardMapper.doLike(dto);
+            // 좋아요 처리 일괄 진행
+            like(isLikedDto, dto);
         } else {
-            log.info("memNo: {}, boardId: {}, boardNo: {}, 이미 좋아요 한 회원입니다.", isLikedDto.getMemNo(), isLikedDto.getBoardId(), isLikedDto.getBoardNo());
-            return 0;
+            throw new Exception("이미 좋아요 한 게시글입니다.");
         }
+
+        likeCnt = boardMapper.getBoardLikeCnt(dto); // 좋아요 갯수 조회하여 반환
+        return likeCnt;
+    }
+
+    @Transactional
+    void like(IsLikedDto isLikedDto, LikeDto dto) {
+        saveLikeData(isLikedDto); // 좋아요 내역 저장
+        boardMapper.doLike(dto); // 좋아요 갯수 업데이트 처리
     }
 
     /**
@@ -145,7 +159,7 @@ public class BoardService {
         return boardMapper.isLiked(dto);
     }
 
-    private int getWriterMemNo(BoardDto boardDto) {
+    public int getWriterMemNo(BoardDto boardDto) {
         return boardMapper.getWriterMemNo(boardDto);
     }
 

@@ -7,6 +7,10 @@
     --text-muted: #636e72;
     --bg-light: #F9FBFF;
     --white: #ffffff;
+    --black: #000000;
+    --text-follow: rgb(0 0 0);
+    --text-follow-background: rgb(20, 233, 150);
+    --text-follow-cancel-background: rgb(243 238 81);
 }
 
 body {
@@ -104,11 +108,29 @@ body {
     gap: 12px;
 }
 
+.follow-div {
+    margin-right: auto;
+}
+
+.follow-btn {
+    margin-right: auto;
+    margin-left: 0.625rem;
+    color: var(--text-follow);
+    background: var(--text-follow-background);
+}
+
+.follow-cancel-btn {
+    margin-right: auto;
+    margin-left: 0.625rem;
+    color: var(--text-follow);
+    background: var(--text-follow-cancel-background);
+}
+
 .author-avatar {
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    background: var(--primary-gradient);
+    /*background: var(--primary-gradient);*/
 }
 
 .author-name { font-weight: 700; font-size: 1rem; }
@@ -150,6 +172,25 @@ body {
     gap: 8px;
 }
 
+.btn-board {
+    margin-right: auto;
+}
+
+.btn-delete {
+    background: white;
+    color: var(--accent-coral);
+    border: 1px solid #FF0000;
+}
+
+.btn-delete:hover { background: red; color: white; }
+
+.btn-modify {
+    background: rgb(178 211 0);
+    color: var(--black);
+}
+
+.btn-modify:hover { background: rgb(206 229 7); }
+
 .btn-like {
     background: #FFF0F0;
     color: var(--accent-coral);
@@ -169,4 +210,47 @@ body {
     .post-container { margin: 0; border-radius: 0; padding: 30px 20px; }
     .post-title { font-size: 2rem; }
     .post-hero { height: 350px; }
+}
+
+.reply-area {
+    margin-left: 1rem;
+}
+
+.reply-area .reply-count-view .reply-count {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.reply-area .replys .reply-body {
+    /*margin-bottom: 20px;*/
+    /*border: 1px solid;*/
+    max-width: 70%;
+    margin: auto;
+}
+
+.reply-area .replys .reply-body .author-profile-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reply-area .replys .reply-body .author-profile-area .profile-image {
+    width: 2rem;
+}
+
+.reply-area .replys .reply-body .author-profile-area .author-nickname {
+    font-size: medium;
+    font-weight: bold;
+}
+
+.reply-area .replys .reply-body .reply-contents {
+    margin-left: 1.5rem;
+}
+
+.btn-write-answer {
+    margin-left: 1.5rem;
+}
+
+.btn-area {
+    display: flex;
 }

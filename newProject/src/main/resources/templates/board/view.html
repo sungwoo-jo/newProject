@@ -2,8 +2,8 @@
     <title>게시글 상세보기</title>
 </head>
 <body class="board-view" th:data-board-id="${boardDto.boardId}" th:data-board-no="${boardDto.boardNo}">
-    <div th:replace="~{fragments/sub_header :: sub_header}"></div>
-    <div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/header/sub_header :: sub_header}"></div>
+    <div th:replace="~{fragments/header/header :: header}"></div>
 
     <input type="hidden" id="memNo" th:value="${boardDto.memNo}">
     <input type="hidden" id="writerNm" th:value="${boardDto.writerNm}">
@@ -22,11 +22,16 @@
         <article class="post-container">
             <div class="post-info">
                 <div class="author-box">
-                    <div class="author-avatar"></div>
+                    <div><img class="author-avatar" th:src="@{http://121.171.123.7:62334/{profileImageName}(profileImageName=${session.member.profileImageName})}"></div>
                     <div>
                         <div class="author-name" th:text="${boardDto.writerNm}"></div>
                         <div class="post-date" th:text="${boardDto.visitDt}"></div>
                     </div>
+                </div>
+                <div class="follow-div" th:if="${session.member.memNo} != ${boardDto.memNo}">
+                <a href="#" th:class="${alreadyFollowFl ? 'btn follow-cancel-btn' : 'btn follow-btn'}" th:text="${alreadyFollowFl ? '팔로우 중' : '팔로우하기'}" th:data-board-no="${boardDto.boardNo}" th:data-board-id="${boardDto.boardId}">
+                    팔로우 여부
+                </a>
                 </div>
                 <div class="post-stats">
                     <span>👁️ <span th:text="${boardDto.hitCnt}"></span></span>
@@ -36,17 +41,21 @@
 
             <div class="post-content">
                 <p th:utext="${boardDto.contents}">
-                    여기에 여행의 상세한 내용이 들어갑니다. <br><br>
-                    제주도의 푸른 바다는 정말 아름다웠습니다. 성산일출봉에서 바라본 일출은 평생 잊지 못할 기억이 될 것 같아요.
-                    여러분도 이번 여름에는 제주도로 떠나보시는 건 어떨까요?
+                    게시글 내용
                 </p>
             </div>
 
             <div class="post-footer">
-                <a href="#" class="btn btn-like" th:data-board-no="${boardDto.boardNo}" th:data-board-id="${boardDto.boardId}">
-                    <span>❤️</span> 도움돼요 <span th:text="${boardDto.likeCnt}"></span>
-                </a>
-                <a th:href="${previousPage}" class="btn btn-list">목록으로</a>
+                <div class="btn btn-board" th:if="${session.member.memNo} == ${boardDto.memNo}">
+                    <a href="#" class="btn btn-delete" th:data-board-no="${boardDto.boardNo}" th:data-board-id="${boardDto.boardId}">삭제하기</a>
+                    <a class="btn btn-modify" th:href="@{/board/{boardId}/write/{boardNo}(boardId=${boardDto.boardId}, boardNo=${boardDto.boardNo})}">수정하기</a><br>
+                </div>
+                <div class="btn btn-default">
+                    <a href="#" class="btn btn-like" th:data-board-no="${boardDto.boardNo}" th:data-board-id="${boardDto.boardId}">
+                        <span>❤️</span> 좋아요 <span th:text="${boardDto.likeCnt}"></span>
+                    </a>
+                    <a th:href="${previousPage}" class="btn btn-list">목록으로</a>
+                </div>
             </div>
         </article>
     </main>
@@ -102,8 +111,6 @@
 
 <!--        </table>-->
 <!--        <a th:href="${previousPage}" class="btn btn-secondary">목록으로 돌아가기</a><br>-->
-        <a th:if="${session.member.memNo == boardDto.memNo}" th:href="@{/board/{boardId}/write/{boardNo}(boardId=${boardDto.boardId}, boardNo=${boardDto.boardNo})}" class="btn btn-secondary">수정하기</a><br>
-        <button id="doDelete">삭제하기</button><br>
 <!--        <button id="like">좋아요</button><br>-->
 <!--        <button th:id="${alreadyFollowFl ? 'cancelFollow' : 'follow'}">-->
 <!--            <span th:if="${alreadyFollowFl}" th:text="'팔로우 중'" onclick="cancelFollow()"></span>-->
@@ -117,14 +124,27 @@
 <!--    &lt;!&ndash;    </button>&ndash;&gt;-->
 
 <!--    </div>-->
-<hr>
-<div id="count"></div> <!-- 댓글 갯수 표시 영역 -->
-<div id="replys"></div> <!-- 댓글 표시 영역 -->
-<h3>댓글 작성</h3>
-    <div class="write-reply-area">
-        <textarea class="replyContents" placeholder="댓글을 작성하세요"></textarea><br>
-        <a href="#" class="do-write">댓글 추가</a>
+    <hr>
+
+    <!-- 댓글 영역 -->
+    <div class="reply-area">
+        <!-- 댓글 갯수 표시 영역 -->
+        <div class="reply-count-view"></div>
+
+        <!-- 댓글 표시 영역 -->
+        <div class="replys"></div>
+
+        <!-- 댓글 작성 영역 -->
+        <h3>댓글 작성</h3>
+            <div class="reply-body">
+                <div class="btn-area">
+                    <textarea class="reply-contents" placeholder="댓글을 작성하세요"></textarea><br>
+                    <a href="#" class="do-write">댓글 추가</a>
+                </div>
+            </div>
     </div>
+    <!-- 댓글 영역 -->
+
 </body>
 <script src="/js/board/board.js"></script>
 
